@@ -22,57 +22,6 @@ interface ApiRowData extends ApiKeyConfig {
 }
 
 export default function ApiStatusPage() {
-  // Block access in production environments for security
-  // Note: In Next.js, process.env.NODE_ENV is available on both client and server
-  const isProduction = process.env.NODE_ENV === 'production';
-  const isVercelProduction = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-  
-  if (isProduction || isVercelProduction) {
-    return (
-      <div style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #181a1b 0%, #232526 100%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#f3f3f3"
-      }}>
-        <div style={{
-          padding: "40px",
-          background: "#232526",
-          borderRadius: "10px",
-          border: "1px solid #444",
-          textAlign: "center",
-          maxWidth: "500px"
-        }}>
-          <h1 style={{ color: "#ffb347", fontSize: "24px", marginBottom: "20px" }}>
-            🔒 Access Restricted
-          </h1>
-          <p style={{ color: "#ccc", lineHeight: "1.6" }}>
-            The API management interface is disabled in production environments for security reasons.
-            API keys should be configured through environment variables in your deployment platform.
-          </p>
-          <div style={{ marginTop: "20px" }}>
-            <a 
-              href="/"
-              style={{
-                display: "inline-block",
-                padding: "10px 20px",
-                background: "#ffb347",
-                color: "#000",
-                borderRadius: "8px",
-                textDecoration: "none",
-                fontWeight: "600"
-              }}
-            >
-              ← Back to Home
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<ApiKeyConfig[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,9 +45,7 @@ export default function ApiStatusPage() {
       requiredApis: [
         { envVar: "RESEARCH_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
         { envVar: "RESEARCH_PERPLEXITY_API_KEY", displayName: "Perplexity API", provider: "perplexity", required: true, configured: false },
-        { envVar: "RESEARCH_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
-        { envVar: "SERPAPI_KEY", displayName: "SerpAPI (Google Search)", provider: "serpapi", required: true, configured: false },
-        { envVar: "DISCOGS_TOKEN", displayName: "Discogs API (Music/Vinyl)", provider: "discogs", required: false, configured: false }
+        { envVar: "RESEARCH_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
@@ -138,88 +85,25 @@ export default function ApiStatusPage() {
     }))
   );
 
-  // Load API keys from localStorage and environment variables
+  // Load API keys from localStorage
   useEffect(() => {
-    const loadApiKeys = async () => {
-      // First load from localStorage
-      const savedKeys = localStorage.getItem('ai-agent-api-keys');
-      let localKeys = {};
-      if (savedKeys) {
-        try {
-          localKeys = JSON.parse(savedKeys);
-        } catch (e) {
-          console.error('Failed to parse saved API keys:', e);
-        }
-      }
-
-      // Then load current environment variables from server
+    const savedKeys = localStorage.getItem('ai-agent-api-keys');
+    if (savedKeys) {
       try {
-        const response = await fetch('/api/verify-api-keys', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(localKeys),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          if (result.results) {
-            // Extract existing keys from environment variables
-            const envKeys: Record<string, string> = {};
-            result.results.forEach((item: any) => {
-              if (item.configured && item.envVar && item.keyValue) {
-                // Always use the actual environment variable value for display
-                envKeys[item.envVar] = item.keyValue;
-              }
-            });
-            
-            // Merge keys (env keys take precedence for configured values, local keys for new entries)
-            const mergedKeys = { ...localKeys, ...envKeys };
-            setApiKeys(mergedKeys);
-            setStatus(result.results || []);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load environment variables:', error);
-        // Fall back to just local keys
-        setApiKeys(localKeys);
+        const parsed = JSON.parse(savedKeys);
+        setApiKeys(parsed);
+      } catch (e) {
+        console.error('Failed to parse saved API keys:', e);
       }
-
-      setLoading(false);
-    };
-
-    loadApiKeys();
+    }
+    setLoading(false);
+    
+    // Load status on component mount
+    checkApiStatus();
   }, []);
 
-  const saveApiKeys = async (keys: Record<string, string>) => {
-    try {
-      // Save to localStorage first for immediate UI updates
-      localStorage.setItem('ai-agent-api-keys', JSON.stringify(keys));
-      
-      // Also save to .env.local file via API
-      const response = await fetch('/api/save-api-keys', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ apiKeys: keys }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Failed to save to .env.local:', errorData.error);
-        setError(`Failed to save to .env.local: ${errorData.error}`);
-      } else {
-        const result = await response.json();
-        console.log('Successfully saved to .env.local:', result.savedKeys);
-        setError(null); // Clear any previous errors
-      }
-    } catch (error) {
-      console.error('Error saving API keys:', error);
-      setError('Failed to save API keys to environment file');
-    }
-    
+  const saveApiKeys = (keys: Record<string, string>) => {
+    localStorage.setItem('ai-agent-api-keys', JSON.stringify(keys));
     setHasUnsavedChanges(false);
   };
 
@@ -229,13 +113,13 @@ export default function ApiStatusPage() {
     setHasUnsavedChanges(true);
     
     // Auto-save after a short delay
-    setTimeout(async () => {
-      await saveApiKeys(newKeys);
+    setTimeout(() => {
+      saveApiKeys(newKeys);
     }, 500);
   };
 
-  const handleSaveAll = async () => {
-    await saveApiKeys(apiKeys);
+  const handleSaveAll = () => {
+    saveApiKeys(apiKeys);
   };
 
   const checkApiStatus = async () => {
@@ -602,14 +486,14 @@ export default function ApiStatusPage() {
                         verticalAlign: "top"
                       }}>
                         <input
-                          type="text"
+                          type="password"
                           placeholder={`Enter ${api.displayName} key...`}
                           value={apiKeys[api.envVar] || ''}
                           onChange={(e) => handleApiKeyChange(api.envVar, e.target.value)}
-                          onBlur={async () => await saveApiKeys(apiKeys)}
-                          onKeyDown={async (e) => {
+                          onBlur={() => saveApiKeys(apiKeys)}
+                          onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === 'Tab') {
-                              await saveApiKeys(apiKeys);
+                              saveApiKeys(apiKeys);
                             }
                           }}
                           style={{
@@ -628,9 +512,9 @@ export default function ApiStatusPage() {
                         verticalAlign: "top"
                       }}>
                         <button
-                          onClick={async () => {
+                          onClick={() => {
                             handleApiKeyChange(api.envVar, '');
-                            await saveApiKeys({ ...apiKeys, [api.envVar]: '' });
+                            saveApiKeys({ ...apiKeys, [api.envVar]: '' });
                           }}
                           style={{
                             padding: "6px 10px",

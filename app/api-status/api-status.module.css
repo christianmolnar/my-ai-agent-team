@@ -1,0 +1,286 @@
+/* API Status Page Styles - Override global dark mode */
+.apiStatusContainer {
+  background-color: #111827 !important; /* gray-900 */
+  color: #d1d5db !important; /* gray-300 */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.apiStatusWrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.apiStatusCard {
+  background-color: #1f2937 !important; /* gray-800 */
+  border: 2px solid #374151 !important; /* gray-700 */
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.apiStatusHeader {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%) !important;
+  border-bottom: 2px solid #4b5563 !important; /* gray-600 */
+  border-radius: 1rem 1rem 0 0;
+}
+
+.apiStatusTitle {
+  color: #fb923c !important; /* orange-400 */
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.apiStatusSubtitle {
+  color: #d1d5db !important; /* gray-300 */
+  font-size: 1.1rem;
+}
+
+.apiStatusSection {
+  background-color: #374151 !important; /* gray-700 */
+  border-bottom: 2px solid #4b5563 !important; /* gray-600 */
+  color: #d1d5db !important; /* gray-300 */
+  padding: 1.5rem 2rem;
+}
+
+.apiStatusTableContainer {
+  background-color: #1f2937 !important;
+  border-radius: 0.75rem;
+  margin: 1.5rem;
+  overflow: hidden;
+  border: 2px solid #374151 !important;
+}
+
+.apiStatusTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #1f2937 !important;
+  table-layout: fixed;
+}
+
+/* Column width specifications */
+.apiStatusTable th:nth-child(1) { width: 12%; } /* Agent */
+.apiStatusTable th:nth-child(2) { width: 22%; } /* API Service - increased for long env vars */
+.apiStatusTable th:nth-child(3) { width: 10%; } /* Provider */
+.apiStatusTable th:nth-child(4) { width: 15%; } /* Status - wider for "Not Configured" */
+.apiStatusTable th:nth-child(5) { width: 10%; } /* Required */
+.apiStatusTable th:nth-child(6) { width: 21%; } /* API Key - slightly reduced */
+.apiStatusTable th:nth-child(7) { width: 10%; } /* Actions */
+
+.apiStatusTableHeader {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+}
+
+.apiStatusTableHeaderCell {
+  color: #fb923c !important; /* orange-400 */
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+  border-right: 2px solid #4b5563 !important;
+  border-bottom: 2px solid #4b5563 !important;
+}
+
+.apiStatusTableHeaderCell:last-child {
+  border-right: none;
+}
+
+.apiStatusTableBody {
+  background-color: #1f2937 !important; /* gray-800 */
+}
+
+.apiStatusTableRow {
+  border-bottom: 1px solid #374151 !important; /* gray-700 */
+  transition: all 0.2s ease;
+}
+
+.apiStatusTableRow:hover {
+  background-color: #374151 !important; /* gray-700 */
+  transform: translateY(-1px);
+}
+
+.apiStatusTableRow:last-child {
+  border-bottom: none;
+}
+
+.apiStatusTableCell {
+  color: #e5e7eb !important; /* gray-200 */
+  padding: 1.25rem 1.5rem;
+  border-right: 1px solid #374151 !important;
+  vertical-align: middle;
+}
+
+.apiStatusTableCell:last-child {
+  border-right: none;
+}
+
+.apiStatusInput {
+  background-color: #374151 !important; /* gray-700 */
+  border: 2px solid #4b5563 !important; /* gray-600 */
+  color: #e5e7eb !important; /* gray-200 */
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  min-width: 250px;
+  transition: all 0.2s ease;
+}
+
+.apiStatusInput::placeholder {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+.apiStatusInput:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3) !important;
+  border-color: #f97316 !important; /* orange-500 */
+  background-color: #4b5563 !important;
+}
+
+.apiStatusFooter {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+  border-top: 2px solid #4b5563 !important; /* gray-600 */
+  color: #d1d5db !important; /* gray-300 */
+  border-radius: 0 0 1rem 1rem;
+  padding: 1.5rem 2rem;
+}
+
+.apiStatusAccent {
+  color: #fb923c !important; /* orange-400 */
+  font-weight: 600;
+}
+
+.apiStatusButtonOrange {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+  color: white !important;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.apiStatusButtonOrange:hover {
+  background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.apiStatusButtonBlue {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.apiStatusButtonBlue:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.apiStatusButtonGray {
+  background-color: #4b5563 !important; /* gray-600 */
+  color: #9ca3af !important; /* gray-400 */
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.apiStatusButtonClear {
+  color: #f87171 !important;
+  background-color: transparent !important;
+  border: 1px solid #dc2626 !important;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.apiStatusButtonClear:hover {
+  background-color: rgba(220, 38, 38, 0.1) !important;
+  color: #fca5a5 !important;
+  transform: translateY(-1px);
+}
+
+.apiStatusErrorBg {
+  background-color: rgba(127, 29, 29, 0.5) !important; /* red-900/50 */
+  border-left: 4px solid #dc2626 !important; /* red-500 */
+  border-radius: 0.5rem;
+}
+
+.apiStatusErrorText {
+  color: #fca5a5 !important; /* red-300 */
+}
+
+.apiStatusErrorIcon {
+  color: #f87171 !important; /* red-400 */
+}
+
+.apiStatusBadge {
+  padding: 0.5rem 0.875rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 2px solid;
+}
+
+.apiStatusBadgeRequired {
+  background-color: rgba(185, 28, 28, 0.2) !important;
+  color: #fca5a5 !important;
+  border-color: #dc2626 !important;
+}
+
+.apiStatusBadgeOptional {
+  background-color: rgba(75, 85, 99, 0.3) !important;
+  color: #d1d5db !important;
+  border-color: #6b7280 !important;
+}
+
+.apiStatusBadgeProvider {
+  background-color: rgba(30, 58, 138, 0.3) !important;
+  color: #93c5fd !important;
+  border-color: #2563eb !important;
+}
+
+.apiStatusAgentName {
+  font-weight: 600;
+  color: #f3f4f6 !important;
+  font-size: 0.95rem;
+}
+
+.apiStatusServiceName {
+  font-weight: 600;
+  color: #e5e7eb !important;
+  font-size: 0.9rem;
+}
+
+.apiStatusEnvVar {
+  color: #9ca3af !important;
+  font-size: 0.7rem;
+  font-family: 'Courier New', monospace;
+  margin-top: 0.25rem;
+  word-break: break-all;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.apiStatusIconStatus {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+}
+
+.apiStatusStatusText {
+  font-weight: 500;
+  color: #d1d5db !important;
+}

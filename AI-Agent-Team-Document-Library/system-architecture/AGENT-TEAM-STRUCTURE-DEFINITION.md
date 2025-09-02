@@ -100,120 +100,59 @@
 - **Accessibility and usability optimization**
 - **Wireframing and mockup creation**
 
-#### **11. Full Stack Software Developer**
-- **Complete application development** across front-end and back-end
-- **End-to-end feature implementation** from database to user interface
-- **API integration and full-stack architecture**
-- **Cross-platform development and deployment**
-- **Full application lifecycle management**
-
-#### **12. Back End Software Developer**
+#### **11. Back End Software Developer**
 - **Server-side application development**
 - **Database design and optimization**
 - **API development and integration**
 - **Infrastructure and deployment automation**
 - **Performance optimization and scaling**
 
-#### **13. Front End Software Developer**
+#### **12. Front End Software Developer**
 - **Client-side application development**
 - **User interface implementation**
 - **Browser compatibility and optimization**
 - **Progressive web app development**
 - **Mobile responsive design implementation**
 
-#### **14. Test Expert**
+#### **13. Test Expert**
 - **Test strategy and planning**
 - **Automated testing framework development**
 - **Quality assurance and validation**
 - **Performance and load testing**
 - **User acceptance testing coordination**
 
-#### **15. Monitoring Expert**
+#### **14. Monitoring Expert**
 - **System monitoring and alerting setup**
 - **Performance metrics and dashboards**
 - **Log analysis and troubleshooting**
 - **Capacity planning and resource monitoring**
 
-#### **16. Availability and Reliability Expert**
+#### **15. Availability and Reliability Expert**
 - **High availability architecture design**
 - **Disaster recovery planning**
 - **Failover and redundancy implementation**
 - **Service level agreement (SLA) management**
 - **Incident response planning**
 
-#### **17. Performance Expert**
+#### **16. Performance Expert**
 - **Performance optimization and tuning**
 - **Bottleneck identification and resolution**
 - **Scalability planning and implementation**
 - **Resource utilization optimization**
 
-#### **18. Security Expert**
+#### **17. Security Expert**
 - **Software security vulnerability assessment**
 - **Security architecture and implementation**
 - **Penetration testing and security audits**
 - **Compliance and regulatory security requirements**
 - **Threat modeling and risk assessment**
 
-#### **19. Privacy Guardian**
+#### **18. Privacy Guardian**
 - **Data privacy and protection expert**
 - **GDPR, CCPA, and privacy regulation compliance**
 - **Data classification and handling policies**
 - **Privacy impact assessments**
 - **Data anonymization and pseudonymization**
-
----
-
-## 🤖 **Multi-AI Model Framework**
-
-### **Universal Model Access**
-- **All agents have API keys** to all available AI models
-- **Complete model roster access** for maximum capability and flexibility
-- **No model restrictions** - each agent can access any available model as needed
-
-### **Available Models (Ever-Expanding)**
-- **OpenAI GPT Series** (GPT-4, GPT-4 Turbo, GPT-3.5, etc.)
-- **Anthropic Claude Series** (Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku, etc.)
-- **Google Gemini Series** (Gemini Ultra, Gemini Pro, Gemini Nano, etc.)
-- **Meta Llama Series** (Llama 3.1, Llama 2, Code Llama, etc.)
-- **Microsoft Azure OpenAI** (Azure-hosted models)
-- **Mistral AI Models** (Mixtral, Mistral Large, etc.)
-- **Specialized Models** (Coding-specific, Domain-specific, etc.)
-- **Future Models** - Framework automatically incorporates new models as they become available
-
-### **Intelligent Model Selection Protocol**
-
-#### **Continuous Model Analysis**
-Each agent must:
-- **Study and analyze each model's capabilities** in their specialty domain
-- **Maintain competency assessments** for each model across different task types
-- **Track performance metrics** and effectiveness data for each model
-- **Update model evaluations** as new versions and models become available
-- **Document model strengths/weaknesses** specific to their domain expertise
-
-#### **Dynamic Model Selection**
-For each project and task, agents must:
-- **Evaluate task requirements** against model capabilities
-- **Select the most effective model** based on:
-  - Task complexity and type
-  - Required output quality
-  - Processing speed requirements
-  - Cost considerations
-  - Model-specific strengths for the task
-- **Document model selection rationale** for future learning
-- **Switch models mid-project** if analysis indicates better alternatives
-
-#### **Collaborative Model Intelligence**
-- **Share model insights** across agents for cross-domain learning
-- **Collaborative model testing** for complex multi-agent projects
-- **Model recommendation system** where agents suggest optimal models for specific task types
-- **Performance feedback loops** to continuously improve model selection
-
-### **Model Performance Tracking**
-- **Real-time effectiveness monitoring** of model performance per task type
-- **Quality metrics tracking** for different models across various domains
-- **Cost-effectiveness analysis** balancing performance and resource usage
-- **Agent-specific model preference profiles** based on empirical results
-- **Cross-project model performance comparison** for strategic insights
 
 ---
 
@@ -231,34 +170,7 @@ For each project and task, agents must:
 
 ---
 
-## 📋 **Migration Strategy Update**
-
-### **Current Migration Purpose**
-Bring everything useful from the old project, ensure nothing that is not needed makes it over, and stop.
-
-### **Restructured Development Approach**
-Create a **CNS-based Software Development team** (minimal core team) to develop the full agent roster:
-
-#### **Minimal CNS Development Team**
-1. **Product Manager Agent**
-2. **Dev Designer Agent** (Development Design Documentation Creator)
-3. **Experience Designer Agent** (UI Designer)
-4. **Full Stack Software Developer Agent**
-5. **Test Expert Agent**
-
-#### **Human Orchestrator Role**
-- **Acts as primary orchestrator** for the minimal development team
-- **Guides the development** of the complete 18-agent system
-- **Oversees team collaboration** and strategic direction
-- **Ensures quality and cohesion** across agent development
-
-### **Development Strategy**
-The minimal CNS team will work together under human orchestration to:
-- **Design and build each remaining agent**
-- **Establish agent interaction protocols**
-- **Create testing and validation frameworks**
-- **Implement the multi-AI model framework**
-- **Build the complete collaborative agent ecosystem**
+## 📋 **Migration Notes**
 
 ### **Agents NOT Moving Over** (Have their own repositories)
 - **Memorias.AI** → Separate repository at `/Users/christian/Repos/Memorias.AI`

@@ -64,9 +64,8 @@ export default function Home() {
             ✅ Component structure in place<br/>
             ✅ API routes directory prepared<br/>
             ✅ Agent files transferred (Phase 2)<br/>
-            ✅ Major cleanup completed (Phase 3)<br/>
-            🔄 API infrastructure setup (Phase 4)<br/>
-            🔧 CNS development team pending
+            ✅ Core agent pages functional<br/>
+            🔄 Ready for optimization (Phase 3)
           </p>
         </div>
 
@@ -82,107 +81,89 @@ export default function Home() {
             fontSize: "20px",
             marginBottom: "16px"
           }}>
-            Available Agents
+            AI Agents
           </h2>
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "10px"
+            gap: "10px",
+            marginBottom: "20px"
           }}>
-            <a href="/vinyl-info-page" style={{
-              display: "block",
-              padding: "12px",
-              background: "#181a1b",
-              borderRadius: "8px",
-              border: "1px solid #333",
-              textDecoration: "none",
-              color: "#f3f3f3",
-              textAlign: "center",
-              transition: "all 0.2s"
-            }}>
-              Vinyl Research
-            </a>
-            <a href="/image-generator" style={{
-              display: "block",
-              padding: "12px",
-              background: "#181a1b",
-              borderRadius: "8px",
-              border: "1px solid #333",
-              textDecoration: "none",
-              color: "#f3f3f3",
-              textAlign: "center",
-              transition: "all 0.2s"
-            }}>
-              Image Generator
-            </a>
-            <a href="/fact-checker" style={{
-              display: "block",
-              padding: "12px",
-              background: "#181a1b",
-              borderRadius: "8px",
-              border: "1px solid #333",
-              textDecoration: "none",
-              color: "#f3f3f3",
-              textAlign: "center",
-              transition: "all 0.2s"
-            }}>
-              Fact Checker
-            </a>
-          </div>
-        </div>
-
-        <div style={{
-          background: "#232526",
-          borderRadius: "10px",
-          padding: "20px",
-          border: "1px solid #444",
-          marginBottom: "30px"
-        }}>
-          <h2 style={{
-            color: "#ffb347",
-            fontSize: "20px",
-            marginBottom: "16px"
-          }}>
-            🔑 Configuration & Setup
-          </h2>
-          <p style={{
-            color: "#ccc",
-            marginBottom: "16px",
-            lineHeight: "1.6"
-          }}>
-            Your agents need API keys to function properly. Check your configuration and verify that your APIs are working.
-          </p>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "10px"
-          }}>
-            <a href="/api-status" style={{
-              display: "block",
-              padding: "12px",
-              background: "#2563eb",
-              borderRadius: "8px",
-              border: "1px solid #3b82f6",
-              textDecoration: "none",
-              color: "#ffffff",
-              textAlign: "center",
-              transition: "all 0.2s",
-              fontWeight: "600"
-            }}>
-              🔍 Check API Status
-            </a>
             <div style={{
               display: "block",
               padding: "12px",
               background: "#181a1b",
               borderRadius: "8px",
               border: "1px solid #333",
-              color: "#ccc",
               textAlign: "center",
-              fontSize: "12px"
+              color: "#f3f3f3"
             }}>
-              Run ./setup-env.sh<br/>to configure
+              Communications Agent
             </div>
+            <div style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textAlign: "center",
+              color: "#f3f3f3"
+            }}>
+              Research Agent
+            </div>
+            <div style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textAlign: "center",
+              color: "#f3f3f3"
+            }}>
+              Creative Agent
+            </div>
+            <div style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textAlign: "center",
+              color: "#f3f3f3"
+            }}>
+              Code Agent
+            </div>
+            <div style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textAlign: "center",
+              color: "#f3f3f3"
+            }}>
+              Analysis Agent
+            </div>
+          </div>
+          
+          {/* API Management Navigation */}
+          <div style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "10px"
+          }}>
+            <a href="/api-status" style={{
+              display: "inline-block",
+              padding: "12px 24px",
+              background: "#ffb347",
+              color: "#000",
+              borderRadius: "8px",
+              textDecoration: "none",
+              fontWeight: "600",
+              transition: "all 0.2s"
+            }}>
+              🔧 Configure API Keys
+            </a>
           </div>
         </div>
 

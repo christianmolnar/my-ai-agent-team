@@ -1,0 +1,2 @@
+# Exclude sensitive API management pages from Vercel deployments
+app/api-status/
