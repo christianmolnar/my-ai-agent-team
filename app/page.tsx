@@ -64,8 +64,9 @@ export default function Home() {
             ✅ Component structure in place<br/>
             ✅ API routes directory prepared<br/>
             ✅ Agent files transferred (Phase 2)<br/>
-            ✅ Core agent pages functional<br/>
-            🔄 Ready for optimization (Phase 3)
+            ✅ Major cleanup completed (Phase 3)<br/>
+            🔄 API infrastructure setup (Phase 4)<br/>
+            🔧 CNS development team pending
           </p>
         </div>
 
@@ -127,6 +128,61 @@ export default function Home() {
             }}>
               Fact Checker
             </a>
+          </div>
+        </div>
+
+        <div style={{
+          background: "#232526",
+          borderRadius: "10px",
+          padding: "20px",
+          border: "1px solid #444",
+          marginBottom: "30px"
+        }}>
+          <h2 style={{
+            color: "#ffb347",
+            fontSize: "20px",
+            marginBottom: "16px"
+          }}>
+            🔑 Configuration & Setup
+          </h2>
+          <p style={{
+            color: "#ccc",
+            marginBottom: "16px",
+            lineHeight: "1.6"
+          }}>
+            Your agents need API keys to function properly. Check your configuration and verify that your APIs are working.
+          </p>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "10px"
+          }}>
+            <a href="/api-status" style={{
+              display: "block",
+              padding: "12px",
+              background: "#2563eb",
+              borderRadius: "8px",
+              border: "1px solid #3b82f6",
+              textDecoration: "none",
+              color: "#ffffff",
+              textAlign: "center",
+              transition: "all 0.2s",
+              fontWeight: "600"
+            }}>
+              🔍 Check API Status
+            </a>
+            <div style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              color: "#ccc",
+              textAlign: "center",
+              fontSize: "12px"
+            }}>
+              Run ./setup-env.sh<br/>to configure
+            </div>
           </div>
         </div>
 
