@@ -63,8 +63,97 @@ export default function Home() {
             ✅ TypeScript configuration ready<br/>
             ✅ Component structure in place<br/>
             ✅ API routes directory prepared<br/>
-            🔄 Ready for agent implementation
+            ✅ Agent files transferred (Phase 2)<br/>
+            ✅ Core agent pages functional<br/>
+            🔄 Ready for optimization (Phase 3)
           </p>
+        </div>
+
+        <div style={{
+          background: "#232526",
+          borderRadius: "10px",
+          padding: "20px",
+          border: "1px solid #444",
+          marginBottom: "30px"
+        }}>
+          <h2 style={{
+            color: "#ffb347",
+            fontSize: "20px",
+            marginBottom: "16px"
+          }}>
+            Available Agents
+          </h2>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "10px"
+          }}>
+            <a href="/memorias-ai" style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textDecoration: "none",
+              color: "#f3f3f3",
+              textAlign: "center",
+              transition: "all 0.2s"
+            }}>
+              Memorias AI
+            </a>
+            <a href="/f-insight-ai" style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textDecoration: "none",
+              color: "#f3f3f3",
+              textAlign: "center",
+              transition: "all 0.2s"
+            }}>
+              F.Insight AI
+            </a>
+            <a href="/vinyl-info-page" style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textDecoration: "none",
+              color: "#f3f3f3",
+              textAlign: "center",
+              transition: "all 0.2s"
+            }}>
+              Vinyl Research
+            </a>
+            <a href="/image-generator" style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textDecoration: "none",
+              color: "#f3f3f3",
+              textAlign: "center",
+              transition: "all 0.2s"
+            }}>
+              Image Generator
+            </a>
+            <a href="/fact-checker" style={{
+              display: "block",
+              padding: "12px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textDecoration: "none",
+              color: "#f3f3f3",
+              textAlign: "center",
+              transition: "all 0.2s"
+            }}>
+              Fact Checker
+            </a>
+          </div>
         </div>
 
         <div style={{

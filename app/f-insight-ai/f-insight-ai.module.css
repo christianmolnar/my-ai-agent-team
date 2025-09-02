@@ -1,0 +1,1344 @@
+/* Stylish Tabs */
+
+/* Tab navigation styles matching screenshot */
+.tabNav {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  margin-top: 12px;
+  margin-bottom: 0;
+  padding-left: 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+.tab {
+  padding: 8px 32px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 12px 12px 0 0;
+  background: rgba(30,41,59,0.7);
+  color: #bfc8e6;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  min-width: 120px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+.tab:hover {
+  background: rgba(30,41,59,0.9);
+  color: #fff;
+}
+.tabActive {
+  background: #2b6cb0;
+  color: #fff;
+  position: relative;
+  z-index: 5;
+  margin-bottom: -1px;
+  border-bottom: 1px solid #2b6cb0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(59, 130, 246, 0.3);
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 0;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.icon {
+  font-size: 2.5rem;
+}
+
+.subtitle {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #10b981;
+}
+
+.lastUpdate {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Portfolio Summary */
+.portfolioSummary {
+  margin-bottom: 2rem;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.kpiCard {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.kpiCard h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpiValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #f1f5f9;
+}
+
+.kpiChange {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.positive {
+  color: #10b981 !important;
+}
+
+.negative {
+  color: #ef4444 !important;
+}
+
+.neutral {
+  color: #94a3b8 !important;
+}
+
+/* Charts Section */
+.chartsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chartContainer {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.chartContainer h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.chartPlaceholder {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+}
+
+.chartPlaceholder p {
+  margin: 0.25rem 0;
+}
+
+.miniChart {
+  margin-top: 1rem;
+  height: 60px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.performanceChart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+}
+
+.chartStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+.chartStats span {
+  padding: 0.25rem 0.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 0.375rem;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Enhanced Performance Section */
+.performanceContainer {
+  grid-column: 1 / -1;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  margin-bottom: 1.5rem;
+}
+
+.performanceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.performanceHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.timePeriodSelector {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  flex-shrink: 0;
+}
+
+.timePeriodButton {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timePeriodButton:hover {
+  color: #f1f5f9;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.timePeriodButton.active {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+}
+
+.timePeriodButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.performanceMetrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.metricCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.metricCard:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.metricIcon {
+  font-size: 1.5rem;
+  opacity: 0.9;
+}
+
+.metricContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metricLabel {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.metricValue {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.metricValue.positive {
+  color: #10b981;
+}
+
+.metricValue.negative {
+  color: #ef4444;
+}
+
+.chartArea {
+  position: relative;
+  height: 200px;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.3);
+  padding: 0 40px 30px 60px; /* Add padding for labels */
+}
+
+.chartSvg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 60px; /* Offset for Y-axis labels */
+  right: 40px;
+  bottom: 30px; /* Offset for X-axis labels */
+  z-index: 2;
+}
+
+.chartSvg circle {
+  transition: r 0.2s ease;
+  cursor: pointer;
+}
+
+.chartHoverPoint:hover {
+  fill: rgba(16, 185, 129, 0.3);
+  stroke: #10b981;
+  stroke-width: 0.5;
+}
+
+/* Y-Axis Labels */
+.yAxisLabels {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 30px;
+  width: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.yAxisLabel {
+  position: absolute;
+  right: 5px;
+  font-size: 0.75rem;
+  color: #64748b;
+  transform: translateY(-50%);
+  text-align: right;
+  line-height: 1;
+}
+
+/* X-Axis Labels */
+.xAxisLabels {
+  position: absolute;
+  left: 60px;
+  right: 40px;
+  bottom: 0;
+  height: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.xAxisLabel {
+  position: absolute;
+  font-size: 0.75rem;
+  color: #64748b;
+  transform: translateX(-50%);
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.chartGrid {
+  position: absolute;
+  top: 0;
+  left: 60px;
+  right: 40px;
+  bottom: 30px;
+  z-index: 1;
+}
+
+.gridLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.chartLine {
+  position: relative;
+  height: 100%;
+  z-index: 2;
+}
+
+.chartPoint {
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  transform: translateX(-50%);
+}
+
+.chartPoint:hover {
+  opacity: 0.8;
+  transform: translateX(-50%) scaleY(1.05);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chartTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.currentValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.chartStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+/* Trading Section */
+.tradingSection {
+  margin-bottom: 2rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.refreshButton {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refreshButton:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* Table */
+.tableContainer {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.positionsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.positionsTable th {
+  background: rgba(15, 23, 42, 0.8);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 0.875rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.positionRow {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.positionRow:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.positionRow td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.symbolCell {
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.scoreContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.scoreBar {
+  height: 4px;
+  background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+  border-radius: 2px;
+  width: 40px;
+}
+
+.actionButton {
+  background: #2b6cb0;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.actionButton:hover {
+  background: #1e4e8c;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  backdrop-filter: blur(20px);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: rgba(148, 163, 184, 0.1);
+  color: #f1f5f9;
+}
+
+.modalBody {
+  padding: 1.5rem;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detailItem label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailItem span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.analysisSection {
+  margin-bottom: 2rem;
+}
+
+.analysisSection h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.analysisPlaceholder {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px dashed rgba(148, 163, 184, 0.3);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  color: #94a3b8;
+}
+
+.analysisPlaceholder ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.5rem;
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.sellButton {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sellButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.analyzeButton {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.analyzeButton:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.backButton {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.backButton:hover {
+  color: #60a5fa;
+}
+
+.footerInfo {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .chartsSection {
+    grid-template-columns: 1fr;
+  }
+  
+  .performanceHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .timePeriodSelector {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .timePeriodButton {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Mobile Chart Adjustments */
+  .chartArea {
+    padding: 0 25px 25px 45px;
+  }
+  
+  .chartSvg {
+    left: 45px;
+    right: 25px;
+    bottom: 25px;
+  }
+  
+  .chartGrid {
+    left: 45px;
+    right: 25px;
+    bottom: 25px;
+  }
+  
+  .yAxisLabels {
+    width: 40px;
+  }
+  
+  .yAxisLabel {
+    font-size: 0.7rem;
+  }
+  
+  .xAxisLabels {
+    left: 45px;
+    right: 25px;
+  }
+  
+  .xAxisLabel {
+    font-size: 0.7rem;
+  }
+  
+  .performanceMetrics {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .metricCard {
+    padding: 0.75rem;
+  }
+  
+  .metricIcon {
+    font-size: 1.25rem;
+  }
+  
+  .metricValue {
+    font-size: 1rem;
+  }
+  
+  .chartArea {
+    height: 150px;
+  }
+  
+  .positionsTable {
+    font-size: 0.875rem;
+  }
+  
+  .positionsTable th,
+  .positionRow td {
+    padding: 0.75rem;
+  }
+  
+  .modalContent {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .footerInfo {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* AI Insights Section */
+.insightsSection {
+  margin-bottom: 2rem;
+}
+
+.insightsBadge {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0.75rem;
+}
+
+.insightCard {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.insightCard:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(30, 41, 59, 0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.insightText {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #e2e8f0;
+}
+
+/* Sector Allocation */
+.sectorAllocation {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectorItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectorHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sectorInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sectorIcon {
+  font-size: 1.5rem;
+  width: 2rem;
+  text-align: center;
+}
+
+.sectorDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.sectorName {
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 0.9rem;
+}
+
+.sectorMeta {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.sectorValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.125rem;
+}
+
+.sectorAmount {
+  font-weight: 600;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.sectorPercent {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.sectorBar {
+  height: 6px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sectorFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.sectorFill:hover {
+  opacity: 0.8;
+  transform: scaleY(1.2);
+}
+
+/* Single Row Trading Activity */
+.tradeStats {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.statItem {
+  color: #cbd5e1;
+}
+
+.statDivider {
+  color: #64748b;
+}
+
+.tradeCard {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.tradeCard:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(30, 41, 59, 0.8);
+  transform: translateY(-1px);
+}
+
+.tradeCard.win {
+  border-left: 4px solid #10b981;
+}
+
+.tradeCard.loss {
+  border-left: 4px solid #ef4444;
+}
+
+.tradeCard.pending {
+  border-left: 4px solid #f59e0b;
+}
+
+.tradeSingleRow {
+  display: grid;
+  grid-template-columns: 80px 110px 90px 1fr 90px 100px;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Column 1: Stock Symbol */
+.tradeSymbolColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.tradeSymbol {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+
+.tradeAction {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Column 2: Shares @ Price */
+.tradeSharesColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.tradeQuantity {
+  color: #e2e8f0;
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.tradePrice {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+/* Column 3: Date with Time */
+.tradeDateColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.tradeDate {
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.tradeTime {
+  color: #64748b;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+/* Column 4: AI Confidence - Taking up more space */
+.tradeAiColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 120px;
+}
+
+.aiLabel {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.confidenceBarFull {
+  height: 6px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.confidenceFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Column 5: P&L Value */
+.tradePnlColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  align-items: flex-end;
+}
+
+.pnlLabel {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1;
+}
+
+.tradePnl {
+  font-weight: 600;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.pendingPnl {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+
+/* Column 6: WIN/PENDING/LOSS */
+.tradeOutcomeColumn {
+  display: flex;
+  justify-content: center;
+}
+
+.winBadge, .lossBadge, .pendingBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.winBadge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.lossBadge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.pendingBadge {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tradeSingleRow {
+    grid-template-columns: 70px 100px 80px 1fr 80px 90px;
+    gap: 0.5rem;
+  }
+  
+  .tradeSymbol {
+    font-size: 0.9rem;
+  }
+  
+  .tradeAction, .tradePrice, .tradeTime {
+    font-size: 0.65rem;
+  }
+  
+  .winBadge, .lossBadge, .pendingBadge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+/* Enhanced Modal Analysis */
+.analysisContent {
+  display: grid;
+  gap: 1rem;
+}
+
+.analysisCategory {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.analysisCategory h5 {
+  margin: 0 0 0.5rem 0;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.analysisCategory ul {
+  margin: 0;
+  padding-left: 1rem;
+  list-style-type: disc;
+}
+
+.analysisCategory li {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #cbd5e1;
+}
+
+.riskManagement {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.riskManagement h5 {
+  margin: 0 0 0.75rem 0;
+  color: #f59e0b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.riskGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.riskItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.riskItem label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.riskItem span {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.low {
+  color: #10b981;
+}
+
+.medium {
+  color: #f59e0b;
+}
+
+.high {
+  color: #ef4444;
+}
+
+.cryptoSection {
+  padding: 24px;
+}
