@@ -1,0 +1,74 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "fixed-mission-control",
+    "title": "\ud83d\ude80 Fixed Mission Control - Robot Fleet Health",
+    "tags": [
+      "robot",
+      "fleet",
+      "fixed"
+    ],
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-5m",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "\ud83d\ude80 MISSION CONTROL",
+        "type": "text",
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "content": "MISSION CONTROL - AI Robot Fleet Command Center",
+          "mode": "markdown"
+        },
+        "transparent": true
+      },
+      {
+        "id": 2,
+        "title": "\ud83d\udcca TOTAL FLEET SIZE",
+        "type": "stat",
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 4
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "fixed",
+              "fixedColor": "#00d4aa"
+            },
+            "custom": {
+              "displayMode": "basic"
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "horizontal"
+        },
+        "targets": [
+          {
+            "expr": "sum(robot_fleet_total)",
+            "legendFormat": "Total Fleet",
+            "refId": "A"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true,
+  "message": "Fixed Total Fleet dashboard with working queries"
+}

@@ -1,0 +1,447 @@
+import { NextRequest, NextResponse } from "next/server";
+import logger from "../../../../lib/logger";
+
+// Create a component-specific logger
+const log = logger.createLogger('CoinbaseAPI');
+
+/**
+ * This endpoint fetches Coinbase data using OAuth token
+ */
+export async function GET(req: NextRequest) {
+  try {
+    // Get access token from cookies
+    const accessToken = req.cookies.get('coinbase_access_token')?.value;
+    const refreshToken = req.cookies.get('coinbase_refresh_token')?.value;
+    
+    if (!accessToken) {
+      // If we have a refresh token, try to get a new access token
+      if (refreshToken) {
+        log.info('No access token available, but refresh token found. Attempting to refresh...');
+        return handleTokenRefresh(req);
+      }
+      
+      log.error('No Coinbase access token or refresh token available');
+      return NextResponse.json({ 
+        error: 'Not authenticated with Coinbase', 
+        success: false 
+      }, { status: 401 });
+    }
+    
+    log.info('Fetching Coinbase data with OAuth token...');
+    
+    // Fetch accounts (balances)
+    const accountsResponse = await fetch('https://api.coinbase.com/v2/accounts', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'CB-VERSION': '2023-04-01'  // Use current API version
+      }
+    });
+    
+    if (!accountsResponse.ok) {
+      // Token might be expired or invalid
+      if (accountsResponse.status === 401) {
+        // Handle token refresh (implementation not shown)
+        return handleTokenRefresh(req);
+      }
+      
+      const errorText = await accountsResponse.text();
+      log.error('Failed to fetch Coinbase accounts', { status: accountsResponse.status, error: errorText });
+      return NextResponse.json({ 
+        error: 'Failed to fetch accounts', 
+        details: errorText,
+        success: false 
+      }, { status: accountsResponse.status });
+    }
+    
+    const accountsData = await accountsResponse.json();
+    log.info(`Retrieved ${accountsData.data?.length || 0} Coinbase accounts`, { count: accountsData.data?.length || 0 });
+    
+    // Fetch transactions (we'll fetch all transactions instead of just one account)
+    let transactions: any[] = [];
+    
+    try {
+      log.info('Fetching all Coinbase transactions');
+      
+      // Coinbase API documentation mentions different endpoints for transactions
+      // Let's try the /user/transactions endpoint first
+      const transactionsResponse = await fetch(`https://api.coinbase.com/v2/user/transactions?limit=25`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'CB-VERSION': '2023-04-01'
+        }
+      });
+      
+      if (transactionsResponse.ok) {
+        const transactionsData = await transactionsResponse.json();
+        transactions = transactionsData.data || [];
+        log.info(`Retrieved ${transactions.length} global transactions`, { count: transactions.length });
+      } else {
+        const errorText = await transactionsResponse.text();
+        log.warn('Failed to fetch global transactions', { 
+          status: transactionsResponse.status, 
+          error: errorText 
+        });
+        
+        // Fallback: Try to get transactions from multiple accounts, not just the first one
+        // We'll check accounts with non-zero balances first
+        if (accountsData.data && accountsData.data.length > 0) {
+          // Get accounts with non-zero balances
+          const activeAccounts = accountsData.data
+            .filter((account: any) => parseFloat(account.balance.amount) > 0)
+            .slice(0, 3); // Limit to 3 accounts to avoid rate limits
+            
+          if (activeAccounts.length === 0) {
+            // If no active accounts, try the first account anyway
+            activeAccounts.push(accountsData.data[0]);
+          }
+          
+          log.info(`Found ${activeAccounts.length} active accounts to check for transactions`);
+          
+          for (const account of activeAccounts) {
+            const accountId = account.id;
+            const accountName = account.name || 'Unnamed';
+            const accountCurrency = account.balance?.currency || 'Unknown';
+            
+            log.info(`Fetching transactions for account: ${accountId}`, { 
+              name: accountName, 
+              currency: accountCurrency,
+              balance: account.balance?.amount || '0' 
+            });
+            
+            try {
+              const accountTxResponse = await fetch(`https://api.coinbase.com/v2/accounts/${accountId}/transactions`, {
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'CB-VERSION': '2023-04-01'
+                }
+              });
+              
+              if (accountTxResponse.ok) {
+                const accountTxData = await accountTxResponse.json();
+                const accountTransactions = accountTxData.data || [];
+                log.info(`Retrieved ${accountTransactions.length} transactions for account ${accountId}`, { 
+                  name: accountName,
+                  count: accountTransactions.length
+                });
+                
+                if (accountTransactions.length > 0) {
+                  // Log the first transaction for debugging
+                  if (accountTransactions[0]) {
+                    log.debug('Sample transaction:', {
+                      type: accountTransactions[0].type,
+                      created_at: accountTransactions[0].created_at,
+                      amount: accountTransactions[0].amount,
+                      native_amount: accountTransactions[0].native_amount
+                    });
+                  }
+                  
+                  transactions = [...transactions, ...accountTransactions];
+                }
+              } else {
+                const errorText = await accountTxResponse.text();
+                log.warn(`Failed to fetch transactions for account ${accountId}`, { 
+                  status: accountTxResponse.status,
+                  error: errorText
+                });
+              }
+            } catch (accountError) {
+              log.error(`Error fetching transactions for account ${accountId}`, accountError);
+            }
+          }
+          
+          log.info(`Total transactions retrieved from all accounts: ${transactions.length}`, { 
+            count: transactions.length
+          });
+          
+          // If we still have no transactions, try one more endpoint
+          if (transactions.length === 0) {
+            try {
+              log.info('Trying alternative /v2/accounts/all/transactions endpoint');
+              const allTxResponse = await fetch('https://api.coinbase.com/v2/accounts/all/transactions', {
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'CB-VERSION': '2023-04-01'
+                }
+              });
+              
+              if (allTxResponse.ok) {
+                const allTxData = await allTxResponse.json();
+                transactions = allTxData.data || [];
+                log.info(`Retrieved ${transactions.length} transactions from alternative endpoint`, { 
+                  count: transactions.length 
+                });
+                
+                // Log a sample transaction for debugging
+                if (transactions.length > 0) {
+                  log.debug('Sample transaction from all/transactions endpoint:', {
+                    type: transactions[0].type,
+                    created_at: transactions[0].created_at,
+                    amount: transactions[0].amount,
+                    native_amount: transactions[0].native_amount
+                  });
+                }
+              } else {
+                const errorText = await allTxResponse.text();
+                log.warn('Failed to fetch from alternative endpoint', { 
+                  status: allTxResponse.status,
+                  error: errorText 
+                });
+              }
+            } catch (altError) {
+              log.error('Error fetching from alternative endpoint', altError);
+            }
+          }
+        } else {
+          log.warn('No accounts found for fetching transactions');
+        }
+      }
+    } catch (txError) {
+      log.error('Error fetching transactions', txError);
+    }
+    
+    // Fetch price data for assets with non-zero balances
+    // This gives us historical price data we can use to calculate changes
+    const nonZeroAccounts = accountsData.data
+      .filter((account: any) => parseFloat(account.balance.amount) > 0);
+      
+    log.info(`Found ${nonZeroAccounts.length} accounts with non-zero balances`);
+      
+    // Get price history for coins with non-zero balance
+    let priceData: Record<string, any> = {};
+    
+    try {
+      // Get price data for each currency with non-zero balance
+      for (const account of nonZeroAccounts.slice(0, 5)) { // Limit to 5 to avoid rate limits
+        const currency = account.balance.currency;
+        if (currency !== 'USD' && currency !== 'EUR' && currency !== 'GBP') {
+          try {
+            log.info(`Fetching price data for ${currency}`, { 
+              name: account.name || 'Unnamed', 
+              balance: account.balance?.amount || '0' 
+            });
+            
+            const spotPriceResponse = await fetch(`https://api.coinbase.com/v2/prices/${currency}-USD/spot`, {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'CB-VERSION': '2023-04-01'
+              }
+            });
+            
+            if (spotPriceResponse.ok) {
+              const spotData = await spotPriceResponse.json();
+              
+              // Get historical price data using more reliable endpoint
+              const historicalResponse = await fetch(`https://api.coinbase.com/v2/prices/${currency}-USD/spot?date=yesterday`, {
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'CB-VERSION': '2023-04-01'
+                }
+              });
+              
+              if (historicalResponse.ok) {
+                const historicalData = await historicalResponse.json();
+                // Calculate percent change using yesterday's price
+                if (historicalData.data && historicalData.data.amount) {
+                  const oldPrice = parseFloat(historicalData.data.amount);
+                  const currentPrice = parseFloat(spotData.data.amount);
+                  const changePercent = ((currentPrice - oldPrice) / oldPrice) * 100;
+                  
+                  priceData[currency] = {
+                    currentPrice,
+                    oldPrice,
+                    changePercent: changePercent.toFixed(2)
+                  };
+                  
+                  log.debug(`Price data for ${currency}`, priceData[currency]);
+                }
+              }
+            }
+          } catch (priceError) {
+            log.error(`Error fetching price data for ${currency}`, priceError);
+          }
+        }
+      }
+    } catch (priceDataError) {
+      log.error('Error fetching price data', priceDataError);
+    }
+    
+    // Transform accounts data to match our expected format with improved price change data
+    const holdings = nonZeroAccounts
+      .map((account: any) => {
+        const currency = account.balance.currency;
+        const changePercent = priceData[currency]?.changePercent || '+0.00';
+        const change = changePercent.startsWith('-') ? changePercent + '%' : '+' + changePercent + '%';
+        
+        return {
+          coin: currency,
+          balance: parseFloat(account.balance.amount),
+          value: account.native_balance 
+            ? parseFloat(account.native_balance.amount) 
+            : 0,
+          change,
+          price: priceData[currency]?.currentPrice || null,
+          lastUpdated: new Date().toISOString()
+        };
+      });
+    
+    // Format transactions to match what our UI expects
+    const formattedTransactions = transactions.map((tx: any) => {
+      try {
+        // Handle different transaction types
+        let formattedTx: any = {
+          date: tx.created_at ? new Date(tx.created_at).toISOString().split('T')[0] : 'Unknown',
+          coin: tx.amount?.currency || 'Unknown',
+          action: 'UNKNOWN',
+          amount: 0,
+          price: 0
+        };
+        
+        // Set the action based on transaction type
+        if (tx.type === 'buy') {
+          formattedTx.action = 'BUY';
+        } else if (tx.type === 'sell') {
+          formattedTx.action = 'SELL';
+        } else if (tx.type === 'send') {
+          formattedTx.action = 'SEND';
+        } else if (tx.type === 'receive') {
+          formattedTx.action = 'RECEIVE';
+        } else if (tx.type) {
+          formattedTx.action = tx.type.toUpperCase();
+        }
+        
+        // Extract amount
+        if (tx.amount && tx.amount.amount) {
+          formattedTx.amount = Math.abs(parseFloat(tx.amount.amount));
+        }
+        
+        // Extract price if available
+        if (tx.native_amount && tx.native_amount.amount && formattedTx.amount > 0) {
+          formattedTx.price = Math.abs(parseFloat(tx.native_amount.amount)) / formattedTx.amount;
+        }
+        
+        return formattedTx;
+      } catch (parseError) {
+        log.warn('Error parsing transaction', parseError);
+        return {
+          date: 'Unknown',
+          coin: 'Unknown',
+          action: 'UNKNOWN',
+          amount: 0,
+          price: 0
+        };
+      }
+    });
+    
+    // Log the formatted results
+    log.info('API response prepared', {
+      accountsCount: accountsData.data?.length || 0,
+      holdingsCount: holdings.length,
+      transactionsCount: formattedTransactions.length
+    });
+
+    if (formattedTransactions.length > 0) {
+      log.debug('Sample formatted transaction', formattedTransactions[0]);
+    }
+
+    return NextResponse.json({
+      success: true,
+      accounts: accountsData.data,
+      holdings,
+      transactions: formattedTransactions
+    });
+    
+  } catch (error) {
+    log.error('Error fetching Coinbase data', error);
+    return NextResponse.json({ 
+      error: 'Failed to fetch Coinbase data', 
+      details: error instanceof Error ? error.message : String(error),
+      success: false 
+    }, { status: 500 });
+  }
+}
+
+/**
+ * Handle token refresh when access token expires
+ */
+async function handleTokenRefresh(req: NextRequest) {
+  try {
+    const refreshToken = req.cookies.get('coinbase_refresh_token')?.value;
+    
+    if (!refreshToken) {
+      console.error('No refresh token available');
+      return NextResponse.json({ 
+        error: 'Authentication expired', 
+        success: false 
+      }, { status: 401 });
+    }
+    
+    const clientId = process.env.COINBASE_OAUTH_CLIENT_ID;
+    const clientSecret = process.env.COINBASE_OAUTH_CLIENT_SECRET;
+    
+    if (!clientId || !clientSecret) {
+      console.error('OAuth configuration missing');
+      return NextResponse.json({ 
+        error: 'OAuth configuration missing', 
+        success: false 
+      }, { status: 500 });
+    }
+    
+    // Request new tokens using refresh token
+    const tokenResponse = await fetch('https://api.coinbase.com/oauth/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: clientId,
+        client_secret: clientSecret
+      })
+    });
+    
+    if (!tokenResponse.ok) {
+      console.error('Failed to refresh token:', await tokenResponse.text());
+      return NextResponse.json({ 
+        error: 'Failed to refresh authentication', 
+        success: false 
+      }, { status: 401 });
+    }
+    
+    const tokenData = await tokenResponse.json();
+    const { access_token, refresh_token, expires_in } = tokenData;
+    
+    // Create response with updated cookies
+    const response = NextResponse.json({ 
+      error: 'Token refreshed, please retry', 
+      success: false,
+      tokenRefreshed: true
+    }, { status: 401 });
+    
+    // Add updated cookies to response
+    response.cookies.set('coinbase_access_token', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: expires_in,
+      path: '/'
+    });
+    
+    if (refresh_token) {
+      response.cookies.set('coinbase_refresh_token', refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        path: '/'
+      });
+    }
+    
+    return response;
+    
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    return NextResponse.json({ 
+      error: 'Authentication failed', 
+      success: false 
+    }, { status: 401 });
+  }
+}

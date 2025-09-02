@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-robot-data-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mock-robot-data-generator
+  template:
+    metadata:
+      labels:
+        app: mock-robot-data-generator
+    spec:
+      containers:
+      - name: generator
+        image: alpine/curl:latest
+        command: ["/bin/sh"]
+        args: ["/scripts/healthy-datacenter-metrics.sh"]
+        ports:
+        - containerPort: 9091
+        volumeMounts:
+        - name: metrics-script
+          mountPath: /scripts
+        env:
+        - name: PATH
+          value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      volumes:
+      - name: metrics-script
+        configMap:
+          name: robot-metrics-server
+          defaultMode: 0755

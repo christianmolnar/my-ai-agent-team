@@ -1,0 +1,275 @@
+[
+  {
+    "claim": "Trump is president of the US",
+    "result": {
+      "summary": "Fact-checking guidance for your claim.",
+      "decision": "Likely false",
+      "reasons": [
+        "No direct match found on trusted fact-checking sites.",
+        "No mainstream news coverage confirming the claim.",
+        "Claim contains sensational or emotionally charged language.",
+        "Screenshots or memes are used as evidence instead of original sources.",
+        "No corroborating evidence from independent sources."
+      ],
+      "guidance": "1. Check the sources below for any direct fact-checks of this claim.\n2. If no direct match, use the Google search link to look for news coverage or debunks.\n3. Look for red flags: only screenshots, no mainstream coverage, or sensational language.\n4. If you find a match on a trusted site, review their analysis.\n5. If you find nothing, treat the claim with skepticism and use the cheat sheet for a full workflow.",
+      "sources": [
+        {
+          "url": "https://www.reuters.com/fact-check/?query=Trump%20is%20president%20of%20the%20US",
+          "headline": "https://www.reuters.com/fact-check/?query=Trump%20is%20president%20of%20the%20US",
+          "image": null
+        },
+        {
+          "url": "https://apnews.com/hub/fact-checking?q=Trump%20is%20president%20of%20the%20US",
+          "headline": "Fact-checking | Political &amp; News | AP News",
+          "image": "https://assets.apnews.com/19/66/bc546486408c8595f01753a9fbeb/ap-logo-176-by-208.svg"
+        },
+        {
+          "url": "https://www.snopes.com/search/?q=Trump%20is%20president%20of%20the%20US",
+          "headline": "Trump Is President Of The US Articles | Snopes.com",
+          "image": "https://www.facebook.com/tr?id=1107652101115292&ev=PageView&noscript=1"
+        },
+        {
+          "url": "https://www.factcheck.org/search/?q=Trump%20is%20president%20of%20the%20US",
+          "headline": "Search - FactCheck.org",
+          "image": "https://www.factcheck.org/img/logomark.png"
+        },
+        {
+          "url": "https://www.bbc.co.uk/search?q=Trump%20is%20president%20of%20the%20US&filter=news",
+          "headline": "https://www.bbc.co.uk/search?q=Trump%20is%20president%20of%20the%20US&filter=news",
+          "image": "https://ichef.bbci.co.uk/news/416/cpsprodpb/6f0a/live/760a7720-39d5-11f0-8519-3b5a01ebe413.jpg"
+        }
+      ],
+      "googleSearch": "https://www.google.com/search?q=%22Trump%20is%20president%20of%20the%20US%22",
+      "cheatSheet": "See fact_checking_cheat_sheet.md for a full workflow.",
+      "factCheckResults": [
+        {
+          "text": "\"When our nation was hit with the terrible pandemic, we produced not one, but two vaccines with record-breaking speed.\"",
+          "claimant": "Donald Trump",
+          "claimDate": "2021-01-20T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "BBC",
+                "site": "bbc.co.uk"
+              },
+              "url": "https://www.bbc.co.uk/news/55730719",
+              "title": "President Trump's final day as president fact-checked",
+              "reviewDate": "2021-01-20T00:00:00Z",
+              "textualRating": "This requires context. The Pfizer/BioNTech vaccine - one of two approved by the US - did sign a deal with the government to deliver doses, however it didn't receive any money to do development or testing.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "\"We have the greatest economy in the world.\"",
+          "claimant": "Donald Trump",
+          "claimDate": "2021-01-20T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "BBC",
+                "site": "bbc.co.uk"
+              },
+              "url": "https://www.bbc.co.uk/news/55730719",
+              "title": "President Trump's final day as president fact-checked",
+              "reviewDate": "2021-01-20T00:00:00Z",
+              "textualRating": "This isn't right. The US economy had certainly done well under Mr Trump prior to the coronavirus outbreak in 2020, but there have been periods under previous administrations when it did better.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "\"We... achieved record low unemployment for African Americans, Hispanic Americans, Asian Americans...\"",
+          "claimant": "Donald Trump",
+          "claimDate": "2021-01-20T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "BBC",
+                "site": "bbc.co.uk"
+              },
+              "url": "https://www.bbc.co.uk/news/55730719",
+              "title": "President Trump's final day as president fact-checked",
+              "reviewDate": "2021-01-20T00:00:00Z",
+              "textualRating": "Record low rates were seen in 2019. However, unemployment rates for all these groups have increased due to the pandemic.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "\"We passed VA Choice.\"",
+          "claimant": "Donald Trump",
+          "claimDate": "2021-01-20T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "BBC",
+                "site": "bbc.co.uk"
+              },
+              "url": "https://www.bbc.co.uk/news/55730719",
+              "title": "President Trump's final day as president fact-checked",
+              "reviewDate": "2021-01-20T00:00:00Z",
+              "textualRating": "President Trump didn't pass this programme - it was created in 2014 under President Obama - but he did expand it.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "\"We proudly leave... with the strongest border security measures ever put into place… with more than 450 miles of powerful new wall.\"",
+          "claimant": "Donald Trump",
+          "claimDate": "2021-01-20T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "BBC",
+                "site": "bbc.co.uk"
+              },
+              "url": "https://www.bbc.co.uk/news/55730719",
+              "title": "President Trump's final day as president fact-checked",
+              "reviewDate": "2021-01-20T00:00:00Z",
+              "textualRating": "This needs some context. The vast majority of the wall constructed replaced or reinforced existing structures on the border.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "\"We rebuilt the United States military.\"",
+          "claimant": "Donald Trump",
+          "claimDate": "2021-01-20T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "BBC",
+                "site": "bbc.co.uk"
+              },
+              "url": "https://www.bbc.co.uk/news/55730719",
+              "title": "President Trump's final day as president fact-checked",
+              "reviewDate": "2021-01-20T00:00:00Z",
+              "textualRating": "This is exaggerated. It's true that Mr Trump's administration has increased the amount of military funding. However, the levels of spending is lower than what was spent on the military during Mr Obama's first administration (2009 to 2013), when using data adjusted for inflation.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "\"I am especially proud to be the first President in decades who has started no new wars.\"",
+          "claimant": "Donald Trump",
+          "claimDate": "2021-01-20T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "BBC",
+                "site": "bbc.co.uk"
+              },
+              "url": "https://www.bbc.co.uk/news/55730719",
+              "title": "President Trump's final day as president fact-checked",
+              "reviewDate": "2021-01-20T00:00:00Z",
+              "textualRating": "This needs context as it depends on how you define war.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "Donald Trump can run for president again in 2028.",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "KGW",
+                "site": "kgw.com"
+              },
+              "url": "https://www.kgw.com/article/news/verify/donald-trump/no-donald-trump-cannot-run-for-president-again-in-2028/536-e52f5a11-f19a-43df-86b3-8cfd5338a79a",
+              "title": "Can Donald Trump run for president again in 2028? | kgw.com",
+              "reviewDate": "2024-11-06T22:39:00Z",
+              "textualRating": "False. Donald Trump cannot run for president again in 2028.",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "This was the first 4-year term without a new war since Eisenhower.",
+          "claimant": "Social media users",
+          "claimDate": "2020-10-24T00:00:00Z",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "USA Today",
+                "site": "usatoday.com"
+              },
+              "url": "https://www.usatoday.com/story/news/factcheck/2020/11/01/fact-check-trump-not-first-president-since-eisenhower-without-new-war/6086636002/",
+              "title": "Fact check: Trump not first president since Eisenhower without new ...",
+              "reviewDate": "2020-11-01T19:14:44Z",
+              "textualRating": "False",
+              "languageCode": "en"
+            }
+          ]
+        },
+        {
+          "text": "Former President Trump could serve two more terms if reelected.",
+          "claimReview": [
+            {
+              "publisher": {
+                "name": "KGW",
+                "site": "kgw.com"
+              },
+              "url": "https://www.kgw.com/article/news/verify/elections-verify/can-trump-serve-two-more-terms-if-reelected-2024-fact-check/536-adbcaf93-38cc-4203-a3f4-7bbd2651bf19",
+              "title": "Why Trump can’t serve two more terms if reelected",
+              "reviewDate": "2024-01-24T20:46:00Z",
+              "textualRating": "False. The Constitution doesn’t allow Trump to serve two more terms.",
+              "languageCode": "en"
+            }
+          ]
+        }
+      ],
+      "semanticMatches": []
+    },
+    "feedback": "incorrect",
+    "timestamp": "2025-06-04T04:28:11.274Z"
+  },
+  {
+    "claim": "girls are just as good as boys",
+    "result": {
+      "sources": {
+        "wikipedia": null,
+        "google": {
+          "summary": "Although “Girls are as good as boys at math” explicitly expresses equality, we predict it could nevertheless suggest that boys have more raw talent.",
+          "googleSearch": "https://www.google.com/search?q=girls%20are%20just%20as%20good%20as%20boys",
+          "primarySource": "Google"
+        },
+        "openai": {
+          "summary": "True. Girls are just as capable as boys in any field and should be given equal opportunities. Gender equality is an important principle, and it is recognized globally that both girls and boys have the same potential for success.",
+          "primarySource": "OpenAI"
+        }
+      },
+      "synthesizedDecision": "Based on the answers provided by Google and OpenAI, it is most likely correct to say that girls are just as capable as boys in any field, including math. The statement that \"Girls are as good as boys at math\" should be interpreted to mean that both genders have equal potential and ability in the subject. OpenAI emphasizes the importance of providing equal opportunities for both girls and boys and recognizes that gender equality is a global principle. Therefore, the most likely correct answer is that girls and boys have the same potential for success in math and other fields.",
+      "primarySource": "Google",
+      "summary": "Although “Girls are as good as boys at math” explicitly expresses equality, we predict it could nevertheless suggest that boys have more raw talent.",
+      "googleSearch": "https://www.google.com/search?q=girls%20are%20just%20as%20good%20as%20boys",
+      "decision": "False"
+    },
+    "feedback": "incorrect",
+    "timestamp": "2025-06-04T06:19:22.692Z"
+  },
+  {
+    "claim": "Trump just closed the deal with china on tariffs",
+    "result": {
+      "sources": {
+        "wikipedia": null,
+        "google": {
+          "summary": "It brought Trump's new US tariffs on Chinese products down from 145% to 30%, while Beijing slashed levies on US imports to 10% and promised to ...",
+          "googleSearch": "https://www.google.com/search?q=Trump%20just%20closed%20the%20deal%20with%20china%20on%20tariffs",
+          "primarySource": "Google"
+        },
+        "openai": {
+          "summary": "False. As of today, Donald Trump is not in office; the current President of the United States is someone else. Therefore, any deal made by Trump regarding tariffs would not be valid at this time.",
+          "primarySource": "OpenAI"
+        }
+      },
+      "synthesizedDecision": "Based on the information provided from OpenAI, it can be determined that the statement from Google is inaccurate. Since Donald Trump is not currently in office, any deal or changes in tariffs made by him would not be valid. Therefore, the correct information is that there has been no recent change in tariffs between the US and China involving Donald Trump.",
+      "primarySource": "Synthesis",
+      "summary": "Based on the information provided from OpenAI, it can be determined that the statement from Google is inaccurate. Since Donald Trump is not currently in office, any deal or changes in tariffs made by him would not be valid. Therefore, the correct information is that there has been no recent change in tariffs between the US and China involving Donald Trump.",
+      "googleSearch": "https://www.google.com/search?q=Trump%20just%20closed%20the%20deal%20with%20china%20on%20tariffs",
+      "decision": "False"
+    },
+    "feedback": "incorrect",
+    "timestamp": "2025-06-13T03:49:07.446Z"
+  }
+]

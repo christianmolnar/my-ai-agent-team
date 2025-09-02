@@ -1,0 +1,126 @@
+apiVersion: v1
+data:
+  server.py: "#!/usr/bin/env python3\n\"\"\"\nEnhanced Robot Fleet Metrics Server\nGenerates
+    realistic robot fleet metrics with:\n1. Total Fleet = sum of other categories\n2.
+    Configurable bounds for each category  \n3. Simulation modes for network issues/failures\n\"\"\"\n\nimport
+    time\nimport random\nimport math\nfrom http.server import HTTPServer, BaseHTTPRequestHandler\nfrom
+    urllib.parse import urlparse, parse_qs\nimport logging\n\n# Configure logging\nlogging.basicConfig(level=logging.INFO)\nlogger
+    = logging.getLogger(__name__)\n\nclass RobotFleetSimulator:\n    def __init__(self):\n
+    \       # Base fleet size per tenant (total will be sum of all categories)\n        self.base_fleet_size
+    = 856000  # Per tenant, 9 tenants = ~7.7M total\n        \n        # Category
+    bounds (per tenant)\n        self.bounds = {\n            'degraded': {'min':
+    1000, 'max': 10000},\n            'critical': {'min': 0, 'max': 3000}, \n            'down':
+    {'min': 0, 'max': 1000}\n        }\n        \n        # Simulation mode\n        self.simulation_mode
+    = 'normal'  # 'normal', 'network_issue', 'major_outage'\n        self.simulation_start_time
+    = time.time()\n        \n        # Tenants\n        self.tenants = [\n            'enterprise',
+    'manufacturing', 'finance', 'healthcare',\n            'retail', 'logistics',
+    'energy', 'telecom', 'government'\n        ]\n        \n        logger.info(f\"Initialized
+    RobotFleetSimulator with {len(self.tenants)} tenants\")\n        logger.info(f\"Base
+    fleet size per tenant: {self.base_fleet_size:,}\")\n        logger.info(f\"Category
+    bounds: {self.bounds}\")\n\n    def set_simulation_mode(self, mode):\n        \"\"\"Set
+    simulation mode: normal, network_issue, major_outage\"\"\"\n        if mode in
+    ['normal', 'network_issue', 'major_outage']:\n            self.simulation_mode
+    = mode\n            self.simulation_start_time = time.time()\n            logger.info(f\"Simulation
+    mode changed to: {mode}\")\n            return True\n        return False\n\n
+    \   def generate_category_values(self, tenant_index):\n        \"\"\"Generate
+    realistic values for degraded, critical, down categories\"\"\"\n        current_time
+    = time.time()\n        \n        # Base values with some variation per tenant\n
+    \       degraded_base = 3000 + (tenant_index * 200)\n        critical_base = 2000
+    + (tenant_index * 150)  \n        down_base = 1200 + (tenant_index * 100)\n        \n
+    \       # Apply simulation effects\n        if self.simulation_mode == 'network_issue':\n
+    \           # Simulate network issues - more degraded/critical\n            degraded_multiplier
+    = 1.5 + 0.3 * math.sin(current_time / 30)  # Oscillate\n            critical_multiplier
+    = 1.8 + 0.4 * math.sin(current_time / 25)\n            down_multiplier = 1.2 +
+    0.2 * math.sin(current_time / 35)\n            \n        elif self.simulation_mode
+    == 'major_outage':\n            # Simulate major outage - lots of down/critical\n
+    \           outage_duration = current_time - self.simulation_start_time\n            if
+    outage_duration < 120:  # 2 minutes of escalating failure\n                severity
+    = min(outage_duration / 120, 1.0)\n                degraded_multiplier = 1 + severity
+    * 2\n                critical_multiplier = 1 + severity * 3  \n                down_multiplier
+    = 1 + severity * 4\n            else:\n                # Recovery phase\n                recovery
+    = min((outage_duration - 120) / 180, 1.0)  # 3 min recovery\n                degraded_multiplier
+    = 3 - recovery * 2\n                critical_multiplier = 4 - recovery * 3\n                down_multiplier
+    = 5 - recovery * 4\n        else:\n            # Normal mode - enhanced variations
+    for healthy datacenter\n            # More dynamic variations with multiple sine
+    waves for realistic fluctuations\n            degraded_multiplier = 1.0 + 0.3
+    * math.sin(current_time / 60) + 0.2 * math.sin(current_time / 120)\n            critical_multiplier
+    = 1.0 + 0.4 * math.sin(current_time / 45) + 0.3 * math.sin(current_time / 90)
+    \n            down_multiplier = 1.0 + 0.25 * math.sin(current_time / 55) + 0.15
+    * math.sin(current_time / 110)\n        \n        # Calculate values with bounds
+    checking\n        degraded = max(self.bounds['degraded']['min'], \n                      min(self.bounds['degraded']['max'],
+    \n                          int(degraded_base * degraded_multiplier)))\n        \n
+    \       critical = max(self.bounds['critical']['min'],\n                      min(self.bounds['critical']['max'],\n
+    \                         int(critical_base * critical_multiplier)))\n        \n
+    \       down = max(self.bounds['down']['min'],\n                  min(self.bounds['down']['max'],\n
+    \                     int(down_base * down_multiplier)))\n        \n        return
+    degraded, critical, down\n\n    def generate_metrics(self):\n        \"\"\"Generate
+    all robot fleet metrics\"\"\"\n        metrics = []\n        current_time = time.time()\n
+    \       \n        total_healthy = 0\n        total_degraded = 0\n        total_critical
+    = 0\n        total_down = 0\n        \n        for i, tenant in enumerate(self.tenants):\n
+    \           # Generate category values\n            degraded, critical, down =
+    self.generate_category_values(i)\n            \n            # Healthy = base fleet
+    size - problems\n            healthy = self.base_fleet_size - degraded - critical
+    - down\n            \n            # Total for this tenant\n            tenant_total
+    = healthy + degraded + critical + down\n            \n            # Accumulate
+    totals\n            total_healthy += healthy\n            total_degraded += degraded\n
+    \           total_critical += critical\n            total_down += down\n            \n
+    \           # Generate metrics for this tenant\n            metrics.extend([\n
+    \               f'robot_fleet_healthy{{tenant=\"{tenant}\"}} {healthy}',\n                f'robot_fleet_degraded{{tenant=\"{tenant}\"}}
+    {degraded}',\n                f'robot_fleet_critical{{tenant=\"{tenant}\"}} {critical}',\n
+    \               f'robot_fleet_down{{tenant=\"{tenant}\"}} {down}',\n                f'robot_fleet_total{{tenant=\"{tenant}\"}}
+    {tenant_total}'\n            ])\n        \n        # Add network/infrastructure
+    metrics for simulation\n        if self.simulation_mode == 'network_issue':\n
+    \           lb_latency = 150 + 50 * math.sin(current_time / 20)\n            ha_failovers
+    = 3 + int(2 * math.sin(current_time / 30))\n        elif self.simulation_mode
+    == 'major_outage':\n            outage_duration = current_time - self.simulation_start_time\n
+    \           if outage_duration < 120:\n                severity = outage_duration
+    / 120\n                lb_latency = 100 + severity * 500\n                ha_failovers
+    = int(severity * 10)\n            else:\n                recovery = min((outage_duration
+    - 120) / 180, 1.0)\n                lb_latency = 600 - recovery * 500\n                ha_failovers
+    = max(0, int(10 - recovery * 10))\n        else:\n            lb_latency = 50
+    + 10 * math.sin(current_time / 40)\n            ha_failovers = 0\n        \n        metrics.extend([\n
+    \           f'load_balancer_latency_ms {lb_latency:.1f}',\n            f'ha_addon_failovers_total
+    {ha_failovers}',\n            f'simulation_mode{{mode=\"{self.simulation_mode}\"}}
+    1'\n        ])\n        \n        logger.info(f\"Generated metrics - Mode: {self.simulation_mode},
+    \"\n                   f\"Total: {total_healthy + total_degraded + total_critical
+    + total_down:,}, \"\n                   f\"Healthy: {total_healthy:,}, Problems:
+    {total_degraded + total_critical + total_down:,}\")\n        \n        return
+    '\\n'.join(metrics) + '\\n'\n\n\nclass MetricsHandler(BaseHTTPRequestHandler):\n
+    \   def __init__(self, *args, simulator=None, **kwargs):\n        self.simulator
+    = simulator\n        super().__init__(*args, **kwargs)\n    \n    def do_GET(self):\n
+    \       parsed_path = urlparse(self.path)\n        \n        if parsed_path.path
+    == '/metrics':\n            # Serve metrics\n            metrics = self.simulator.generate_metrics()\n
+    \           self.send_response(200)\n            self.send_header('Content-Type',
+    'text/plain; charset=utf-8')\n            self.end_headers()\n            self.wfile.write(metrics.encode('utf-8'))\n
+    \           \n        elif parsed_path.path == '/simulate':\n            # Handle
+    simulation mode changes\n            query_params = parse_qs(parsed_path.query)\n
+    \           mode = query_params.get('mode', ['normal'])[0]\n            \n            if
+    self.simulator.set_simulation_mode(mode):\n                response = f\"Simulation
+    mode set to: {mode}\\n\"\n                self.send_response(200)\n            else:\n
+    \               response = f\"Invalid simulation mode: {mode}. Valid modes: normal,
+    network_issue, major_outage\\n\"\n                self.send_response(400)\n                \n
+    \           self.send_header('Content-Type', 'text/plain')\n            self.end_headers()\n
+    \           self.wfile.write(response.encode('utf-8'))\n            \n        elif
+    parsed_path.path == '/health':\n            # Health check\n            self.send_response(200)\n
+    \           self.send_header('Content-Type', 'text/plain')\n            self.end_headers()\n
+    \           self.wfile.write(b'OK\\n')\n            \n        else:\n            #
+    404 for other paths\n            self.send_response(404)\n            self.end_headers()\n
+    \   \n    def log_message(self, format, *args):\n        # Suppress default HTTP
+    logging\n        pass\n\n\ndef create_handler(simulator):\n    def handler(*args,
+    **kwargs):\n        return MetricsHandler(*args, simulator=simulator, **kwargs)\n
+    \   return handler\n\n\nif __name__ == '__main__':\n    # Initialize simulator\n
+    \   simulator = RobotFleetSimulator()\n    \n    # Create HTTP server\n    server
+    = HTTPServer(('0.0.0.0', 8080), create_handler(simulator))\n    \n    logger.info(\"\U0001F680
+    Enhanced Robot Fleet Metrics Server starting on port 8080\")\n    logger.info(\"Endpoints:\")\n
+    \   logger.info(\"  GET /metrics - Prometheus metrics\")\n    logger.info(\"  GET
+    /simulate?mode=normal|network_issue|major_outage - Change simulation mode\")\n
+    \   logger.info(\"  GET /health - Health check\")\n    logger.info(\"\")\n    logger.info(\"Simulation
+    modes:\")\n    logger.info(\"  normal - Standard operations with small variations\")\n
+    \   logger.info(\"  network_issue - Network problems causing degradation\")  \n
+    \   logger.info(\"  major_outage - Major system failure simulation\")\n    \n
+    \   try:\n        server.serve_forever()\n    except KeyboardInterrupt:\n        logger.info(\"Shutting
+    down server...\")\n        server.shutdown()\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: enhanced-robot-metrics-server
