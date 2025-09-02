@@ -88,32 +88,6 @@ export default function Home() {
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
             gap: "10px"
           }}>
-            <a href="/memorias-ai" style={{
-              display: "block",
-              padding: "12px",
-              background: "#181a1b",
-              borderRadius: "8px",
-              border: "1px solid #333",
-              textDecoration: "none",
-              color: "#f3f3f3",
-              textAlign: "center",
-              transition: "all 0.2s"
-            }}>
-              Memorias AI
-            </a>
-            <a href="/f-insight-ai" style={{
-              display: "block",
-              padding: "12px",
-              background: "#181a1b",
-              borderRadius: "8px",
-              border: "1px solid #333",
-              textDecoration: "none",
-              color: "#f3f3f3",
-              textAlign: "center",
-              transition: "all 0.2s"
-            }}>
-              F.Insight AI
-            </a>
             <a href="/vinyl-info-page" style={{
               display: "block",
               padding: "12px",

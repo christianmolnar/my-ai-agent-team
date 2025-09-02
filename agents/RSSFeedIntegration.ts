@@ -33,36 +33,7 @@ type CacheEntry = {
 const RSS_CACHE: Record<string, CacheEntry> = {};
 const CACHE_DURATION = 10 * 60 * 1000; // Cache validity period: 10 minutes in milliseconds
 
-/**
- * Creates a simple text similarity function that serves as a fallback
- * when the more complex natural library methods encounter issues
- * 
- * @param str1 - First string to compare
- * @param str2 - Second string to compare
- * @returns A similarity score between 0 and 1 (higher means more similar)
- */
-function simpleSimilarity(str1: string, str2: string): number {
-  // Normalize strings to lowercase for case-insensitive comparison
-  str1 = str1.toLowerCase();
-  str2 = str2.toLowerCase();
-  
-  // Split into words and filter out short words (less than 4 characters)
-  const words1 = str1.split(/\s+/).filter(w => w.length > 3);
-  const words2 = str2.split(/\s+/).filter(w => w.length > 3);
-  
-  // Count words that appear in both strings (including partial matches)
-  let commonWords = 0;
-  words1.forEach(w1 => {
-    if (words2.some(w2 => w2.includes(w1) || w1.includes(w2))) {
-      commonWords++;
-    }
-  });
-  
-  // Calculate similarity as ratio of common words to total words
-  // Returns 0 if either string has no words to avoid division by zero
-  if (words1.length === 0 || words2.length === 0) return 0;
-  return commonWords / Math.max(words1.length, words2.length);
-}
+
 
 /**
  * Creates an advanced semantic similarity function using TF-IDF (Term Frequency-Inverse Document Frequency)
@@ -145,8 +116,8 @@ function calculateSemanticSimilarity(text1: string, text2: string): number {
     return similarity;  // Returns a value between 0 and 1
   } catch (error) {
     console.error('Error calculating semantic similarity:', error);
-    // If TF-IDF calculation fails, fall back to simpler similarity function
-    return simpleSimilarity(text1, text2);
+    // Return 0 if Natural library processing fails
+    return 0;
   }
 }
 
