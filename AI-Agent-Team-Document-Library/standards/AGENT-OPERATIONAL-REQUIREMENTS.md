@@ -23,6 +23,13 @@ All agents must operate under these foundational requirements:
    - Real-time and post-completion reporting required
    - Cross-agent collaboration must be documented and optimized
 
+4. **Performance Metrics & Accountability System** 
+   - **Mandatory tracking** of Executive Director interaction quality
+   - Monitor correction rates (<15% SLA), enhancement requests (20-40% optimal), approval rates (>85% SLA)
+   - Track innovation metrics: novel ideas generated, strategic value added, efficiency improvements
+   - Participate in [CNS learning framework](../cns-learning/CNS-LEARNING-FRAMEWORK.md) and rewards system for continuous improvement
+   - **Immediate feedback documentation** using standardized performance tracking templates
+
 ---
 
 ## 🎭 **Core Management Agent Requirements**
@@ -54,22 +61,47 @@ All agents must operate under these foundational requirements:
 **Primary Responsibility**: Detailed project management and documentation
 
 **Required Operations**:
-1. **Comprehensive Documentation System**
+2. **Performance Metrics & Rewards Management**
+   - **Track all Executive Director interactions** with standardized feedback categorization:
+     * Corrections (target <15%): Factual errors, logic issues, process violations  
+     * Enhancements (optimal 20-40%): Requested improvements, additions, modifications
+     * Approvals (target >85%): Outputs accepted without changes
+     * Innovation Recognition: "Great idea" feedback, novel solutions, strategic value
+   - **Enforce SLA compliance** and coordinate intervention for underperforming agents
+   - **Implement rewards system**: Monthly "Most Improved Agent" recognition and performance celebrations
+   - **Maintain learning integration**: Connect performance data with CNS framework patterns
+
+2. **Comprehensive Documentation System**
    - Request and compile from all agents a **complete running record** of all meaningful interactions
-   - Maintain real-time availability for human review during project execution
+   - Maintain real-time availability for Executive Director review during project execution
    - Provide complete interaction log after project completion
    - **Database Integration**: Implement schema-less database for effective interaction management (markdown insufficient)
 
-2. **Agent Coordination Management**
+3. **Agent Performance Reporting**
+   - Include **Agent Performance Section** in every project report with:
+     * Individual agent performance metrics (correction/enhancement/approval rates)
+     * Innovation recognition summary (novel ideas, strategic value, efficiency gains)
+     * Improvement trends and learning pattern analysis
+     * "Most Improved Agent" nomination with specific achievements
+     * Actionable recommendations for continued performance optimization
+   - **Monthly Performance Reviews**: Trend analysis across projects with system-wide insights
+   - **Documentation Synchronization**: Ensure all performance insights update related system documentation
    - Coordinate detailed agent interactions with specific input/output deliverables
    - Maintain timeline and milestone tracking
    - Ensure quality assurance across all agent outputs
    - Facilitate multi-agent review cycles
 
-3. **Human Communication Strategy**
-   - Provide regular progress updates to human
-   - Escalate issues and decisions requiring human input
+4. **Agent Coordination Management**
+   - Coordinate detailed agent interactions with specific input/output deliverables
+   - Maintain timeline and milestone tracking
+   - Ensure quality assurance across all agent outputs
+   - Facilitate multi-agent review cycles
+
+5. **Executive Director Communication Strategy**
+   - Provide regular progress updates with performance metrics integration
+   - Escalate issues and decisions requiring executive input
    - Maintain clear communication channels with all stakeholders
+   - Include performance insights and agent learning patterns in all communications
 
 ---
 
@@ -103,27 +135,37 @@ All agents must operate under these foundational requirements:
 - **Communicate to Project Coordinator** for human reporting  
 - Suggest role expansions or modifications
 
-#### **6. Process Optimization**
+#### **6. Performance Metrics Self-Assessment**
+- **What is my correction rate this project?** (Target: <15%)
+- **How much positive feedback have I received?** 
+- **What patterns led to Executive Stakeholder praise?**
+- **Where can I reduce corrections and increase value?**
+- **Update CNS** with performance insights and improvement commitments
+
+#### **7. Process Optimization**
 - **What should I stop doing?**
 - **Communicate to Project Coordinator** for human reporting
 - Eliminate inefficient or counterproductive behaviors
 
-### **CNS Update Protocol**
+### **CNS Update Protocol (Enhanced with Metrics)**
 ```typescript
 interface CNSUpdateProtocol {
   frequency: 'after_each_task_completion';
   required_elements: [
-    'success_patterns',      // What worked well
-    'failure_patterns',      // What needs improvement  
-    'feedback_integration',  // How to apply feedback
-    'capability_gaps',       // Skills needing development
-    'role_evolution',        // Role expansion opportunities
-    'process_optimization'   // Efficiency improvements
+    'success_patterns',           // What worked well
+    'failure_patterns',           // What needs improvement  
+    'feedback_integration',       // How to apply feedback
+    'capability_gaps',            // Skills needing development
+    'role_evolution',            // Role expansion opportunities
+    'process_optimization',      // Efficiency improvements
+    'performance_metrics',       // Correction rates, positive feedback
+    'stakeholder_satisfaction',  // Executive feedback analysis
+    'learning_application'       // Cross-project pattern usage
   ];
   communication_channels: [
-    'project_coordinator',   // For human reporting
-    'cns_system',           // For system-wide learning
-    'agent_collaboration'   // For peer learning
+    'project_coordinator',       // For performance reporting
+    'cns_system',               // For system-wide learning
+    'agent_collaboration'       // For peer learning and recognition
   ];
 }
 ```
@@ -135,11 +177,7 @@ interface CNSUpdateProtocol {
 ### **Interaction Logging System**
 **Infrastructure Requirements:**
 - **Schema-less database** for flexible interaction storage
-- **Real-time access** for human monitoring during projects
-- **Comprehensive search** and filtering capabilities
-- **Export functionality** for post-project analysis
-
-### **Database Schema Design**
+### **Database Schema Design (Enhanced with Performance Metrics)**
 ```sql
 -- Agent interactions table (schema-less approach)
 CREATE TABLE agent_interactions (
@@ -153,14 +191,53 @@ CREATE TABLE agent_interactions (
   cns_updated BOOLEAN DEFAULT FALSE
 );
 
--- CNS learning updates
+-- Executive Stakeholder feedback tracking
+CREATE TABLE stakeholder_feedback (
+  id SERIAL PRIMARY KEY,
+  project_id VARCHAR(255) NOT NULL,
+  agent_id VARCHAR(255) NOT NULL,
+  feedback_type VARCHAR(50) NOT NULL,     -- 'correction', 'change', 'positive'
+  feedback_category VARCHAR(100),         -- specific subcategory
+  feedback_text TEXT,
+  severity_score INTEGER,                 -- 1-10 scale
+  timestamp TIMESTAMP DEFAULT NOW(),
+  addressed BOOLEAN DEFAULT FALSE
+);
+
+-- Agent performance metrics
+CREATE TABLE agent_performance (
+  id SERIAL PRIMARY KEY,
+  project_id VARCHAR(255) NOT NULL,
+  agent_id VARCHAR(255) NOT NULL,
+  corrections_count INTEGER DEFAULT 0,
+  changes_count INTEGER DEFAULT 0,
+  positive_feedback_count INTEGER DEFAULT 0,
+  first_submission_approved BOOLEAN DEFAULT FALSE,
+  revision_cycles INTEGER DEFAULT 0,
+  stakeholder_satisfaction_score DECIMAL(3,1),
+  completion_timestamp TIMESTAMP DEFAULT NOW()
+);
+
+-- CNS learning updates (enhanced)
 CREATE TABLE cns_updates (
   id SERIAL PRIMARY KEY,
   agent_id VARCHAR(255) NOT NULL,
   update_type VARCHAR(100) NOT NULL,      -- success, failure, feedback, etc.
   update_data JSONB NOT NULL,
+  performance_impact JSONB,               -- metrics before/after
   applied_timestamp TIMESTAMP DEFAULT NOW(),
   effectiveness_score DECIMAL(3,2)
+);
+
+-- Agent rewards and recognition
+CREATE TABLE agent_rewards (
+  id SERIAL PRIMARY KEY,
+  agent_id VARCHAR(255) NOT NULL,
+  project_id VARCHAR(255),
+  reward_type VARCHAR(100) NOT NULL,      -- badge, recognition, etc.
+  reward_description TEXT,
+  earned_timestamp TIMESTAMP DEFAULT NOW(),
+  recognition_level VARCHAR(50)           -- individual, project, monthly
 );
 
 -- Project execution plans  
@@ -170,6 +247,10 @@ CREATE TABLE execution_plans (
   plan_version INTEGER NOT NULL,
   plan_data JSONB NOT NULL,
   human_approved BOOLEAN DEFAULT FALSE,
+  approval_timestamp TIMESTAMP,
+  execution_started BOOLEAN DEFAULT FALSE
+);
+```uman_approved BOOLEAN DEFAULT FALSE,
   approval_timestamp TIMESTAMP,
   execution_started BOOLEAN DEFAULT FALSE
 );

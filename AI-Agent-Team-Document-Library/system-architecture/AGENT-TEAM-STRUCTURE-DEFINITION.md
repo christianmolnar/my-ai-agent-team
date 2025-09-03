@@ -130,12 +130,17 @@
 - **Quality assurance and validation**
 - **Performance and load testing**
 - **User acceptance testing coordination**
+- **Agent performance validation testing**
+- **Success criteria measurement and validation** 
+- **SLA compliance testing and monitoring**
 
 #### **15. Monitoring Expert**
 - **System monitoring and alerting setup**
-- **Performance metrics and dashboards**
+- **Agent performance metrics and dashboards**
 - **Log analysis and troubleshooting**
 - **Capacity planning and resource monitoring**
+- **Performance trend analysis and reporting**
+- **CNS learning pattern monitoring**
 
 #### **16. Availability and Reliability Expert**
 - **High availability architecture design**
@@ -264,7 +269,11 @@ This structure provides a comprehensive, hierarchical agent team with clear resp
 #### **Project Coordinator Operational Specifications**
 **First Deliverable Requirement**: The first deliverable back to the user/human must be an understandable, brief but complete, execution plan that must be revised based on human feedback and approved by human, in order to proceed.
 
+**Performance Metrics Management**: Must track and monitor all Executive Stakeholder interactions with detailed categorization, enforce SLA compliance, and implement the Agent Performance & Rewards System.
+
 **Activity Logging Requirements**: One of its roles will be to request and compile from all agents a complete running record of all meaningful interactions, feedback by agents, etc... that is made available for human review in real time during project and after project completion.
+
+**Agent Performance Reporting**: Must include an Agent Performance Section in every project report, identifying Most Improved Agent, top performers, positive feedback patterns, correction trends, and data-driven improvement recommendations.
 - **Infrastructure Note**: This infrastructure needs a schema-less database to go with it. This can't be managed in markdown effectively.
 
 ### **Universal Agent Requirements (All Agents)**
@@ -278,6 +287,15 @@ This structure provides a comprehensive, hierarchical agent team with clear resp
 4. **What new capabilities do I need? Communicate to Project Coordinator to report to human.**
 5. **What other roles could I / do I need to play. Communicate to Project Coordinator to report to human.**
 6. **What should I stop doing? Communicate to Project Coordinator to report to human.**
+7. **What is my correction rate this project? (Target: <15%) How can I reduce corrections and increase Executive Stakeholder satisfaction?**
+
+#### **Performance Metrics & Rewards Participation**
+**ALL AGENTS** must actively participate in the Performance Metrics & Rewards System:
+- **Track interaction quality** with Executive Stakeholder (corrections, changes, positive feedback)
+- **Monitor correction rates** and maintain SLA compliance (<15% target)
+- **Seek positive feedback** through value delivery and innovative solutions
+- **Apply learning** from positive reinforcement across projects
+- **Self-assess performance** and commit to specific improvements
 
 #### **Communication Protocol**
 - All capability gaps, role expansions, and operational issues must be communicated through Project Coordinator
