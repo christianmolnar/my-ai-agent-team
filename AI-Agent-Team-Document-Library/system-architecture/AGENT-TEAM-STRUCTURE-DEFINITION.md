@@ -164,6 +164,21 @@
 - **Privacy impact assessments**
 - **Data anonymization and pseudonymization**
 
+### **Education and Learning Agents**
+
+#### **20. Music Coach Agent**
+- **Music theory education and instruction**
+- **Chord progression analysis and generation**
+- **Piano and guitar chord instruction**
+- **Scale education and practice guidance**
+- **Music notation reading and writing assistance**
+- **Real-time chord finder and identification**
+- **Music practice routine development**
+- **Composition and songwriting guidance**
+- **Integrated with music AI services** (ElevenLabs, Suno, Moises)
+- **Music theory API integration** (Uberchord, Chords API, Music.js)
+- **Custom progression and scale generation**
+
 ---
 
 ## 🔄 **Agent Collaboration Framework**
@@ -227,4 +242,83 @@
 18. Security Expert
 19. Privacy Guardian
 
+### **Phase 6: Education and Learning**
+20. Music Coach Agent
+
 This structure provides a comprehensive, hierarchical agent team with clear responsibilities, collaboration frameworks, and implementation priorities.
+
+---
+
+## 🧠 **Agent Operational Requirements**
+
+### **Core Management Agent Requirements**
+
+#### **Master Orchestrator Operational Specifications**
+**First Deliverable Requirement**: The first deliverable back to the user/human must be an understandable, brief but complete, execution plan that must be revised based on human feedback and approved by human, in order to proceed.
+
+**Project Analysis Requirements**: As Master Orchestrator reviews project given to it by human and identifies agent roles, it must:
+1. **Evaluate whether all tasks and roles can be played by the current team**
+2. **If new agent capabilities are needed, propose to human before project start and any time when needed during project execution**
+3. **Same if whole new agent types are needed**
+
+#### **Project Coordinator Operational Specifications**
+**First Deliverable Requirement**: The first deliverable back to the user/human must be an understandable, brief but complete, execution plan that must be revised based on human feedback and approved by human, in order to proceed.
+
+**Activity Logging Requirements**: One of its roles will be to request and compile from all agents a complete running record of all meaningful interactions, feedback by agents, etc... that is made available for human review in real time during project and after project completion.
+- **Infrastructure Note**: This infrastructure needs a schema-less database to go with it. This can't be managed in markdown effectively.
+
+### **Universal Agent Requirements (All Agents)**
+
+#### **Central Neural System (CNS) Integration**
+**EACH AGENT** must have instructions to review all interactions and task execution and ask:
+
+1. **What has gone right, and update CNS to make sure that I always do this?**
+2. **What did I do wrong, and update CNS to make sure that I always do this?**
+3. **What feedback have I received from other agents, and update CNS to make sure that I always do this?**
+4. **What new capabilities do I need? Communicate to Project Coordinator to report to human.**
+5. **What other roles could I / do I need to play. Communicate to Project Coordinator to report to human.**
+6. **What should I stop doing? Communicate to Project Coordinator to report to human.**
+
+#### **Communication Protocol**
+- All capability gaps, role expansions, and operational issues must be communicated through Project Coordinator
+- Real-time learning updates must be integrated into CNS
+- Cross-agent feedback must be documented and acted upon
+
+#### **Quality Assurance Integration**
+- Continuous self-assessment and improvement
+- Proactive identification of enhancement opportunities
+- Systematic documentation of lessons learned
+- Integration with overall team learning systems
+
+---
+
+## 📊 **Database Requirements**
+
+### **Schema-less Database for Project Coordination**
+```sql
+-- Real-time agent interaction logging
+project_interactions: {
+  project_id: string,
+  agent_id: string,
+  interaction_type: string,
+  timestamp: datetime,
+  content: object,
+  feedback_received: array,
+  cns_updates: object
+}
+```
+
+### **CNS Learning Database**
+```sql
+-- Central Neural System learning data
+cns_learning: {
+  agent_id: string,
+  learning_type: enum['success', 'failure', 'feedback', 'capability_gap'],
+  content: object,
+  implementation_status: string,
+  effectiveness_score: number,
+  created_at: datetime
+}
+```
+
+This comprehensive framework ensures all agents operate with consistent learning, communication, and improvement protocols while maintaining clear accountability and human oversight.

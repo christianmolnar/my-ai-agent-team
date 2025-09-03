@@ -1,6 +1,6 @@
 # AI Agent Team - Foundation
 
-🚀 **Clean AI Agent Team infrastructure with 18-agent hierarchy and CNS framework integration**
+🚀 **Clean AI Agent Team infrastructure with 20-agent hierarchy and Central Neural System (CNS) framework integration**
 
 ## 🎯 Project Status
 

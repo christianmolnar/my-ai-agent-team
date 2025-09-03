@@ -1,137 +1,63 @@
-# AI Agent Team - Document Library
+# AI Agent Team Document Library
+*Comprehensive documentation for 20-agent AI team architecture*
 
-**Repository Documentation Hub**  
-**Last Updated:** September 2, 2025  
+## �� **Document Structure**
 
----
+### **Primary Architecture Documents**
+- **[`system-architecture/AGENT-TEAM-STRUCTURE-DEFINITION.md`](system-architecture/AGENT-TEAM-STRUCTURE-DEFINITION.md)** - **MASTER DOCUMENT**
+  - Complete 20-agent roster and responsibilities
+  - **Agent Operational Requirements** (CNS integration, communication protocols)
+  - Database requirements for project coordination and learning
+  - Implementation priorities and phases
 
-## 📚 Library Organization
+- **[`migration-plans/AGENT-TEAM-MIGRATION-PLAN.md`](migration-plans/AGENT-TEAM-MIGRATION-PLAN.md)** - **IMPLEMENTATION STATUS**
+  - Current migration status and completed work
+  - Phase-by-phase implementation roadmap
+  - Private operations restructuring strategy
+  - Clonability framework for public distribution
 
-### 🎨 Design Specifications
-**Location:** `/design-specifications/`  
-*Comprehensive design documents for UI components and system interfaces*
+### **Implementation Resources**
+- **[`implementation-guides/`](implementation-guides/)**
+  - **Music Coach Agent Implementation** - Comprehensive music education agent
+  - **Claude Model Optimization Strategy** - Tier-based AI model assignments
+  
+- **[`standards/`](standards/)**
+  - **Agent Operational Requirements** - Detailed CNS and communication standards
+  - **Development Workflow Standards** - Code and process standards
 
-- [`API-MANAGEMENT-DASHBOARD-DESIGN-SPEC.md`](design-specifications/API-MANAGEMENT-DASHBOARD-DESIGN-SPEC.md) - Complete design specification for the API management interface with visual design system, technical implementation, and user experience guidelines
+### **Supporting Documentation**
+- **[`system-architecture/`](system-architecture/)** - Core architecture and API documentation
+- **[`design-specifications/`](design-specifications/)** - UI/UX design specifications
+- **[`temp/`](temp/)** - Temporary files for cleanup
 
-### 🏗️ System Architecture  
-**Location:** `/system-architecture/`  
-*Core system design and architectural decisions*
+## 🎯 **Key Integration Points**
 
-- [`AGENT-TEAM-STRUCTURE-DEFINITION.md`](system-architecture/AGENT-TEAM-STRUCTURE-DEFINITION.md) - Agent team structure and organization
-- [`UNIVERSAL-AI-MODEL-ACCESS-SYSTEM.md`](system-architecture/UNIVERSAL-AI-MODEL-ACCESS-SYSTEM.md) - Universal AI model access system architecture
+### **Master Orchestrator Requirements** (Ready for Implementation)
+1. **First Deliverable**: Must provide execution plan for human approval before proceeding
+2. **Project Analysis**: Evaluate team capabilities and propose new agents when needed
+3. **Model Assignment**: Claude Opus for complex reasoning and coordination
 
-### 📋 Implementation Guides
-**Location:** `/implementation-guides/`  
-*Step-by-step implementation instructions and completed work documentation*
+### **All Agent Requirements** (Central Neural System)
+1. **What has gone right** → Update CNS to ensure consistency
+2. **What did I do wrong** → Update CNS to prevent repetition  
+3. **What feedback received** → Update CNS to integrate learnings
+4. **What new capabilities needed** → Communicate to Project Coordinator
+5. **What other roles could I play** → Communicate to Project Coordinator
+6. **What should I stop doing** → Communicate to Project Coordinator
 
-- [`API-INFRASTRUCTURE-PHASE4-COMPLETE.md`](implementation-guides/API-INFRASTRUCTURE-PHASE4-COMPLETE.md) - API infrastructure phase 4 completion documentation
-- [`UNIVERSAL-SYSTEM-COMPLETE.md`](implementation-guides/UNIVERSAL-SYSTEM-COMPLETE.md) - Universal system implementation completion
+### **Database Strategy** (Schema-less + Structured)
+- **Project Coordination**: Schema-less database for real-time agent interactions
+- **CNS Learning**: Structured database for continuous improvement data
+- **Human Review**: Complete activity logging for transparency
 
-### 🔄 Migration Plans
-**Location:** `/migration-plans/`  
-*System migration strategies and transition documentation*
+## 🚀 **Implementation Ready**
 
-- [`AGENT-TEAM-MIGRATION-PLAN.md`](migration-plans/AGENT-TEAM-MIGRATION-PLAN.md) - Agent team migration planning and execution
+The documentation structure now provides:
+- ✅ **Complete 20-agent architecture** with operational requirements
+- ✅ **Central Neural System (CNS) integration** specifications  
+- ✅ **Claude model optimization** strategy with cost projections
+- ✅ **Music Coach Agent** comprehensive implementation guide
+- ✅ **Database strategy** for coordination and learning
+- ✅ **Migration status tracking** within plan documents
 
----
-
-## 🎯 Quick Navigation
-
-### For Developers
-- **UI Components**: Start with Design Specifications
-- **System Setup**: Check Implementation Guides  
-- **Architecture Questions**: Review System Architecture docs
-
-### For Product Managers
-- **Feature Specifications**: Design Specifications section
-- **Migration Planning**: Migration Plans section
-- **System Overview**: System Architecture section
-
-### For New Team Members
-1. **Start Here**: System Architecture overview
-2. **Then Read**: Implementation Guides for current state
-3. **For Contributions**: Design Specifications for standards
-
----
-
-## 📝 Document Types
-
-### Design Specifications
-- **Purpose**: Detailed UI/UX design requirements
-- **Audience**: Developers, Designers, Product Managers
-- **Format**: Comprehensive specs with visual examples
-- **Update Frequency**: Per feature release
-
-### System Architecture
-- **Purpose**: High-level system design decisions
-- **Audience**: Technical leads, Architects
-- **Format**: Architectural diagrams and explanations
-- **Update Frequency**: Per major system changes
-
-### Implementation Guides
-- **Purpose**: Step-by-step technical instructions
-- **Audience**: Developers, DevOps
-- **Format**: Ordered procedures with code examples
-- **Update Frequency**: Per implementation phase
-
-### Migration Plans
-- **Purpose**: System transition strategies
-- **Audience**: Technical leads, Project managers
-- **Format**: Timeline-based planning documents
-- **Update Frequency**: Per migration initiative
-
----
-
-## 🔄 Document Lifecycle
-
-### Creation Process
-1. **Draft**: Initial document creation
-2. **Review**: Technical and content review
-3. **Approval**: Stakeholder sign-off
-4. **Publication**: Addition to library
-5. **Maintenance**: Regular updates and revisions
-
-### Version Control
-- **Document Versions**: Tracked in document headers
-- **Change History**: Git commit history
-- **Archive Policy**: Outdated versions moved to archive
-- **Review Schedule**: Quarterly documentation review
-
----
-
-## 📊 Library Statistics
-
-- **Total Documents**: 6
-- **Design Specifications**: 1
-- **System Architecture**: 2  
-- **Implementation Guides**: 2
-- **Migration Plans**: 1
-
----
-
-## 🤝 Contributing
-
-### Adding New Documents
-1. **Choose Category**: Select appropriate subfolder
-2. **Follow Template**: Use existing documents as templates
-3. **Include Metadata**: Add creation date, version, author
-4. **Update Index**: Add entry to this README
-
-### Document Standards
-- **Markdown Format**: All documents in .md format
-- **Clear Headers**: Use consistent header hierarchy
-- **Table of Contents**: For documents > 500 words
-- **Cross-References**: Link to related documents
-- **Update Dates**: Include last modified dates
-
-### Review Process
-- **Technical Accuracy**: Verify all technical details
-- **Clarity**: Ensure clear, accessible language
-- **Completeness**: Check all required sections
-- **Consistency**: Follow established patterns
-
----
-
-**Document Library Version:** 1.0  
-**Maintained by:** AI Agent Team  
-**Contact:** See repository maintainers
+**Next Step**: Begin technical implementation of Master Orchestrator with first deliverable approval workflow and CNS integration framework.
