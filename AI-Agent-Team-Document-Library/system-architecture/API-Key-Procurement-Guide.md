@@ -64,32 +64,59 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
+**Management Tier (Claude Opus):**
+- **Master Orchestrator Agent:** `MASTER_ORCHESTRATOR_ANTHROPIC_API_KEY`
+- **Project Coordinator Agent:** `PROJECT_COORDINATOR_ANTHROPIC_API_KEY`
+
+**Development Tier (Claude Sonnet 4):**
+- **Full Stack Developer Agent:** `FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY`
+- **DevOps Engineer Agent:** `DEVOPS_ENGINEER_ANTHROPIC_API_KEY`
+- **QA Engineer Agent:** `QA_ENGINEER_ANTHROPIC_API_KEY`
+- **Data Scientist Agent:** `DATA_SCIENTIST_ANTHROPIC_API_KEY`
+
+**Specialized Tier (Claude Haiku/Sonnet 4):**
 - **Communications Agent:** `COMMUNICATIONS_ANTHROPIC_API_KEY`
 - **Researcher Agent:** `RESEARCHER_ANTHROPIC_API_KEY`
-- **Image and Video Generator Agent:** `IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY`
-- **Full Stack Developer Agent:** `FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY`
+- **Content Creator Agent:** `CONTENT_CREATOR_ANTHROPIC_API_KEY`
 
 ### Setup Instructions
 
 1. **Sign Up:** Visit https://console.anthropic.com
-2. **Account Verification:** Complete email verification
+2. **Account Verification:** Complete email verification and billing setup
 3. **API Key Generation:**
-   - Navigate to API Keys section in console
+   - Navigate to [Account Settings > API Keys](https://console.anthropic.com/account/keys)
    - Click "Create Key"
-   - Name your key appropriately
+   - Name your key appropriately (e.g., "AI-Agent-Team-Master-Orchestrator")
    - Copy and securely store the key
+4. **Model Access:**
+   - **Claude Opus:** Requires tier 4 API access (higher usage history needed)
+   - **Claude Sonnet 4:** Available with standard API access
+   - **Claude Haiku:** Available immediately with new accounts
 
-### Pricing
+### Pricing (Updated September 2025)
 
-- **Free Tier:** Limited free usage for testing
-- **Pay-per-use:** Claude 3.5 Sonnet: $3 per million input tokens, $15 per million output tokens
-- **Claude 3 Opus:** $15 per million input tokens, $75 per million output tokens
+**Claude Opus (Premium Tier):**
+- Input: $15 per million tokens
+- Output: $75 per million tokens
+- **Best for:** Master Orchestrator, Project Coordinator (complex reasoning)
+
+**Claude Sonnet 4 (Balanced Performance):**
+- Input: $3 per million tokens  
+- Output: $15 per million tokens
+- **Best for:** Development agents, technical tasks
+
+**Claude Haiku (Speed/Cost Optimized):**
+- Input: $0.25 per million tokens
+- Output: $1.25 per million tokens
+- **Best for:** Communications, routine tasks, high-volume processing
 
 ### Requirements
 
 - Account verification required
 - Payment method needed for production usage
-- Rate limits apply
+- **Claude Opus access:** Requires API tier 4 (build usage history first)
+- Rate limits: 50-400 requests per minute depending on tier
+- **Workspaces:** Use to segment API keys and control spend by agent
 
 ---
 

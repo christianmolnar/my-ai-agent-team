@@ -22,15 +22,14 @@
 - **Model Strategy**: Claude model optimization strategy with tier-based assignments (Opus/Sonnet 4/Haiku)
 
 ### 🔄 **IN PROGRESS**
-- **Phase 4**: Public repository clonability setup
+- **Phase 4**: Public repository clonability setup  
 - **Phase 5**: Private operations restructuring
-- **Operational Requirements**: Agent CNS integration and database schema implementation
+- **DECISION POINT**: Human vs Agent orchestration strategy
 
-### 📋 **PENDING PRIORITY**
-- **Music Coach Agent**: Technical implementation with API integrations
-- **Claude Model Deployment**: Implement tier-based model assignments across all 20 agents
-- **Database Strategy**: Schema-less database for project coordination and CNS learning data
-- **Agent Collaboration Framework**: Real-time interaction logging and feedback systems
+### 📋 **IMMEDIATE PRIORITY** 
+- **Infrastructure Completion**: Finish Phases 4-5 before agent implementation
+- **Claude Model Strategy**: Prepare for October 2025 implementation (moved from Phase 7)
+- **Agent Readiness Assessment**: Establish transition criteria for human-to-agent migration
 
 ## 📋 **Complete Inventory Analysis**
 
@@ -424,6 +423,65 @@ echo "3. Local-only private data (no version control)"
     - [ ] Schema-less database for real-time interaction logging
     - [ ] First deliverable approval workflow for management agents
     - [ ] Communication protocols through Project Coordinator
+
+---
+
+## 🚀 **REVISED MIGRATION STRATEGY** 
+
+### **Decision Point: Human vs Agent Orchestration**
+
+Based on the complexity observed so far, we recommend **Option B: Continue with human orchestrated migration** until a stable foundation is established.
+
+**Rationale:**
+- Multiple phases in progress create coordination complexity  
+- Claude model optimization requires stable infrastructure first
+- Agent-led migration introduces additional variables during an already complex transition
+
+### **CONSOLIDATED PHASE PLAN**
+
+#### **Current Priority: Complete Phase 4-5 Consolidation** 🔄 **ACTIVE**
+**Objective:** Finish infrastructure setup before agent implementation
+1. [ ] Complete public repository clonability (Phase 4 remainder)
+2. [ ] Finish private operations restructuring (Phase 5 remainder)  
+3. [ ] **Establish Human-Agent Transition Criteria** (new requirement)
+
+#### **Future Phase: Agent Implementation** 🔄 **FUTURE** 
+**Objective:** Implement agents with Claude model optimization  
+**Trigger:** Infrastructure stability achieved (Phases 4-5 complete)
+1. [ ] Implement **Claude model optimization IMMEDIATELY** (moved from Phase 7)
+   - [ ] **Claude Opus** for Master Orchestrator (complex reasoning, coordination)
+   - [ ] **Claude Sonnet 4** for development agents (coding, technical tasks)
+   - [ ] **Claude Haiku** for communications and routine tasks
+2. [ ] Deploy Master Orchestrator and Project Coordinator as first agents
+3. [ ] **Agent-Led Migration Decision Point**: Evaluate if agents can take over
+4. [ ] Complete remaining agent implementation under agent coordination
+
+### **Human-to-Agent Transition Criteria** 📋
+
+**Infrastructure Requirements (Must Complete First):**
+- [ ] Stable deployment pipeline (Vercel builds succeed consistently)
+- [ ] Clean API key management system  
+- [ ] Documentation sync across all four documents
+- [ ] Environment variable templates and setup scripts
+
+**Agent Readiness Requirements:**
+- [ ] Master Orchestrator implemented with Claude Opus
+- [ ] Project Coordinator implemented with Claude Opus  
+- [ ] CNS framework operational for agent self-assessment
+- [ ] Database schema for agent interaction logging
+
+**Success Metrics for Transition:**
+- [ ] 95%+ deployment success rate over 2 weeks
+- [ ] Master Orchestrator successfully manages 3+ consecutive projects
+- [ ] Agent communication protocols tested and validated
+- [ ] Human oversight reduction to <20% intervention rate
+
+### **REVISED TIMELINE**
+
+**September 2025:** Complete infrastructure consolidation (Phases 4-5)  
+**October 2025:** Implement Claude model optimization and deploy core management agents  
+**November 2025:** **Decision Point** - Evaluate agent-led migration capability  
+**December 2025:** Full agent team deployment (if agents proven capable) OR continue human-led approach
 
 ---
 
