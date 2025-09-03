@@ -231,6 +231,10 @@ export default function ApiStatusPage() {
     // Auto-save after a short delay
     setTimeout(async () => {
       await saveApiKeys(newKeys);
+      // Auto-verify after saving
+      setTimeout(async () => {
+        await checkApiStatus(newKeys);
+      }, 1000);
     }, 500);
   };
 
@@ -238,9 +242,11 @@ export default function ApiStatusPage() {
     await saveApiKeys(apiKeys);
   };
 
-  const checkApiStatus = async () => {
+  const checkApiStatus = async (keysToCheck?: Record<string, string>) => {
     setIsCheckingStatus(true);
     setError(null);
+    
+    const keysForVerification = keysToCheck || apiKeys;
     
     try {
       const response = await fetch('/api/verify-api-keys', {
@@ -248,7 +254,7 @@ export default function ApiStatusPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(apiKeys),
+        body: JSON.stringify(keysForVerification),
       });
 
       if (!response.ok) {
@@ -279,7 +285,10 @@ export default function ApiStatusPage() {
     if (!statusItem) {
       return { icon: '⏸️', status: 'Not Checked' };
     }
-    return statusItem.configured 
+    if (!statusItem.configured) {
+      return { icon: '❌', status: 'No Key' };
+    }
+    return statusItem.valid 
       ? { icon: '✅', status: 'Connected' }
       : { icon: '🔴', status: 'Invalid' };
   };
