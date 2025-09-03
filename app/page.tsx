@@ -109,7 +109,7 @@ export default function Home() {
               textAlign: "center",
               color: "#f3f3f3"
             }}>
-              Research Agent
+              Researcher Agent
             </div>
             <div style={{
               display: "block",
@@ -120,7 +120,7 @@ export default function Home() {
               textAlign: "center",
               color: "#f3f3f3"
             }}>
-              Creative Agent
+              Image and Video Generator Agent
             </div>
             <div style={{
               display: "block",
@@ -131,7 +131,7 @@ export default function Home() {
               textAlign: "center",
               color: "#f3f3f3"
             }}>
-              Code Agent
+              Full Stack Developer Agent
             </div>
             <div style={{
               display: "block",
@@ -142,7 +142,7 @@ export default function Home() {
               textAlign: "center",
               color: "#f3f3f3"
             }}>
-              Analysis Agent
+              Data Scientist Agent
             </div>
           </div>
           

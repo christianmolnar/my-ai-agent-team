@@ -8,6 +8,7 @@ interface ApiKeyConfig {
   provider: string;
   required: boolean;
   configured: boolean;
+  valid?: boolean;
 }
 
 interface AgentConfig {
@@ -91,40 +92,40 @@ export default function ApiStatusPage() {
       ]
     },
     {
-      name: "Research Agent", 
-      description: "Performs web research and data analysis",
+      name: "Researcher Agent", 
+      description: "General research automation across all domains, includes VinylResearcherAgent and Fact Checker capabilities",
       requiredApis: [
-        { envVar: "RESEARCH_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "RESEARCH_PERPLEXITY_API_KEY", displayName: "Perplexity API", provider: "perplexity", required: true, configured: false },
-        { envVar: "RESEARCH_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "RESEARCHER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
+        { envVar: "RESEARCHER_PERPLEXITY_API_KEY", displayName: "Perplexity API", provider: "perplexity", required: true, configured: false },
+        { envVar: "RESEARCHER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "SERPAPI_KEY", displayName: "SerpAPI (Google Search)", provider: "serpapi", required: true, configured: false },
         { envVar: "DISCOGS_TOKEN", displayName: "Discogs API (Music/Vinyl)", provider: "discogs", required: false, configured: false }
       ]
     },
     {
-      name: "Creative Agent",
-      description: "Generates creative content, images, and designs", 
+      name: "Image and Video Generator Agent",
+      description: "Static image generation, video content creation, graphic design, visual storytelling", 
       requiredApis: [
-        { envVar: "CREATIVE_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "CREATIVE_STABILITY_API_KEY", displayName: "Stability AI API", provider: "stability", required: true, configured: false },
-        { envVar: "CREATIVE_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false }
+        { envVar: "IMAGE_VIDEO_GENERATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
+        { envVar: "IMAGE_VIDEO_GENERATOR_STABILITY_API_KEY", displayName: "Stability AI API", provider: "stability", required: true, configured: false },
+        { envVar: "IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false }
       ]
     },
     {
-      name: "Code Agent",
-      description: "Assists with programming and development tasks",
+      name: "Full Stack Developer Agent",
+      description: "End-to-end application development, full stack architecture design, front-end and back-end integration",
       requiredApis: [
-        { envVar: "CODE_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "CODE_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: true, configured: false },
-        { envVar: "CODE_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
+        { envVar: "FULL_STACK_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
+        { envVar: "FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: true, configured: false },
+        { envVar: "FULL_STACK_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
       ]
     },
     {
-      name: "Analysis Agent",
-      description: "Performs data analysis and provides insights",
+      name: "Data Scientist Agent",
+      description: "Data researcher and analysis expert - gathers data that justifies whether a project should or should not be undertaken",
       requiredApis: [
-        { envVar: "ANALYSIS_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "ANALYSIS_COHERE_API_KEY", displayName: "Cohere API", provider: "cohere", required: false, configured: false }
+        { envVar: "DATA_SCIENTIST_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
+        { envVar: "DATA_SCIENTIST_COHERE_API_KEY", displayName: "Cohere API", provider: "cohere", required: false, configured: false }
       ]
     }
   ];
@@ -441,7 +442,7 @@ export default function ApiStatusPage() {
                 💾 Save All
               </button>
               <button
-                onClick={checkApiStatus}
+                onClick={() => checkApiStatus()}
                 style={{
                   padding: "8px 16px",
                   borderRadius: "6px",

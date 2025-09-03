@@ -29,7 +29,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 - **Research Agent:** `RESEARCH_OPENAI_API_KEY`
 - **Creative Agent:** `CREATIVE_OPENAI_API_KEY`
 - **Code Agent:** `CODE_OPENAI_API_KEY`
-- **Analysis Agent:** `ANALYSIS_OPENAI_API_KEY`
+- **Data Scientist Agent:** `DATA_SCIENTIST_OPENAI_API_KEY`
 
 ### Setup Instructions
 
@@ -235,7 +235,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
-- **Analysis Agent:** `ANALYSIS_COHERE_API_KEY`
+- **Data Scientist Agent:** `DATA_SCIENTIST_COHERE_API_KEY`
 
 ### Setup Instructions
 
@@ -348,13 +348,13 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 | Provider | Agent(s) | Free Tier | Paid Tier | Setup Difficulty | Key Features |
 |----------|----------|-----------|-----------|------------------|--------------|
-| **OpenAI** | Communications, Research, Creative, Code, Analysis | $5 credits | Usage-based | Easy | Most popular LLM, ChatGPT API |
+| **OpenAI** | Communications, Research, Creative, Code, Data Scientist | $5 credits | Usage-based | Easy | Most popular LLM, ChatGPT API |
 | **Anthropic** | Communications, Creative, Code | Limited free | $3-$75 per 1M tokens | Easy | Claude models, safety-focused |
 | **Google AI** | Research | Generous free | $0.30-$10 per 1M tokens | Easy | Gemini models, multimodal |
 | **Perplexity** | Research | Limited free | $20/month + usage | Medium | Real-time web search |
 | **Stability AI** | Creative | Limited credits | $0.03-$0.75 per generation | Easy | Image/video generation |
 | **Together AI** | Code | $25 credits | Usage-based | Easy | Open source models |
-| **Cohere** | Analysis | Generous free | Usage-based | Easy | Enterprise-focused NLP |
+| **Cohere** | Data Scientist | Generous free | Usage-based | Easy | Enterprise-focused NLP |
 | **SerpAPI** | Research | 250 searches/month | $75-$275/month | Easy | Google Search API |
 | **Discogs** | Research | Free | Free | Easy | Music database API |
 
@@ -392,9 +392,9 @@ CODE_OPENAI_API_KEY=your_openai_key_here
 CODE_ANTHROPIC_API_KEY=your_anthropic_key_here
 CODE_TOGETHER_API_KEY=your_together_key_here
 
-# Analysis Agent
-ANALYSIS_OPENAI_API_KEY=your_openai_key_here
-ANALYSIS_COHERE_API_KEY=your_cohere_key_here
+# Data Scientist Agent
+DATA_SCIENTIST_OPENAI_API_KEY=your_openai_key_here
+DATA_SCIENTIST_COHERE_API_KEY=your_cohere_key_here
 ```
 
 ## Cost Estimation

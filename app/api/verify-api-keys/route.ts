@@ -383,19 +383,25 @@ export async function POST(request: Request) {
     const specificEnvVars = [
       { envVar: 'COMMUNICATIONS_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
       { envVar: 'COMMUNICATIONS_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
-      { envVar: 'RESEARCH_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
-      { envVar: 'RESEARCH_PERPLEXITY_API_KEY', provider: 'perplexity', verifyFn: verifyPerplexity },
-      { envVar: 'RESEARCH_GOOGLE_AI_API_KEY', provider: 'google', verifyFn: verifyGoogleAI },
+      { envVar: 'RESEARCHER_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
+      { envVar: 'RESEARCHER_PERPLEXITY_API_KEY', provider: 'perplexity', verifyFn: verifyPerplexity },
+      { envVar: 'RESEARCHER_GOOGLE_AI_API_KEY', provider: 'google', verifyFn: verifyGoogleAI },
       { envVar: 'SERPAPI_KEY', provider: 'serpapi', verifyFn: verifySerpAPI },
       { envVar: 'DISCOGS_TOKEN', provider: 'discogs', verifyFn: verifyDiscogs },
-      { envVar: 'CREATIVE_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
-      { envVar: 'CREATIVE_STABILITY_API_KEY', provider: 'stability', verifyFn: verifyStabilityAI },
-      { envVar: 'CREATIVE_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
-      { envVar: 'CODE_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
-      { envVar: 'CODE_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
-      { envVar: 'CODE_TOGETHER_API_KEY', provider: 'together', verifyFn: verifyTogetherAI },
-      { envVar: 'ANALYSIS_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
-      { envVar: 'ANALYSIS_COHERE_API_KEY', provider: 'cohere', verifyFn: verifyCohere }
+      { envVar: 'IMAGE_VIDEO_GENERATOR_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
+      { envVar: 'IMAGE_VIDEO_GENERATOR_STABILITY_API_KEY', provider: 'stability', verifyFn: verifyStabilityAI },
+      { envVar: 'IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
+      { envVar: 'FULL_STACK_DEVELOPER_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
+      { envVar: 'FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
+      { envVar: 'FULL_STACK_DEVELOPER_TOGETHER_API_KEY', provider: 'together', verifyFn: verifyTogetherAI },
+      { envVar: 'DATA_SCIENTIST_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
+      { envVar: 'DATA_SCIENTIST_COHERE_API_KEY', provider: 'cohere', verifyFn: verifyCohere },
+      { envVar: 'BACK_END_DEVELOPER_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
+      { envVar: 'BACK_END_DEVELOPER_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
+      { envVar: 'BACK_END_DEVELOPER_TOGETHER_API_KEY', provider: 'together', verifyFn: verifyTogetherAI },
+      { envVar: 'FRONT_END_DEVELOPER_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
+      { envVar: 'FRONT_END_DEVELOPER_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
+      { envVar: 'FRONT_END_DEVELOPER_TOGETHER_API_KEY', provider: 'together', verifyFn: verifyTogetherAI }
     ];
 
     for (const { envVar, provider, verifyFn } of specificEnvVars) {
