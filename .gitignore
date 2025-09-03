@@ -17,6 +17,13 @@ build/
 .env.test.local
 .env.production.local
 
+# API Key Backup Files - NEVER COMMIT THESE
+*.backup
+**/backup*
+**/*backup*
+**/AI-Agent-Key-Backup.md
+.env.*backup*
+
 # IDE
 .vscode/
 .idea/

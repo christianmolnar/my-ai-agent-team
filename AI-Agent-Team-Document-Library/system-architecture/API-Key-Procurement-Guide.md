@@ -26,9 +26,9 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 ### Required API Keys by Agent
 
 - **Communications Agent:** `COMMUNICATIONS_OPENAI_API_KEY`
-- **Research Agent:** `RESEARCH_OPENAI_API_KEY`
-- **Creative Agent:** `CREATIVE_OPENAI_API_KEY`
-- **Code Agent:** `CODE_OPENAI_API_KEY`
+- **Researcher Agent:** `RESEARCHER_OPENAI_API_KEY`
+- **Image and Video Generator Agent:** `IMAGE_VIDEO_GENERATOR_OPENAI_API_KEY`
+- **Full Stack Developer Agent:** `FULL_STACK_DEVELOPER_OPENAI_API_KEY`
 - **Data Scientist Agent:** `DATA_SCIENTIST_OPENAI_API_KEY`
 
 ### Setup Instructions
@@ -65,8 +65,9 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 ### Required API Keys by Agent
 
 - **Communications Agent:** `COMMUNICATIONS_ANTHROPIC_API_KEY`
-- **Creative Agent:** `CREATIVE_ANTHROPIC_API_KEY`
-- **Code Agent:** `CODE_ANTHROPIC_API_KEY`
+- **Researcher Agent:** `RESEARCHER_ANTHROPIC_API_KEY`
+- **Image and Video Generator Agent:** `IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY`
+- **Full Stack Developer Agent:** `FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY`
 
 ### Setup Instructions
 
@@ -100,7 +101,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
-- **Research Agent:** `RESEARCH_GOOGLE_AI_API_KEY`
+- **Researcher Agent:** `RESEARCHER_GOOGLE_AI_API_KEY`
 
 ### Setup Instructions
 
@@ -138,7 +139,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
-- **Research Agent:** `RESEARCH_PERPLEXITY_API_KEY`
+- **Researcher Agent:** `RESEARCHER_PERPLEXITY_API_KEY`
 
 ### Setup Instructions
 
@@ -168,7 +169,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
-- **Creative Agent:** `CREATIVE_STABILITY_API_KEY`
+- **Image and Video Generator Agent:** `IMAGE_VIDEO_GENERATOR_STABILITY_API_KEY`
 
 ### Setup Instructions
 
@@ -202,7 +203,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
-- **Code Agent:** `CODE_TOGETHER_API_KEY`
+- **Full Stack Developer Agent:** `FULL_STACK_DEVELOPER_TOGETHER_API_KEY`
 
 ### Setup Instructions
 
@@ -266,7 +267,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
-- **Research Agent:** `SERPAPI_KEY`
+- **Researcher Agent:** `SERPAPI_KEY`
 
 ### Setup Instructions
 
@@ -308,7 +309,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
-- **Research Agent:** `DISCOGS_TOKEN`
+- **Researcher Agent:** `DISCOGS_TOKEN`
 
 ### Setup Instructions
 
@@ -375,22 +376,23 @@ After obtaining your API keys, add them to your `.env.local` file:
 COMMUNICATIONS_OPENAI_API_KEY=your_openai_key_here
 COMMUNICATIONS_ANTHROPIC_API_KEY=your_anthropic_key_here
 
-# Research Agent
-RESEARCH_OPENAI_API_KEY=your_openai_key_here
-RESEARCH_GOOGLE_AI_API_KEY=your_google_ai_key_here
-RESEARCH_PERPLEXITY_API_KEY=your_perplexity_key_here
+# Researcher Agent
+RESEARCHER_OPENAI_API_KEY=your_openai_key_here
+RESEARCHER_ANTHROPIC_API_KEY=your_anthropic_key_here
+RESEARCHER_GOOGLE_AI_API_KEY=your_google_ai_key_here
+RESEARCHER_PERPLEXITY_API_KEY=your_perplexity_key_here
 SERPAPI_KEY=your_serpapi_key_here
 DISCOGS_TOKEN=your_discogs_token_here
 
-# Creative Agent
-CREATIVE_OPENAI_API_KEY=your_openai_key_here
-CREATIVE_STABILITY_API_KEY=your_stability_key_here
-CREATIVE_ANTHROPIC_API_KEY=your_anthropic_key_here
+# Image and Video Generator Agent
+IMAGE_VIDEO_GENERATOR_OPENAI_API_KEY=your_openai_key_here
+IMAGE_VIDEO_GENERATOR_STABILITY_API_KEY=your_stability_key_here
+IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY=your_anthropic_key_here
 
-# Code Agent
-CODE_OPENAI_API_KEY=your_openai_key_here
-CODE_ANTHROPIC_API_KEY=your_anthropic_key_here
-CODE_TOGETHER_API_KEY=your_together_key_here
+# Full Stack Developer Agent
+FULL_STACK_DEVELOPER_OPENAI_API_KEY=your_openai_key_here
+FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY=your_anthropic_key_here
+FULL_STACK_DEVELOPER_TOGETHER_API_KEY=your_together_key_here
 
 # Data Scientist Agent
 DATA_SCIENTIST_OPENAI_API_KEY=your_openai_key_here

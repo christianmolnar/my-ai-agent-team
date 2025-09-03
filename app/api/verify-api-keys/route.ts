@@ -384,6 +384,7 @@ export async function POST(request: Request) {
       { envVar: 'COMMUNICATIONS_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
       { envVar: 'COMMUNICATIONS_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
       { envVar: 'RESEARCHER_OPENAI_API_KEY', provider: 'openai', verifyFn: verifyOpenAI },
+      { envVar: 'RESEARCHER_ANTHROPIC_API_KEY', provider: 'anthropic', verifyFn: verifyAnthropic },
       { envVar: 'RESEARCHER_PERPLEXITY_API_KEY', provider: 'perplexity', verifyFn: verifyPerplexity },
       { envVar: 'RESEARCHER_GOOGLE_AI_API_KEY', provider: 'google', verifyFn: verifyGoogleAI },
       { envVar: 'SERPAPI_KEY', provider: 'serpapi', verifyFn: verifySerpAPI },

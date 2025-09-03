@@ -81,23 +81,45 @@ export default function ApiStatusPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
-  // Define agent configurations with unique API keys per agent
+  // Define agent configurations with unique API keys per agent - ALL 19 AGENTS IN OFFICIAL ORDER
   const agentConfigs: AgentConfig[] = [
     {
+      name: "Master Orchestrator Agent",
+      description: "Central coordination hub that manages and orchestrates all other agents",
+      requiredApis: [
+        { envVar: "MASTER_ORCHESTRATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "MASTER_ORCHESTRATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "MASTER_ORCHESTRATOR_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Project Coordinator Agent",
+      description: "Project management, timeline coordination, resource allocation",
+      requiredApis: [
+        { envVar: "PROJECT_COORDINATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "PROJECT_COORDINATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "PROJECT_COORDINATOR_NOTION_API_KEY", displayName: "Notion API", provider: "notion", required: false, configured: false },
+        { envVar: "PROJECT_COORDINATOR_SLACK_API_KEY", displayName: "Slack API", provider: "slack", required: false, configured: false }
+      ]
+    },
+    {
       name: "Communications Agent",
-      description: "Handles email, messaging, and communication tasks",
+      description: "Email writing, document writing, meeting notes, presentation creation",
       requiredApis: [
         { envVar: "COMMUNICATIONS_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "COMMUNICATIONS_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false }
+        { envVar: "COMMUNICATIONS_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "COMMUNICATIONS_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "COMMUNICATIONS_RESEND_API_KEY", displayName: "Resend API", provider: "resend", required: false, configured: false }
       ]
     },
     {
       name: "Researcher Agent", 
-      description: "General research automation across all domains, includes VinylResearcherAgent and Fact Checker capabilities",
+      description: "General research automation, data gathering, fact checking, vinyl research",
       requiredApis: [
         { envVar: "RESEARCHER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "RESEARCHER_PERPLEXITY_API_KEY", displayName: "Perplexity API", provider: "perplexity", required: true, configured: false },
         { envVar: "RESEARCHER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "RESEARCHER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "RESEARCHER_PERPLEXITY_API_KEY", displayName: "Perplexity API", provider: "perplexity", required: false, configured: false },
         { envVar: "SERPAPI_KEY", displayName: "SerpAPI (Google Search)", provider: "serpapi", required: true, configured: false },
         { envVar: "DISCOGS_TOKEN", displayName: "Discogs API (Music/Vinyl)", provider: "discogs", required: false, configured: false }
       ]
@@ -107,37 +129,146 @@ export default function ApiStatusPage() {
       description: "Static image generation, video content creation, graphic design, visual storytelling", 
       requiredApis: [
         { envVar: "IMAGE_VIDEO_GENERATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "IMAGE_VIDEO_GENERATOR_STABILITY_API_KEY", displayName: "Stability AI API", provider: "stability", required: true, configured: false },
-        { envVar: "IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false }
+        { envVar: "IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "IMAGE_VIDEO_GENERATOR_STABILITY_API_KEY", displayName: "Stability AI API", provider: "stability", required: false, configured: false },
+        { envVar: "IMAGE_VIDEO_GENERATOR_MIDJOURNEY_API_KEY", displayName: "Midjourney API", provider: "midjourney", required: false, configured: false },
+        { envVar: "IMAGE_VIDEO_GENERATOR_RUNWAY_API_KEY", displayName: "Runway API", provider: "runway", required: false, configured: false }
       ]
     },
     {
-      name: "Full Stack Developer Agent",
-      description: "End-to-end application development, full stack architecture design, front-end and back-end integration",
+      name: "PersonalAssistantBridge Agent",
+      description: "Bridge between AI agent team and personal assistant systems",
       requiredApis: [
-        { envVar: "FULL_STACK_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: true, configured: false },
-        { envVar: "FULL_STACK_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
+        { envVar: "PERSONALASSISTANTBRIDGE_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "PERSONALASSISTANTBRIDGE_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "PERSONALASSISTANTBRIDGE_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Product Manager Agent",
+      description: "Business requirement identification, specification document writing, stakeholder communication",
+      requiredApis: [
+        { envVar: "PRODUCT_MANAGER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "PRODUCT_MANAGER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "PRODUCT_MANAGER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "PRODUCT_MANAGER_NOTION_API_KEY", displayName: "Notion API", provider: "notion", required: false, configured: false }
       ]
     },
     {
       name: "Data Scientist Agent",
-      description: "Data researcher and analysis expert - gathers data that justifies whether a project should or should not be undertaken",
+      description: "Data researcher and analysis expert, project viability analysis",
       requiredApis: [
         { envVar: "DATA_SCIENTIST_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
+        { envVar: "DATA_SCIENTIST_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "DATA_SCIENTIST_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "DATA_SCIENTIST_COHERE_API_KEY", displayName: "Cohere API", provider: "cohere", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Development Design Documentation Creator Agent",
+      description: "Technical architecture documentation, API specification writing, system design",
+      requiredApis: [
+        { envVar: "DEV_DESIGN_DOC_CREATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "DEV_DESIGN_DOC_CREATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "DEV_DESIGN_DOC_CREATOR_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Experience Designer Agent",
+      description: "User interface design and prototyping, user experience research and testing",
+      requiredApis: [
+        { envVar: "EXPERIENCE_DESIGNER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "EXPERIENCE_DESIGNER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "EXPERIENCE_DESIGNER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "EXPERIENCE_DESIGNER_FIGMA_API_KEY", displayName: "Figma API", provider: "figma", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Full Stack Developer Agent",
+      description: "End-to-end application development, full stack architecture design",
+      requiredApis: [
+        { envVar: "FULL_STACK_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: true, configured: false },
+        { envVar: "FULL_STACK_DEVELOPER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "FULL_STACK_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Back End Software Developer Agent",
+      description: "Server-side application development, database design, API development",
+      requiredApis: [
+        { envVar: "BACK_END_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "BACK_END_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "BACK_END_DEVELOPER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "BACK_END_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Front End Software Developer Agent",
+      description: "Client-side application development, user interface implementation",
+      requiredApis: [
+        { envVar: "FRONT_END_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "FRONT_END_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "FRONT_END_DEVELOPER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "FRONT_END_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Test Expert Agent",
+      description: "Test strategy and planning, automated testing framework development",
+      requiredApis: [
+        { envVar: "TEST_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "TEST_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "TEST_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Monitoring Expert Agent",
+      description: "System monitoring and alerting setup, performance metrics and dashboards",
+      requiredApis: [
+        { envVar: "MONITORING_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "MONITORING_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "MONITORING_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "MONITORING_EXPERT_DATADOG_API_KEY", displayName: "Datadog API", provider: "datadog", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Availability and Reliability Expert Agent",
+      description: "High availability architecture design, disaster recovery planning",
+      requiredApis: [
+        { envVar: "AVAILABILITY_RELIABILITY_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "AVAILABILITY_RELIABILITY_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "AVAILABILITY_RELIABILITY_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Performance Expert Agent",
+      description: "Performance optimization and tuning, bottleneck identification",
+      requiredApis: [
+        { envVar: "PERFORMANCE_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "PERFORMANCE_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "PERFORMANCE_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Security Expert Agent",
+      description: "Software security vulnerability assessment, security architecture",
+      requiredApis: [
+        { envVar: "SECURITY_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "SECURITY_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "SECURITY_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+    {
+      name: "Privacy Guardian Agent",
+      description: "Data privacy and protection expert, GDPR/CCPA compliance",
+      requiredApis: [
+        { envVar: "PRIVACY_GUARDIAN_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "PRIVACY_GUARDIAN_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "PRIVACY_GUARDIAN_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     }
   ];
-
-  // Flatten agent configs to create table rows
-  const allApiRequirements: ApiRowData[] = agentConfigs.flatMap(agent =>
-    agent.requiredApis.map(api => ({
-      ...api,
-      agentName: agent.name,
-      agentDescription: agent.description
-    }))
-  );
 
   // Load API keys from localStorage and environment variables
   useEffect(() => {
@@ -527,139 +658,178 @@ export default function ApiStatusPage() {
                 </tr>
               </thead>
               <tbody>
-                {allApiRequirements.map((api, index) => {
-                  const apiStatus = getApiStatus(api.envVar);
-                  return (
+                {agentConfigs.map((agent, agentIndex) => {
+                  // Create agent header row
+                  const agentHeaderRow = (
                     <tr 
-                      key={`${api.agentName}-${api.envVar}`}
+                      key={`agent-header-${agentIndex}`}
                       style={{
-                        borderBottom: index < allApiRequirements.length - 1 ? "1px solid #333" : "none"
+                        borderBottom: "1px solid #444",
+                        background: "#2a2d2e"
                       }}
                     >
-                      <td style={{
-                        padding: "12px",
-                        borderRight: "1px solid #333",
-                        verticalAlign: "top"
-                      }}>
+                      <td 
+                        colSpan={7}
+                        style={{
+                          padding: "15px 12px",
+                          fontWeight: "700",
+                          fontSize: "16px",
+                          color: "#ffb347"
+                        }}
+                      >
+                        🤖 {agent.name}
                         <div style={{
-                          fontWeight: "600",
-                          color: "#f3f3f3",
-                          fontSize: "14px"
+                          fontSize: "13px",
+                          color: "#ccc",
+                          fontWeight: "400",
+                          marginTop: "4px"
                         }}>
-                          {api.agentName}
+                          {agent.description}
                         </div>
-                      </td>
-                      <td style={{
-                        padding: "12px",
-                        borderRight: "1px solid #333",
-                        verticalAlign: "top"
-                      }}>
-                        <div style={{ fontSize: "14px", color: "#f3f3f3", fontWeight: "500" }}>
-                          {api.displayName}
-                        </div>
-                        <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
-                          {api.envVar}
-                        </div>
-                      </td>
-                      <td style={{
-                        padding: "12px",
-                        borderRight: "1px solid #333",
-                        verticalAlign: "top"
-                      }}>
-                        <span style={{
-                          display: "inline-block",
-                          padding: "4px 8px",
-                          background: "#2563eb",
-                          color: "#fff",
-                          borderRadius: "4px",
-                          fontSize: "11px",
-                          fontWeight: "600",
-                          textTransform: "uppercase"
-                        }}>
-                          {api.provider}
-                        </span>
-                      </td>
-                      <td style={{
-                        padding: "12px",
-                        borderRight: "1px solid #333",
-                        verticalAlign: "top"
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{ fontSize: "16px" }}>{apiStatus.icon}</span>
-                          <span style={{ fontSize: "13px", color: "#ccc" }}>{apiStatus.status}</span>
-                        </div>
-                      </td>
-                      <td style={{
-                        padding: "12px",
-                        borderRight: "1px solid #333",
-                        verticalAlign: "top"
-                      }}>
-                        <span style={{
-                          display: "inline-block",
-                          padding: "4px 8px",
-                          background: api.required ? "#dc2626" : "#16a34a",
-                          color: "#fff",
-                          borderRadius: "4px",
-                          fontSize: "11px",
-                          fontWeight: "600"
-                        }}>
-                          {api.required ? 'Required' : 'Optional'}
-                        </span>
-                      </td>
-                      <td style={{
-                        padding: "12px",
-                        borderRight: "1px solid #333",
-                        verticalAlign: "top"
-                      }}>
-                        <input
-                          type="text"
-                          placeholder={`Enter ${api.displayName} key...`}
-                          value={apiKeys[api.envVar] || ''}
-                          onChange={(e) => handleApiKeyChange(api.envVar, e.target.value)}
-                          onBlur={async () => await saveApiKeys(apiKeys)}
-                          onKeyDown={async (e) => {
-                            if (e.key === 'Enter' || e.key === 'Tab') {
-                              await saveApiKeys(apiKeys);
-                            }
-                          }}
-                          style={{
-                            width: "100%",
-                            padding: "8px 10px",
-                            background: "#232526",
-                            border: "1px solid #555",
-                            borderRadius: "4px",
-                            color: "#f3f3f3",
-                            fontSize: "13px"
-                          }}
-                        />
-                      </td>
-                      <td style={{
-                        padding: "12px",
-                        verticalAlign: "top"
-                      }}>
-                        <button
-                          onClick={async () => {
-                            handleApiKeyChange(api.envVar, '');
-                            await saveApiKeys({ ...apiKeys, [api.envVar]: '' });
-                          }}
-                          style={{
-                            padding: "6px 10px",
-                            borderRadius: "4px",
-                            border: "none",
-                            cursor: "pointer",
-                            fontWeight: "600",
-                            fontSize: "12px",
-                            background: "#dc2626",
-                            color: "#fff"
-                          }}
-                          title="Clear API key"
-                        >
-                          🗑️ Clear
-                        </button>
                       </td>
                     </tr>
                   );
-                })}
+
+                  // Create API key rows for this agent
+                  const apiRows = agent.requiredApis.map((api, apiIndex) => {
+                    const apiStatus = getApiStatus(api.envVar);
+                    return (
+                      <tr 
+                        key={`${agent.name}-${api.envVar}`}
+                        style={{
+                          borderBottom: apiIndex < agent.requiredApis.length - 1 ? "1px solid #333" : 
+                                       agentIndex < agentConfigs.length - 1 ? "1px solid #444" : "none"
+                        }}
+                      >
+                        <td style={{
+                          padding: "12px",
+                          paddingLeft: "24px",
+                          borderRight: "1px solid #333",
+                          verticalAlign: "top"
+                        }}>
+                          <div style={{
+                            fontSize: "12px",
+                            color: "#888",
+                            fontStyle: "italic"
+                          }}>
+                            └ API Key {apiIndex + 1}
+                          </div>
+                        </td>
+                        <td style={{
+                          padding: "12px",
+                          borderRight: "1px solid #333",
+                          verticalAlign: "top"
+                        }}>
+                          <div style={{ fontSize: "14px", color: "#f3f3f3", fontWeight: "500" }}>
+                            {api.displayName}
+                          </div>
+                          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+                            {api.envVar}
+                          </div>
+                        </td>
+                        <td style={{
+                          padding: "12px",
+                          borderRight: "1px solid #333",
+                          verticalAlign: "top"
+                        }}>
+                          <span style={{
+                            display: "inline-block",
+                            padding: "4px 8px",
+                            background: "#2563eb",
+                            color: "#fff",
+                            borderRadius: "4px",
+                            fontSize: "11px",
+                            fontWeight: "600",
+                            textTransform: "uppercase"
+                          }}>
+                            {api.provider}
+                          </span>
+                        </td>
+                        <td style={{
+                          padding: "12px",
+                          borderRight: "1px solid #333",
+                          verticalAlign: "top"
+                        }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span style={{ fontSize: "16px" }}>{apiStatus.icon}</span>
+                            <span style={{ fontSize: "13px", color: "#ccc" }}>{apiStatus.status}</span>
+                          </div>
+                        </td>
+                        <td style={{
+                          padding: "12px",
+                          borderRight: "1px solid #333",
+                          verticalAlign: "top"
+                        }}>
+                          <span style={{
+                            display: "inline-block",
+                            padding: "4px 8px",
+                            background: api.required ? "#dc2626" : "#16a34a",
+                            color: "#fff",
+                            borderRadius: "4px",
+                            fontSize: "11px",
+                            fontWeight: "600"
+                          }}>
+                            {api.required ? 'Required' : 'Optional'}
+                          </span>
+                        </td>
+                        <td style={{
+                          padding: "12px",
+                          borderRight: "1px solid #333",
+                          verticalAlign: "top"
+                        }}>
+                          <input
+                            type="text"
+                            placeholder={`Enter ${api.displayName} key...`}
+                            value={apiKeys[api.envVar] || ''}
+                            onChange={(e) => handleApiKeyChange(api.envVar, e.target.value)}
+                            onBlur={async () => await saveApiKeys(apiKeys)}
+                            onKeyDown={async (e) => {
+                              if (e.key === 'Enter' || e.key === 'Tab') {
+                                await saveApiKeys(apiKeys);
+                              }
+                            }}
+                            style={{
+                              width: "100%",
+                              padding: "8px 10px",
+                              background: "#232526",
+                              border: "1px solid #555",
+                              borderRadius: "4px",
+                              color: "#f3f3f3",
+                              fontSize: "13px"
+                            }}
+                          />
+                        </td>
+                        <td style={{
+                          padding: "12px",
+                          verticalAlign: "top"
+                        }}>
+                          <button
+                            onClick={async () => {
+                              handleApiKeyChange(api.envVar, '');
+                              await saveApiKeys({ ...apiKeys, [api.envVar]: '' });
+                            }}
+                            style={{
+                              padding: "6px 10px",
+                              borderRadius: "4px",
+                              border: "none",
+                              cursor: "pointer",
+                              fontWeight: "600",
+                              fontSize: "12px",
+                              background: "#dc2626",
+                              color: "#fff"
+                            }}
+                            title="Clear API key"
+                          >
+                            🗑️ Clear
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  });
+
+                  // Return agent header row followed by its API rows
+                  return [agentHeaderRow, ...apiRows];
+                }).flat()}
               </tbody>
             </table>
           </div>
