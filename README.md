@@ -83,7 +83,7 @@ npm run build
 
 ## 📚 Documentation
 
-- **Migration Plan**: `AI-Agent-Team-Document-Library/AGENT-TEAM-MIGRATION-PLAN.md`
+- **Migration Plan**: `AI-Agent-Team-Document-Library/migration-plans/AGENT-TEAM-MIGRATION-PLAN.md`
 - **Agent Structure**: `AI-Agent-Team-Document-Library/AGENT-TEAM-STRUCTURE-DEFINITION.md`
 - **Framework Docs**: `framework/docs/`
 
