@@ -3,14 +3,13 @@ import { CommunicationsAgent } from './CommunicationsAgent';
 import { ResearcherAgent } from './ResearcherAgent';
 import { ImageGeneratorAgent } from './ImageGeneratorAgent';
 import { VinylResearcherAgent } from './VinylResearcherAgent';
-import { PersonalAssistantBridge } from './PersonalAssistantBridge';
 
 // Registry for all available agents
 export class AgentRegistry {
   private agents: Map<string, Agent> = new Map();
   constructor() {
     // Register core agents here
-    this.register(new PersonalAssistantBridge());
+    // Note: PersonalAssistantBridge is not registered as it's a service, not an agent
     this.register(new CommunicationsAgent());
     this.register(new ResearcherAgent());
     this.register(new ImageGeneratorAgent());
