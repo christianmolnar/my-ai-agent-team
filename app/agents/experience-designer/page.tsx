@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function ExperienceDesignerAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              🎨 Experience Designer Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              User interface and experience design expert. Creates intuitive, accessible,
+              and beautiful user experiences with comprehensive design systems.
             </p>
           </div>
 
@@ -112,7 +112,7 @@ export default function MusicCoachAgentPage() {
               fontWeight: "600",
               marginBottom: "20px"
             }}>
-              🎯 Core Capabilities
+              🎨 Core Capabilities
             </h2>
             <div style={{
               display: "grid",
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "🎨", title: "UI Design", desc: "Interface design and interactive prototyping" },
+                { icon: "👥", title: "UX Research", desc: "User experience research and usability testing" },
+                { icon: "📐", title: "Design Systems", desc: "Comprehensive design system creation" },
+                { icon: "♿", title: "Accessibility", desc: "Inclusive design and usability optimization" },
+                { icon: "📱", title: "Wireframing", desc: "Wireframe and mockup development" },
+                { icon: "🗺️", title: "User Journey Mapping", desc: "Flow optimization and information architecture" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",
@@ -165,18 +165,33 @@ export default function MusicCoachAgentPage() {
               fontWeight: "600",
               marginBottom: "15px"
             }}>
-              📈 Recent Activity
+              🔧 Technical Integration
             </h2>
             <div style={{
-              padding: "20px",
-              background: "#232526",
-              borderRadius: "8px",
-              border: "1px solid #444",
-              textAlign: "center"
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "10px"
             }}>
-              <p style={{ color: "#ccc", fontSize: "14px", margin: 0 }}>
-                Activity log integration coming soon...
-              </p>
+              {[
+                "Figma & Sketch APIs",
+                "Adobe XD",
+                "InVision & Marvel",
+                "UserTesting Platform",
+                "Accessibility Tools",
+                "Design System APIs"
+              ].map((tech, index) => (
+                <div key={index} style={{
+                  padding: "8px 12px",
+                  background: "#232526",
+                  borderRadius: "6px",
+                  border: "1px solid #444",
+                  fontSize: "12px",
+                  color: "#ccc",
+                  textAlign: "center"
+                }}>
+                  {tech}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -192,26 +207,42 @@ export default function MusicCoachAgentPage() {
               fontWeight: "600",
               marginBottom: "15px"
             }}>
-              🔧 API Configuration
+              📊 Performance Metrics
             </h2>
-            <div style={{ textAlign: "center" }}>
-              <Link
-                href="/api-status"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 20px",
-                  background: "#ffb347",
-                  color: "#000",
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "15px"
+            }}>
+              {[
+                { metric: "Design Approval Rate", target: "92%" },
+                { metric: "User Satisfaction", target: "88%" },
+                { metric: "Accessibility Score", target: "AAA" },
+                { metric: "Usability Test Success", target: "90%" }
+              ].map((item, index) => (
+                <div key={index} style={{
+                  padding: "15px",
+                  background: "#232526",
                   borderRadius: "8px",
-                  textDecoration: "none",
-                  fontWeight: "600",
-                  fontSize: "14px"
-                }}
-              >
-                🔑 Configure API Keys
-              </Link>
+                  border: "1px solid #444",
+                  textAlign: "center"
+                }}>
+                  <div style={{
+                    fontSize: "20px",
+                    fontWeight: "600",
+                    color: "#ffb347",
+                    marginBottom: "5px"
+                  }}>
+                    {item.target}
+                  </div>
+                  <div style={{
+                    fontSize: "12px",
+                    color: "#ccc"
+                  }}>
+                    {item.metric}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

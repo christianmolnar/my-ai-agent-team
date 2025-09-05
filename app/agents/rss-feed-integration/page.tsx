@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function RSSFeedIntegrationAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              📡 RSS Feed Integration Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              Monitors and processes RSS feeds for content aggregation and analysis.
+              Provides automated content discovery and real-time feed monitoring capabilities.
             </p>
           </div>
 
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "📡", title: "Feed Monitoring", desc: "Real-time RSS feed tracking" },
+                { icon: "🔄", title: "Auto-Processing", desc: "Automated content parsing" },
+                { icon: "📊", title: "Content Analysis", desc: "Extract key insights from feeds" },
+                { icon: "🏷️", title: "Smart Tagging", desc: "Automatic content categorization" },
+                { icon: "📈", title: "Trend Detection", desc: "Identify emerging topics" },
+                { icon: "🔔", title: "Alert System", desc: "Notify on important updates" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",

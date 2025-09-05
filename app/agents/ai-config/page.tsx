@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function AIConfigAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              ⚙️ AI Configuration Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              Manages AI system configurations and settings across all agent operations.
+              Provides centralized configuration management and optimization capabilities.
             </p>
           </div>
 
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "⚙️", title: "System Configuration", desc: "Centralized settings management" },
+                { icon: "🔧", title: "Parameter Tuning", desc: "Optimize AI model parameters" },
+                { icon: "📊", title: "Performance Monitoring", desc: "Track configuration effectiveness" },
+                { icon: "🔄", title: "Auto-Adjustment", desc: "Dynamic configuration updates" },
+                { icon: "💾", title: "Config Backup", desc: "Version control for settings" },
+                { icon: "🎛️", title: "Environment Management", desc: "Dev, staging, production configs" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",

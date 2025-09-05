@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function PersonalAssistantBridgeAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              🤝 Personal Assistant Bridge Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              Bridge between AI agent team and personal assistant systems.
+              This agent facilitates seamless integration and coordination between different assistant platforms.
             </p>
           </div>
 
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "🤝", title: "System Integration", desc: "Connect different assistant platforms" },
+                { icon: "🔄", title: "Data Synchronization", desc: "Sync information across systems" },
+                { icon: "📱", title: "Cross-Platform Support", desc: "Works with multiple assistant types" },
+                { icon: "🔐", title: "Secure Communication", desc: "Encrypted data transfer protocols" },
+                { icon: "📊", title: "Usage Analytics", desc: "Monitor integration performance" },
+                { icon: "⚡", title: "Real-time Updates", desc: "Live synchronization capabilities" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",

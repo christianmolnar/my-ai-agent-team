@@ -64,6 +64,10 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 ### Required API Keys by Agent
 
+**Personal Assistant Tier (Claude Sonnet 4):**
+- **Personal Assistant Agent:** `PERSONAL_ASSISTANT_ANTHROPIC_API_KEY`
+- **Music Coach Agent:** `MUSIC_COACH_ANTHROPIC_API_KEY`
+
 **Management Tier (Claude Opus):**
 - **Master Orchestrator Agent:** `MASTER_ORCHESTRATOR_ANTHROPIC_API_KEY`
 - **Project Coordinator Agent:** `PROJECT_COORDINATOR_ANTHROPIC_API_KEY`
@@ -79,21 +83,57 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 - **Researcher Agent:** `RESEARCHER_ANTHROPIC_API_KEY`
 - **Content Creator Agent:** `CONTENT_CREATOR_ANTHROPIC_API_KEY`
 
+### Claude Sonnet 4 Subscription Setup
+
+**For Personal Assistant and Music Coach Agents**
+
+1. **Subscription Type:** Claude Sonnet Pro Subscription
+   - **Cost:** $20/month per individual account
+   - **Benefits:** Higher usage limits, priority access, faster response times
+   - **Required for:** Personal Assistant conversational interface, Music Coach specialized education
+
+2. **Claude Console Account Setup:**
+   - Visit https://console.anthropic.com
+   - Create account with email verification
+   - Upgrade to Claude Sonnet Pro subscription
+   - Complete billing setup with payment method
+
+3. **API Access Setup:**
+   - Navigate to [Account Settings > API Keys](https://console.anthropic.com/account/keys)
+   - Click "Create Key" for each agent:
+     - "Personal-Assistant-Sonnet-4-Key"
+     - "Music-Coach-Sonnet-4-Key"
+   - Copy and securely store each key immediately
+   - Keys are only shown once upon creation
+
+4. **Workspace Configuration (Recommended):**
+   - Create separate workspaces for cost management:
+     - "Personal-Assistant-Workspace" 
+     - "Music-Coach-Workspace"
+   - Set spending limits per workspace
+   - Monitor usage through workspace analytics
+
 ### Setup Instructions
 
 1. **Sign Up:** Visit https://console.anthropic.com
 2. **Account Verification:** Complete email verification and billing setup
-3. **API Key Generation:**
+3. **Subscription Upgrade:** Upgrade to Claude Sonnet Pro for enhanced capabilities
+4. **API Key Generation:**
    - Navigate to [Account Settings > API Keys](https://console.anthropic.com/account/keys)
    - Click "Create Key"
-   - Name your key appropriately (e.g., "AI-Agent-Team-Master-Orchestrator")
+   - Name your key appropriately (e.g., "AI-Agent-Team-Personal-Assistant")
    - Copy and securely store the key
-4. **Model Access:**
+5. **Model Access:**
    - **Claude Opus:** Requires tier 4 API access (higher usage history needed)
-   - **Claude Sonnet 4:** Available with standard API access
+   - **Claude Sonnet 4:** Available with Pro subscription and standard API access
    - **Claude Haiku:** Available immediately with new accounts
 
-### Pricing (Updated September 2025)
+### Pricing (Updated January 2025)
+
+**Claude Sonnet Pro Subscription:**
+- **Monthly Cost:** $20/month per account
+- **Benefits:** Enhanced usage limits, priority access, faster responses
+- **Best for:** Personal Assistant conversation management, Music Coach education
 
 **Claude Opus (Premium Tier):**
 - Input: $15 per million tokens
@@ -103,7 +143,7 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 **Claude Sonnet 4 (Balanced Performance):**
 - Input: $3 per million tokens  
 - Output: $15 per million tokens
-- **Best for:** Development agents, technical tasks
+- **Best for:** Personal Assistant, Music Coach, Development agents, technical tasks
 
 **Claude Haiku (Speed/Cost Optimized):**
 - Input: $0.25 per million tokens
@@ -114,9 +154,12 @@ A comprehensive guide for obtaining all required API keys for the AI Agent Team 
 
 - Account verification required
 - Payment method needed for production usage
+- **Claude Sonnet Pro Subscription:** $20/month required for Personal Assistant and Music Coach
 - **Claude Opus access:** Requires API tier 4 (build usage history first)
 - Rate limits: 50-400 requests per minute depending on tier
 - **Workspaces:** Use to segment API keys and control spend by agent
+- **Personal Assistant Setup:** Requires external API integration for conversation management
+- **Music Coach Setup:** Requires music theory API integrations (see Music Coach implementation guide)
 
 ---
 

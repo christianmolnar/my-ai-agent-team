@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function SecurityExpertAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              🔐 Security Expert Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              Application and infrastructure security expert. Provides vulnerability assessments,
+              security architecture, compliance management, and threat modeling capabilities.
             </p>
           </div>
 
@@ -112,7 +112,7 @@ export default function MusicCoachAgentPage() {
               fontWeight: "600",
               marginBottom: "20px"
             }}>
-              🎯 Core Capabilities
+              🔐 Core Capabilities
             </h2>
             <div style={{
               display: "grid",
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "🛡️", title: "Vulnerability Assessment", desc: "Software security assessment and remediation" },
+                { icon: "🏗️", title: "Security Architecture", desc: "Design and implementation of security systems" },
+                { icon: "🔍", title: "Penetration Testing", desc: "Comprehensive security audits and testing" },
+                { icon: "📋", title: "Compliance Management", desc: "Regulatory requirements and standards" },
+                { icon: "⚠️", title: "Threat Modeling", desc: "Risk assessment and threat analysis protocols" },
+                { icon: "🚨", title: "Incident Response", desc: "Security incident response and forensics" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",
@@ -165,18 +165,33 @@ export default function MusicCoachAgentPage() {
               fontWeight: "600",
               marginBottom: "15px"
             }}>
-              📈 Recent Activity
+              🔧 Technical Integration
             </h2>
             <div style={{
-              padding: "20px",
-              background: "#232526",
-              borderRadius: "8px",
-              border: "1px solid #444",
-              textAlign: "center"
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "10px"
             }}>
-              <p style={{ color: "#ccc", fontSize: "14px", margin: 0 }}>
-                Activity log integration coming soon...
-              </p>
+              {[
+                "OWASP ZAP & Nessus",
+                "CVE Databases",
+                "SOC 2 & PCI DSS",
+                "OAuth & SAML",
+                "Encryption Services",
+                "SIEM Systems"
+              ].map((tech, index) => (
+                <div key={index} style={{
+                  padding: "8px 12px",
+                  background: "#232526",
+                  borderRadius: "6px",
+                  border: "1px solid #444",
+                  fontSize: "12px",
+                  color: "#ccc",
+                  textAlign: "center"
+                }}>
+                  {tech}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -192,26 +207,42 @@ export default function MusicCoachAgentPage() {
               fontWeight: "600",
               marginBottom: "15px"
             }}>
-              🔧 API Configuration
+              📊 Performance Metrics
             </h2>
-            <div style={{ textAlign: "center" }}>
-              <Link
-                href="/api-status"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 20px",
-                  background: "#ffb347",
-                  color: "#000",
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "15px"
+            }}>
+              {[
+                { metric: "Vulnerability Detection", target: "99%" },
+                { metric: "Incident Prevention", target: "95%" },
+                { metric: "Compliance Score", target: "100%" },
+                { metric: "Security Posture", target: "A+" }
+              ].map((item, index) => (
+                <div key={index} style={{
+                  padding: "15px",
+                  background: "#232526",
                   borderRadius: "8px",
-                  textDecoration: "none",
-                  fontWeight: "600",
-                  fontSize: "14px"
-                }}
-              >
-                🔑 Configure API Keys
-              </Link>
+                  border: "1px solid #444",
+                  textAlign: "center"
+                }}>
+                  <div style={{
+                    fontSize: "20px",
+                    fontWeight: "600",
+                    color: "#ffb347",
+                    marginBottom: "5px"
+                  }}>
+                    {item.target}
+                  </div>
+                  <div style={{
+                    fontSize: "12px",
+                    color: "#ccc"
+                  }}>
+                    {item.metric}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

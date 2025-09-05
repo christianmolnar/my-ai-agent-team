@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function WhisperTranscribeAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              🎤 Whisper Transcribe Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              Converts audio content to accurate text transcriptions using OpenAI Whisper.
+              Provides high-quality speech recognition and transcription services.
             </p>
           </div>
 
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "🎤", title: "Audio Transcription", desc: "Convert speech to text accurately" },
+                { icon: "🌍", title: "Multi-Language", desc: "Support for 99+ languages" },
+                { icon: "📹", title: "Video Processing", desc: "Extract audio from video files" },
+                { icon: "⏱️", title: "Timestamp Support", desc: "Generate timestamped transcripts" },
+                { icon: "🎯", title: "High Accuracy", desc: "State-of-the-art transcription quality" },
+                { icon: "📱", title: "Format Support", desc: "MP3, WAV, MP4, and more" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",

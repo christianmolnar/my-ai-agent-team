@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function FactCheckerIntegrationAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              ✅ Fact Checker Integration Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              Validates information accuracy through multiple fact-checking services.
+              Ensures reliable and trustworthy information processing across all agent interactions.
             </p>
           </div>
 
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "🔍", title: "Source Verification", desc: "Cross-reference multiple data sources" },
+                { icon: "📊", title: "Accuracy Scoring", desc: "Rate information reliability" },
+                { icon: "🌐", title: "Real-time Checking", desc: "Live fact verification services" },
+                { icon: "📚", title: "Knowledge Base", desc: "Access to verified information databases" },
+                { icon: "⚠️", title: "Bias Detection", desc: "Identify potential information bias" },
+                { icon: "📈", title: "Confidence Metrics", desc: "Provide verification confidence levels" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",

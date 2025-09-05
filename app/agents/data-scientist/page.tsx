@@ -1,27 +1,221 @@
-import React from 'react';
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function DataScientistAgentPage() {
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex flex-col items-center justify-center p-8">
-      <div className="w-full max-w-3xl bg-white/10 rounded-2xl shadow-xl p-10 flex flex-col items-center">
-        <h1 className="text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-lg">Data Scientist Agent</h1>
-        <p className="text-lg text-gray-200 mb-8 text-center max-w-xl">
-          The Data Scientist Agent analyzes data, builds predictive models, and provides actionable insights to support decision-making and agent collaboration.
-        </p>
-        <section className="w-full bg-white/5 rounded-xl p-6 mb-6">
-          <h2 className="text-2xl font-bold text-white mb-2">Recent Activity</h2>
-          <div className="text-gray-300">(Activity log integration coming soon...)</div>
-        </section>
-        <section className="w-full bg-white/5 rounded-xl p-6">
-          <h2 className="text-2xl font-bold text-white mb-2">Capabilities</h2>
-          <ul className="list-disc list-inside text-gray-200 space-y-1">
-            <li>Data analysis and visualization</li>
-            <li>Predictive modeling</li>
-            <li>Insight generation</li>
-            <li>Collaboration with other agents</li>
-          </ul>
-        </section>
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #181a1b 0%, #232526 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#f3f3f3"
+      }}>
+        <div style={{
+          padding: "20px",
+          background: "#232526",
+          borderRadius: "10px",
+          border: "1px solid #444",
+          textAlign: "center"
+        }}>
+          <p style={{ color: "#ffb347", fontSize: "18px" }}>Loading agent details...</p>
+        </div>
       </div>
-    </main>
+    );
+  }
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #181a1b 0%, #232526 100%)",
+      padding: "20px"
+    }}>
+      <main style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        color: "#f3f3f3"
+      }}>
+        <div style={{
+          marginBottom: "30px",
+          display: "flex",
+          alignItems: "center",
+          gap: "15px"
+        }}>
+          <Link 
+            href="/"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 15px",
+              background: "#181a1b",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              textDecoration: "none",
+              color: "#f3f3f3",
+              fontSize: "14px"
+            }}
+          >
+            ← Back to Home
+          </Link>
+        </div>
+
+        <div style={{
+          background: "#232526",
+          borderRadius: "20px",
+          padding: "30px",
+          border: "1px solid #444"
+        }}>
+          <div style={{
+            textAlign: "center",
+            marginBottom: "30px"
+          }}>
+            <h1 style={{
+              fontSize: "32px",
+              fontWeight: "600",
+              color: "#ffb347",
+              marginBottom: "10px"
+            }}>
+              📊 Data Scientist Agent
+            </h1>
+            <p style={{
+              color: "#ccc",
+              fontSize: "16px",
+              maxWidth: "600px",
+              margin: "0 auto",
+              lineHeight: "1.6"
+            }}>
+              Analyzes data, builds predictive models, and provides actionable insights.
+              Specializes in statistical analysis, machine learning, and data visualization to support decision-making.
+            </p>
+          </div>
+
+          <div style={{
+            background: "#181a1b",
+            borderRadius: "10px",
+            border: "1px solid #333",
+            padding: "20px",
+            marginBottom: "25px"
+          }}>
+            <h2 style={{
+              color: "#ffb347",
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: "20px"
+            }}>
+              🎯 Core Capabilities
+            </h2>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: "15px"
+            }}>
+              {[
+                { icon: "📊", title: "Data Analysis", desc: "Statistical analysis and data exploration" },
+                { icon: "🤖", title: "Machine Learning", desc: "Predictive modeling and algorithms" },
+                { icon: "📈", title: "Data Visualization", desc: "Charts, graphs, and interactive dashboards" },
+                { icon: "🔍", title: "Pattern Recognition", desc: "Identify trends and anomalies" },
+                { icon: "📚", title: "Research Methods", desc: "Experimental design and hypothesis testing" },
+                { icon: "💡", title: "Actionable Insights", desc: "Transform data into business value" }
+              ].map((capability, index) => (
+                <div key={index} style={{
+                  padding: "15px",
+                  background: "#232526",
+                  borderRadius: "8px",
+                  border: "1px solid #444"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "18px" }}>{capability.icon}</span>
+                    <span style={{ fontSize: "14px", fontWeight: "600", color: "#ffb347" }}>
+                      {capability.title}
+                    </span>
+                  </div>
+                  <p style={{ 
+                    fontSize: "12px", 
+                    color: "#ccc", 
+                    margin: 0,
+                    lineHeight: "1.4"
+                  }}>
+                    {capability.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{
+            background: "#181a1b",
+            borderRadius: "10px",
+            border: "1px solid #333",
+            padding: "20px",
+            marginBottom: "25px"
+          }}>
+            <h2 style={{
+              color: "#ffb347",
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: "15px"
+            }}>
+              📈 Recent Activity
+            </h2>
+            <div style={{
+              padding: "20px",
+              background: "#232526",
+              borderRadius: "8px",
+              border: "1px solid #444",
+              textAlign: "center"
+            }}>
+              <p style={{ color: "#ccc", fontSize: "14px", margin: 0 }}>
+                Activity log integration coming soon...
+              </p>
+            </div>
+          </div>
+
+          <div style={{
+            background: "#181a1b",
+            borderRadius: "10px",
+            border: "1px solid #333",
+            padding: "20px"
+          }}>
+            <h2 style={{
+              color: "#ffb347",
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: "15px"
+            }}>
+              🔧 API Configuration
+            </h2>
+            <div style={{ textAlign: "center" }}>
+              <Link
+                href="/api-status"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "12px 20px",
+                  background: "#ffb347",
+                  color: "#000",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                  fontWeight: "600",
+                  fontSize: "14px"
+                }}
+              >
+                🔑 Configure API Keys
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function MusicCoachAgentPage() {
+export default function StoryWriterAgentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function MusicCoachAgentPage() {
               color: "#ffb347",
               marginBottom: "10px"
             }}>
-              🎹 Music Coach Agent
+              ✍️ Story Writer Agent
             </h1>
             <p style={{
               color: "#ccc",
@@ -94,8 +94,8 @@ export default function MusicCoachAgentPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Your personal music instructor specializing in New Orleans piano, jazz theory, and music education.
-              Provides personalized coaching and interactive learning experiences.
+              Creates engaging narratives and creative content across multiple formats.
+              Specializes in storytelling, creative writing, and narrative development.
             </p>
           </div>
 
@@ -120,12 +120,12 @@ export default function MusicCoachAgentPage() {
               gap: "15px"
             }}>
               {[
-                { icon: "🎹", title: "New Orleans Piano", desc: "Traditional and modern New Orleans styles" },
-                { icon: "🎼", title: "Jazz Theory", desc: "Comprehensive jazz harmony and theory" },
-                { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
-                { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
-                { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "📚", title: "Creative Writing", desc: "Original stories and narratives" },
+                { icon: "🎭", title: "Character Development", desc: "Rich, compelling characters" },
+                { icon: "🌍", title: "World Building", desc: "Immersive fictional environments" },
+                { icon: "📖", title: "Multiple Genres", desc: "Fiction, non-fiction, poetry" },
+                { icon: "✨", title: "Plot Structure", desc: "Engaging story arcs and pacing" },
+                { icon: "🔄", title: "Adaptive Style", desc: "Match tone and voice requirements" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",
