@@ -228,6 +228,9 @@ export async function GET() {
     // Get all environment variables that might contain API keys
     const envVars = process.env;
     
+    // Debug: Log available environment variables (without values for security)
+    console.log('Available env vars with API_KEY:', Object.keys(envVars).filter(key => key.includes('API_KEY')));
+    
     // Define provider mappings
     const providerChecks = [
       {

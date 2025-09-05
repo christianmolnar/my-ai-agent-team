@@ -2,7 +2,6 @@ import { Agent, AgentTask, AgentTaskResult } from './Agent';
 import { exec } from 'child_process'; // I need to import exec for running shell commands
 import * as fs from 'fs'; // I need to import fs for file system operations
 import * as path from 'path'; // I need to import path for path operations
-import PersonalAssistantBridge from './PersonalAssistantBridge'; // Bridge for secure API access
 
 // Here's my example Communications Agent implementation
 export class CommunicationsAgent implements Agent {
@@ -278,26 +277,68 @@ export class CommunicationsAgent implements Agent {
     resolution?: string,
     strength?: number
   }): Promise<string> {
-    try {
-      // Use PersonalAssistantBridge for secure DALL-E access
-      const response = await PersonalAssistantBridge.requestAPIAccess('openai-dalle', {
-        prompt: prompt,
-        size: resolution || '1024x1024',
-        n: 1,
-        quality: 'standard'
-      }, 'communications-agent');
-
-      if (response.success && response.data?.imageUrl) {
-        return response.data.imageUrl;
+    // Dynamically import openai to avoid issues if not needed elsewhere
+    const OpenAI = (await import('openai')).default;
+    const { AI_CONFIG } = await import('./ai_config');
+    const openai = new OpenAI({ apiKey: AI_CONFIG.llm.apiKey });    // Compose the full prompt, optionally referencing the image
+    let fullPrompt = prompt;
+    const strengthValue = strength || 5; // Default to 5 if not provided
+    
+    // Apply strength in multiple ways to make it more effective
+    if (referenceImagePath) {
+      // Use strength to determine how much to emphasize the reference image
+      let influenceLevel = '';
+      let styleTerms = '';
+      
+      if (strengthValue <= 2) {
+        influenceLevel = 'very subtly';
+        styleTerms = 'taking minimal inspiration from';
+      } else if (strengthValue <= 4) {
+        influenceLevel = 'subtly';
+        styleTerms = 'taking light inspiration from';
+      } else if (strengthValue <= 6) {
+        influenceLevel = 'moderately';
+        styleTerms = 'following the style of';
+      } else if (strengthValue <= 8) {
+        influenceLevel = 'strongly';
+        styleTerms = 'closely mimicking the style and composition of';
       } else {
-        throw new Error(response.error || 'Image generation failed');
+        influenceLevel = 'very strongly';
+        styleTerms = 'precisely replicating the style, mood, and composition of';
       }
-    } catch (error) {
-      console.error('Image generation error:', error);
-      return 'Image generation failed: ' + (error instanceof Error ? error.message : 'Unknown error');
+      
+      fullPrompt += ` Reference the uploaded image at ${referenceImagePath} and ${influenceLevel} incorporate its style, colors, composition, and visual elements in the generated image. The final image should be ${styleTerms} the reference while incorporating the prompt details.`;
     }
-  }
-}
+    
+    // Add strength as a quality indicator that affects the overall style
+    if (strength) {
+      if (strengthValue <= 3) {
+        fullPrompt += ` Create this image with a simple, minimalist style with fewer details.`;
+      } else if (strengthValue > 3 && strengthValue <= 6) {
+        fullPrompt += ` Create this image with a balanced level of detail and clarity.`;
+      } else if (strengthValue > 6 && strengthValue <= 8) {
+        fullPrompt += ` Create this image with high detail, excellent clarity, and precise elements.`;
+      } else {
+        fullPrompt += ` Create this image with exceptional photorealistic detail, perfect clarity, intricate textures, and meticulous attention to all elements.`;
+      }
+    }
+    
+    // DALL-E 3 supports aspect ratio and high-res, but not direct image reference. For true image-to-image, Stable Diffusion or DALL-E edit API is needed.
+    // DALL-E 3 supports only certain sizes. Map aspect ratio to allowed size.
+    let size: '1024x1024' | '1792x1024' | '1024x1792' = '1024x1024';
+    if (aspectRatio === '16:9' || resolution === '1792x1024') {
+      size = '1792x1024';
+    } else if (aspectRatio === '9:16' || resolution === '1024x1792') {
+      size = '1024x1792';
+    }
+    const response = await openai.images.generate({
+      prompt: fullPrompt,
+      n: 1,
+      size,
+      response_format: 'url',
+      model: 'dall-e-3',
+    });
+    if (!response.data || !response.data[0] || !response.data[0].url) {
       throw new Error('No image URL returned from OpenAI.');
     }
     return response.data[0].url;
