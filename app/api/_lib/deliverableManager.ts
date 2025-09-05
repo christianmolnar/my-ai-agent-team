@@ -24,10 +24,22 @@ export class DeliverableManager {
     const logPath = path.join(this.basePath, 'team-activity.json');
     let log: ActivityLogEntry[] = [];
     if (fs.existsSync(logPath)) {
-      log = JSON.parse(fs.readFileSync(logPath, 'utf-8'));
+      const raw = fs.readFileSync(logPath, 'utf-8');
+      try {
+        // Support both array and {activity: []} legacy format
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          log = parsed;
+        } else if (parsed && Array.isArray(parsed.activity)) {
+          log = parsed.activity;
+        }
+      } catch (e) {
+        log = [];
+      }
     }
     log.push(entry);
-    fs.writeFileSync(logPath, JSON.stringify(log, null, 2));
+    // Write as { activity: [...] } for compatibility
+    fs.writeFileSync(logPath, JSON.stringify({ activity: log }, null, 2));
   }
 
   // Read the activity log

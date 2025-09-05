@@ -1,12 +1,13 @@
 // teamActivityApi.ts
 // API handler for agent-driven team-activity.json updates (append-only, real-time)
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { DeliverableManager } from '../_lib/deliverableManager';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { deliverableId, agent, action, details } = req.body;
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const { deliverableId, agent, action, details } = body;
   if (!deliverableId || !agent || !action) {
-    return res.status(400).json({ error: 'Missing required fields' });
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
   const basePath = `${process.cwd()}/deliverables/${deliverableId}`;
   const mgr = new DeliverableManager(basePath);
@@ -17,5 +18,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     details,
   };
   mgr.appendActivityLog(entry);
-  res.status(200).json({ success: true });
+  return NextResponse.json({ success: true });
 }
