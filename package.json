@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "PORT=30000 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify-claude": "npx tsc scripts/verify-claude-integration.ts --outDir dist --target es2020 --module node16 --moduleResolution node16 && node dist/scripts/verify-claude-integration.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.61.0",
     "axios": "^1.10.0",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",

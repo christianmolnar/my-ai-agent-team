@@ -1,5 +1,5 @@
 # AI Agent Team Complete Specification
-*Comprehensive definition of all 20 agents with capabilities, APIs, and integration requirements*
+*Comprehensive definition of all 21 agents with capabilities, APIs, and integration requirements*
 
 ---
 
@@ -11,7 +11,7 @@
 
 ## 🎯 **Agent Team Architecture Overview**
 
-This document defines the complete 20-agent ecosystem with detailed specifications for each agent, their collaboration patterns, and integration with private repository infrastructure.
+This document defines the complete 21-agent ecosystem with detailed specifications for each agent, their collaboration patterns, and integration with private repository infrastructure.
 
 ### **Architecture Principles**
 - **Public Repository**: Contains agent framework, UI, and shareable logic
@@ -38,7 +38,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 #### **API Requirements**
 - Access to Project Coordinator for detailed planning delegation
 - Read access to all agent performance metrics via CNS
-- Communication channels to all 20 agents for coordination
+- Communication channels to all 21 agents for coordination
 - Private repository bridge for strategic context and user preferences
 
 #### **CNS Integration Requirements**
@@ -196,7 +196,42 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #6: Personal Assistant Bridge**
+### **Agent #6: Personal Assistant Agent**
+**Primary Role**: Primary user conversational interface and task orchestration
+**Claude Model Assignment**: Claude Sonnet 3.5 (conversational AI with persona integration)
+
+#### **Core Capabilities**
+- Direct user conversation management with persona-aware responses
+- Intent analysis and complexity assessment for task routing
+- Master Orchestrator coordination for complex multi-agent tasks
+- Personalized response generation using private repository context
+- Conversation history management and context maintenance
+- Real-time streaming responses and interactive dialogue
+- Task delegation and agent coordination oversight
+- User preference learning and adaptation
+
+#### **API Requirements**
+- Claude Sonnet API for conversational intelligence
+- Personal Assistant Bridge for private data access
+- Master Orchestrator Agent for complex task delegation
+- Real-time communication channels (WebSocket, streaming)
+- Session management and conversation persistence
+- User authentication and preference systems
+
+#### **CNS Integration Requirements**
+- **Performance Metrics**: User satisfaction scores, conversation success rates, task completion accuracy
+- **Learning Patterns**: User preference patterns, effective conversation flows, persona optimization
+- **Feedback Integration**: Direct user feedback, conversation quality ratings, improvement suggestions
+- **Self-Assessment Protocol**: Conversation effectiveness, persona accuracy, user goal achievement
+
+#### **Private Repository Integration**
+- **Identity Data**: User persona, communication preferences, personal context
+- **Conversation History**: Past interactions, successful approaches, user patterns
+- **Task Context**: User goals, project priorities, decision-making preferences
+
+---
+
+### **Agent #7: Personal Assistant Bridge**
 **Primary Role**: Secure interface between public agents and private repository
 **Claude Model Assignment**: Claude Haiku (security-focused structured tasks)
 
@@ -232,7 +267,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ## 💻 **SOFTWARE DEVELOPMENT TEAM AGENTS**
 
-### **Agent #7: Product Manager**
+### **Agent #8: Product Manager**
 **Primary Role**: Business requirements and product strategy
 **Claude Model Assignment**: Claude Sonnet 4 (strategic analysis required)
 
@@ -266,7 +301,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #8: Data Scientist**
+### **Agent #9: Data Scientist**
 **Primary Role**: Data-driven decision making and analytics
 **Claude Model Assignment**: Claude Sonnet 4 (analytical reasoning required)
 
@@ -301,7 +336,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #9: Development Design Documentation Creator**
+### **Agent #10: Development Design Documentation Creator**
 **Primary Role**: Technical architecture and system design documentation
 **Claude Model Assignment**: Claude Sonnet 4 (technical documentation focus)
 
@@ -334,7 +369,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #10: Experience Designer (UI Designer)**
+### **Agent #11: Experience Designer (UI Designer)**
 **Primary Role**: User interface and experience design
 **Claude Model Assignment**: Claude Haiku (creative structured tasks)
 
@@ -368,7 +403,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #11: Full Stack Developer Agent**
+### **Agent #12: Full Stack Developer Agent**
 **Primary Role**: End-to-end application development and architecture
 **Claude Model Assignment**: Claude Sonnet 4 (complex technical development)
 
@@ -403,7 +438,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #12: Back End Software Developer**
+### **Agent #13: Back End Software Developer**
 **Primary Role**: Server-side application development and infrastructure
 **Claude Model Assignment**: Claude Sonnet 4 (backend technical focus)
 
@@ -438,7 +473,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #13: Front End Software Developer**
+### **Agent #14: Front End Software Developer**
 **Primary Role**: Client-side application development and user interfaces
 **Claude Model Assignment**: Claude Sonnet 4 (frontend technical focus)
 
@@ -473,7 +508,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #14: Test Expert**
+### **Agent #15: Test Expert**
 **Primary Role**: Quality assurance and comprehensive testing strategy
 **Claude Model Assignment**: Claude Haiku (structured testing processes)
 
@@ -508,7 +543,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #15: Monitoring Expert**
+### **Agent #16: Monitoring Expert**
 **Primary Role**: System monitoring and observability
 **Claude Model Assignment**: Claude Haiku (monitoring and alerting focus)
 
@@ -543,7 +578,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #16: Availability and Reliability Expert**
+### **Agent #17: Availability and Reliability Expert**
 **Primary Role**: High availability and disaster recovery
 **Claude Model Assignment**: Claude Haiku (reliability engineering focus)
 
@@ -578,7 +613,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #17: Performance Expert**
+### **Agent #18: Performance Expert**
 **Primary Role**: System performance optimization and tuning
 **Claude Model Assignment**: Claude Haiku (performance analysis focus)
 
@@ -613,7 +648,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #18: Security Expert**
+### **Agent #19: Security Expert**
 **Primary Role**: Application and infrastructure security
 **Claude Model Assignment**: Claude Sonnet 4 (security analysis required)
 
@@ -648,7 +683,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ---
 
-### **Agent #19: Privacy Guardian**
+### **Agent #20: Privacy Guardian**
 **Primary Role**: Data privacy and protection compliance
 **Claude Model Assignment**: Claude Haiku (privacy compliance focus)
 
@@ -685,7 +720,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 
 ## 🎓 **EDUCATION AND LEARNING AGENTS**
 
-### **Agent #20: Music Coach Agent**
+### **Agent #21: Music Coach Agent**
 **Primary Role**: Music education and instruction
 **Claude Model Assignment**: Claude Haiku (educational structured tasks)
 
@@ -969,7 +1004,7 @@ PRIVACY_GUARDIAN_ENABLED=true
 19. **Image and Video Generator Agent** - Creative content with private brand guidelines
 20. **Music Coach Agent** - Educational capabilities with private learning preferences
 
-**Success Criteria**: Complete 20-agent ecosystem with specialized capabilities
+**Success Criteria**: Complete 21-agent ecosystem with specialized capabilities
 
 ---
 
@@ -1000,4 +1035,4 @@ PRIVACY_GUARDIAN_ENABLED=true
 
 ---
 
-*This comprehensive specification provides the foundation for implementing a sophisticated 20-agent ecosystem with secure private data integration, enabling autonomous operation while maintaining privacy, security, and human oversight.*
+*This comprehensive specification provides the foundation for implementing a sophisticated 21-agent ecosystem with secure private data integration, enabling autonomous operation while maintaining privacy, security, and human oversight.*

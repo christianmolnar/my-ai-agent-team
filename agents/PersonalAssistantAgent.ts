@@ -1,6 +1,9 @@
 import { Agent, AgentTask, AgentTaskResult } from './Agent';
 import { MasterOrchestratorAgent } from './MasterOrchestratorAgent';
 import { PersonalAssistantBridge } from './PersonalAssistantBridge';
+import { ClaudeService } from '../lib/claude/ClaudeService';
+import { AgentClaudeClientFactory } from '../lib/claude/AgentClaudeClients';
+import Anthropic from '@anthropic-ai/sdk';
 
 /**
  * Personal Assistant Agent - Tier 0 User Interface Layer
@@ -23,12 +26,11 @@ export class PersonalAssistantAgent implements Agent {
   ];
   
   // External API clients
-  private claudeSonnetClient: any; // Claude Sonnet 4 API client
+  private claudeService: ClaudeService;
   private personaBridge: PersonalAssistantBridge;
   private masterOrchestrator: MasterOrchestratorAgent;
   
   // Configuration
-  private readonly claudeModel = 'claude-3-sonnet-20240229';
   private readonly maxContextTokens = 200000; // Claude Sonnet context window
   private readonly maxResponseTokens = 4096;
 
@@ -37,12 +39,8 @@ export class PersonalAssistantAgent implements Agent {
   }
 
   private async initializeServices(): Promise<void> {
-    // Initialize Claude Sonnet 4 API client
-    this.claudeSonnetClient = await this.createClaudeClient({
-      apiKey: process.env.PERSONAL_ASSISTANT_ANTHROPIC_API_KEY || '',
-      model: this.claudeModel,
-      maxTokens: this.maxResponseTokens
-    });
+    // Initialize Claude Sonnet 3.5 service
+    this.claudeService = AgentClaudeClientFactory.createPersonalAssistantClient();
 
     // Initialize persona bridge for private repo data
     this.personaBridge = new PersonalAssistantBridge();
@@ -182,13 +180,24 @@ export class PersonalAssistantAgent implements Agent {
     const analysisPrompt = this.constructIntentAnalysisPrompt(userMessage, context);
     
     try {
-      const analysis = await this.claudeSonnetClient.messages.create({
-        messages: [{ role: 'user', content: analysisPrompt }],
-        max_tokens: 1000,
-        model: this.claudeModel
-      });
+      const messages: Anthropic.MessageParam[] = [
+        { role: 'user', content: analysisPrompt }
+      ];
 
-      return this.parseIntentAnalysis(analysis.content[0].text);
+      const systemPrompt = `You are an expert intent analysis system for a Personal Assistant Agent. 
+      Analyze user messages to determine complexity and coordination requirements.
+      
+      Respond with the following format:
+      COMPLEXITY: [low|medium|high]
+      ORCHESTRATION: [yes|no]  
+      AGENTS: [comma-separated list of required agent types]
+      DELIVERABLES: [comma-separated list of expected deliverables]
+      PRIORITY: [low|medium|high]
+      REASONING: [brief explanation]`;
+
+      const analysis = await this.claudeService.generateResponse(messages, systemPrompt);
+
+      return this.parseIntentAnalysis(analysis);
     } catch (error) {
       console.error('Error analyzing user intent:', error);
       // Fallback to simple analysis
@@ -312,7 +321,7 @@ REASONING: [brief explanation]`;
   }
 
   /**
-   * Generates direct conversational responses using Claude Sonnet 4
+   * Generates direct conversational responses using Claude Sonnet 3.5
    */
   private async generateDirectResponse(
     userMessage: string, 
@@ -327,18 +336,28 @@ REASONING: [brief explanation]`;
       currentContext: conversationContext?.currentContext
     });
 
-    const response = await this.claudeSonnetClient.messages.create({
-      messages: [{ role: 'user', content: conversationPrompt }],
-      max_tokens: this.maxResponseTokens,
-      temperature: 0.7 // Slightly creative for natural conversation
-    });
+    const messages: Anthropic.MessageParam[] = [
+      { role: 'user', content: conversationPrompt }
+    ];
 
-    return {
-      response: response.content[0].text,
-      conversationType: 'direct',
-      personaInfluence: personaContext.appliedElements,
-      suggestedFollowUps: this.generateFollowUpSuggestions(userMessage, response.content[0].text)
-    };
+    const systemPrompt = this.buildPersonaSystemPrompt(personaContext);
+
+    try {
+      const response = await this.claudeService.generateResponse(
+        messages,
+        systemPrompt
+      );
+
+      return {
+        response: response,
+        conversationType: 'direct',
+        personaInfluence: personaContext.appliedElements,
+        suggestedFollowUps: this.generateFollowUpSuggestions(userMessage, response)
+      };
+    } catch (error) {
+      console.error('Error generating direct response:', error);
+      return this.generateErrorResponse(error);
+    }
   }
 
   /**
@@ -422,6 +441,30 @@ ${personaContext.relevantElements.map(element => `- ${element.category}: ${eleme
   }
 
   /**
+   * Builds system prompt with persona context integration
+   */
+  private buildPersonaSystemPrompt(personaContext: PersonaContext): string {
+    return `You are a highly capable Personal Assistant AI that helps users with a wide variety of tasks and questions.
+
+PERSONALITY & APPROACH:
+- Be friendly, professional, and genuinely helpful
+- Adapt your communication style to match the user's preferences
+- Show understanding of their background and current context
+- Be concise but thorough in your responses
+
+USER CONTEXT:
+${this.formatPersonaContext(personaContext)}
+
+COMMUNICATION GUIDELINES:
+- Match the user's preferred communication style: ${personaContext.communicationStyle}
+- Reference their expertise and interests when relevant
+- Consider their current projects and ongoing work
+- Provide responses that are actionable and relevant to their role as ${personaContext.role}
+
+Your goal is to provide personalized, contextually relevant assistance that feels natural and helpful.`;
+  }
+
+  /**
    * Parses intent analysis response from Claude Sonnet 4
    */
   private parseIntentAnalysis(analysisText: string): IntentAnalysis {
@@ -438,50 +481,6 @@ ${personaContext.relevantElements.map(element => `- ${element.category}: ${eleme
       deliverables: this.extractDeliverables(analysisText),
       priority: this.extractPriority(analysisText)
     };
-  }
-
-  /**
-   * External API integration for Claude Sonnet
-   */
-  private async createClaudeClient(config: ClaudeConfig): Promise<any> {
-    console.log('Initializing Claude client with model:', config.model);
-    
-    // Return mock client for development until @anthropic-ai/sdk is installed
-    return {
-      messages: {
-        create: async (params: any) => {
-          // Simulate API response structure
-          const mockResponse = this.generateMockClaudeResponse(params);
-          return {
-            content: [{ text: mockResponse }]
-          };
-        }
-      }
-    };
-  }
-
-  /**
-   * Generate mock Claude responses for development
-   */
-  private generateMockClaudeResponse(params: any): string {
-    const userMessage = params.messages?.[0]?.content || 'No message';
-    
-    if (userMessage.includes('Intent Analysis')) {
-      return `COMPLEXITY: medium
-ORCHESTRATION: yes
-AGENTS: researcher-agent, communications-agent
-DELIVERABLES: analysis, recommendations
-PRIORITY: medium
-REASONING: This appears to be a complex request that would benefit from multi-agent coordination.`;
-    }
-    
-    return `Thank you for your message. I understand you're asking about: "${userMessage.substring(0, 100)}..."
-
-Based on the context you've provided, I can help you with this. Here's my response:
-
-This is a mock response from the Claude Sonnet integration. In production, this would be powered by Claude Sonnet 4 with full conversational capabilities, persona integration, and sophisticated reasoning.
-
-Would you like me to elaborate on any specific aspect of this topic?`;
   }
 
   /**
@@ -523,13 +522,23 @@ Create a comprehensive, personalized response that:
 
 The response should feel like a natural conversation while delivering all requested outcomes.`;
 
-    const finalResponse = await this.claudeSonnetClient.messages.create({
-      messages: [{ role: 'user', content: responsePrompt }],
-      max_tokens: this.maxResponseTokens,
-      temperature: 0.5 // Balanced creativity for natural yet focused response
-    });
+    const messages: Anthropic.MessageParam[] = [
+      { role: 'user', content: responsePrompt }
+    ];
 
-    return finalResponse.content[0].text;
+    const systemPrompt = this.buildPersonaSystemPrompt(personaContext);
+
+    try {
+      const finalResponse = await this.claudeService.generateResponse(
+        messages,
+        systemPrompt
+      );
+
+      return finalResponse;
+    } catch (error) {
+      console.error('Error crafting final response:', error);
+      return 'I apologize, but I encountered an issue while crafting the final response. The agents have completed their tasks, but I had difficulty presenting the results.';
+    }
   }
 
   /**

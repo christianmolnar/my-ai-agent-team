@@ -47,7 +47,7 @@ const agentTeams = {
     {
       id: "music-coach",
       name: "Music Coach",
-      description: "Music education and instruction with theory and practice guidance",
+      description: "Music education, theory, practice guidance, and transcription tools (guitar tabs, piano scores from YouTube)",
       emoji: "🎹"
     }
   ],

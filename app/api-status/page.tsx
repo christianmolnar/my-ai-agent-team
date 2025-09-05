@@ -8,7 +8,8 @@ interface ApiKeyConfig {
   provider: string;
   required: boolean;
   configured: boolean;
-  valid?: boolean;
+  status?: 'valid' | 'invalid' | 'rate_limited' | 'network_error' | 'unknown_error' | 'not_verified';
+  error?: string;
 }
 
 interface AgentConfig {
@@ -81,44 +82,69 @@ export default function ApiStatusPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
-  // Define agent configurations with unique API keys per agent - ALL 19 AGENTS IN OFFICIAL ORDER
+  // Initialize and check API status on component mount
+  useEffect(() => {
+    const initializeApiStatus = async () => {
+      setLoading(true);
+      try {
+        // Load API keys from environment and check their status
+        await checkApiStatus();
+      } catch (error) {
+        console.error('Failed to initialize API status:', error);
+        setError('Failed to load API configuration');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeApiStatus();
+  }, []);
+
+  // Define agent configurations following the Agent Roster Specification structure - ALL 21 AGENTS
   const agentConfigs: AgentConfig[] = [
+    // =============================================================================
+    // 🏛️ CORE MANAGEMENT AGENTS
+    // =============================================================================
     {
       name: "Master Orchestrator Agent",
-      description: "Central coordination hub that manages and orchestrates all other agents",
+      description: "Strategic oversight and multi-agent coordination (Claude Opus)",
       requiredApis: [
+        { envVar: "MASTER_ORCHESTRATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Opus)", provider: "anthropic", required: true, configured: false },
         { envVar: "MASTER_ORCHESTRATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "MASTER_ORCHESTRATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "MASTER_ORCHESTRATOR_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
       name: "Project Coordinator Agent",
-      description: "Project management, timeline coordination, resource allocation",
+      description: "Detailed project execution and inter-agent coordination (Claude Opus)",
       requiredApis: [
+        { envVar: "PROJECT_COORDINATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Opus)", provider: "anthropic", required: true, configured: false },
         { envVar: "PROJECT_COORDINATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "PROJECT_COORDINATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "PROJECT_COORDINATOR_NOTION_API_KEY", displayName: "Notion API", provider: "notion", required: false, configured: false },
         { envVar: "PROJECT_COORDINATOR_SLACK_API_KEY", displayName: "Slack API", provider: "slack", required: false, configured: false }
       ]
     },
+
+    // =============================================================================
+    // 🎨 SPECIALIZED FUNCTION AGENTS  
+    // =============================================================================
     {
       name: "Communications Agent",
-      description: "Email writing, document writing, meeting notes, presentation creation",
+      description: "All forms of written communication and content creation (Claude Sonnet 3.5)",
       requiredApis: [
-        { envVar: "COMMUNICATIONS_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "COMMUNICATIONS_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "COMMUNICATIONS_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
+        { envVar: "COMMUNICATIONS_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
         { envVar: "COMMUNICATIONS_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "COMMUNICATIONS_RESEND_API_KEY", displayName: "Resend API", provider: "resend", required: false, configured: false }
       ]
     },
     {
-      name: "Researcher Agent", 
-      description: "General research automation, data gathering, fact checking, vinyl research",
+      name: "Researcher Agent",
+      description: "Comprehensive research across all domains with specialized capabilities (Claude Sonnet 3.5)",
       requiredApis: [
-        { envVar: "RESEARCHER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
+        { envVar: "RESEARCHER_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
+        { envVar: "RESEARCHER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
         { envVar: "RESEARCHER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
-        { envVar: "RESEARCHER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "RESEARCHER_PERPLEXITY_API_KEY", displayName: "Perplexity API", provider: "perplexity", required: false, configured: false },
         { envVar: "SERPAPI_KEY", displayName: "SerpAPI (Google Search)", provider: "serpapi", required: true, configured: false },
         { envVar: "DISCOGS_TOKEN", displayName: "Discogs API (Music/Vinyl)", provider: "discogs", required: false, configured: false }
@@ -126,146 +152,176 @@ export default function ApiStatusPage() {
     },
     {
       name: "Image and Video Generator Agent",
-      description: "Static image generation, video content creation, graphic design, visual storytelling", 
+      description: "Visual content creation across all media types (Claude Haiku)",
       requiredApis: [
-        { envVar: "IMAGE_VIDEO_GENERATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "IMAGE_VIDEO_GENERATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
+        { envVar: "IMAGE_VIDEO_GENERATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
         { envVar: "IMAGE_VIDEO_GENERATOR_STABILITY_API_KEY", displayName: "Stability AI API", provider: "stability", required: false, configured: false },
         { envVar: "IMAGE_VIDEO_GENERATOR_MIDJOURNEY_API_KEY", displayName: "Midjourney API", provider: "midjourney", required: false, configured: false },
         { envVar: "IMAGE_VIDEO_GENERATOR_RUNWAY_API_KEY", displayName: "Runway API", provider: "runway", required: false, configured: false }
       ]
     },
     {
-      name: "PersonalAssistantBridge Agent",
-      description: "Bridge between AI agent team and personal assistant systems",
+      name: "Personal Assistant Agent",
+      description: "Primary user conversational interface and task orchestration (Claude Sonnet 3.5)",
       requiredApis: [
-        { envVar: "PERSONALASSISTANTBRIDGE_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "PERSONALASSISTANTBRIDGE_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
-        { envVar: "PERSONALASSISTANTBRIDGE_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+        { envVar: "PERSONAL_ASSISTANT_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
+        { envVar: "PERSONAL_ASSISTANT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "PERSONAL_ASSISTANT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
-      name: "Product Manager Agent",
-      description: "Business requirement identification, specification document writing, stakeholder communication",
+      name: "Personal Assistant Bridge Agent",
+      description: "Secure interface between public agents and private repository (Claude Haiku)",
       requiredApis: [
+        { envVar: "PERSONAL_ASSISTANT_BRIDGE_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
+        { envVar: "PERSONAL_ASSISTANT_BRIDGE_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "PERSONAL_ASSISTANT_BRIDGE_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+
+    // =============================================================================
+    // 💻 SOFTWARE DEVELOPMENT TEAM AGENTS
+    // =============================================================================
+    {
+      name: "Product Manager Agent",
+      description: "Business requirements and product strategy (Claude Sonnet 3.5)",
+      requiredApis: [
+        { envVar: "PRODUCT_MANAGER_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
         { envVar: "PRODUCT_MANAGER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "PRODUCT_MANAGER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "PRODUCT_MANAGER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "PRODUCT_MANAGER_NOTION_API_KEY", displayName: "Notion API", provider: "notion", required: false, configured: false }
       ]
     },
     {
       name: "Data Scientist Agent",
-      description: "Data researcher and analysis expert, project viability analysis",
+      description: "Data-driven decision making and analytics (Claude Sonnet 3.5)",
       requiredApis: [
-        { envVar: "DATA_SCIENTIST_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: true, configured: false },
-        { envVar: "DATA_SCIENTIST_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
+        { envVar: "DATA_SCIENTIST_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
+        { envVar: "DATA_SCIENTIST_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
         { envVar: "DATA_SCIENTIST_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "DATA_SCIENTIST_COHERE_API_KEY", displayName: "Cohere API", provider: "cohere", required: false, configured: false }
       ]
     },
     {
       name: "Development Design Documentation Creator Agent",
-      description: "Technical architecture documentation, API specification writing, system design",
+      description: "Technical architecture and system design documentation (Claude Sonnet 3.5)",
       requiredApis: [
+        { envVar: "DEV_DESIGN_DOC_CREATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
         { envVar: "DEV_DESIGN_DOC_CREATOR_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "DEV_DESIGN_DOC_CREATOR_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "DEV_DESIGN_DOC_CREATOR_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
-      name: "Experience Designer Agent",
-      description: "User interface design and prototyping, user experience research and testing",
+      name: "Experience Designer Agent", 
+      description: "User interface and experience design (Claude Haiku)",
       requiredApis: [
+        { envVar: "EXPERIENCE_DESIGNER_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
         { envVar: "EXPERIENCE_DESIGNER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "EXPERIENCE_DESIGNER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "EXPERIENCE_DESIGNER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "EXPERIENCE_DESIGNER_FIGMA_API_KEY", displayName: "Figma API", provider: "figma", required: false, configured: false }
       ]
     },
     {
       name: "Full Stack Developer Agent",
-      description: "End-to-end application development, full stack architecture design",
+      description: "End-to-end application development and architecture (Claude Sonnet 3.5)",
       requiredApis: [
+        { envVar: "FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
         { envVar: "FULL_STACK_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: true, configured: false },
         { envVar: "FULL_STACK_DEVELOPER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "FULL_STACK_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
       ]
     },
     {
       name: "Back End Software Developer Agent",
-      description: "Server-side application development, database design, API development",
+      description: "Server-side application development and infrastructure (Claude Sonnet 3.5)",
       requiredApis: [
+        { envVar: "BACK_END_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
         { envVar: "BACK_END_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "BACK_END_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "BACK_END_DEVELOPER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "BACK_END_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
       ]
     },
     {
       name: "Front End Software Developer Agent",
-      description: "Client-side application development, user interface implementation",
+      description: "Client-side application development and user interfaces (Claude Sonnet 3.5)",
       requiredApis: [
+        { envVar: "FRONT_END_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
         { envVar: "FRONT_END_DEVELOPER_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "FRONT_END_DEVELOPER_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "FRONT_END_DEVELOPER_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
         { envVar: "FRONT_END_DEVELOPER_TOGETHER_API_KEY", displayName: "Together API", provider: "together", required: false, configured: false }
       ]
     },
     {
       name: "Test Expert Agent",
-      description: "Test strategy and planning, automated testing framework development",
+      description: "Quality assurance and comprehensive testing strategy (Claude Haiku)",
       requiredApis: [
+        { envVar: "TEST_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
         { envVar: "TEST_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "TEST_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "TEST_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
       name: "Monitoring Expert Agent",
-      description: "System monitoring and alerting setup, performance metrics and dashboards",
+      description: "System monitoring and observability (Claude Haiku)",
       requiredApis: [
+        { envVar: "MONITORING_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
         { envVar: "MONITORING_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "MONITORING_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "MONITORING_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
-        { envVar: "MONITORING_EXPERT_DATADOG_API_KEY", displayName: "Datadog API", provider: "datadog", required: false, configured: false }
+        { envVar: "MONITORING_EXPERT_DATADOG_API_KEY", displayName: "DataDog API", provider: "datadog", required: false, configured: false }
       ]
     },
     {
       name: "Availability and Reliability Expert Agent",
-      description: "High availability architecture design, disaster recovery planning",
+      description: "High availability and disaster recovery (Claude Haiku)",
       requiredApis: [
+        { envVar: "AVAILABILITY_RELIABILITY_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
         { envVar: "AVAILABILITY_RELIABILITY_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "AVAILABILITY_RELIABILITY_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "AVAILABILITY_RELIABILITY_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
       name: "Performance Expert Agent",
-      description: "Performance optimization and tuning, bottleneck identification",
+      description: "System performance optimization and tuning (Claude Haiku)",
       requiredApis: [
+        { envVar: "PERFORMANCE_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
         { envVar: "PERFORMANCE_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "PERFORMANCE_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "PERFORMANCE_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
       name: "Security Expert Agent",
-      description: "Software security vulnerability assessment, security architecture",
+      description: "Application and infrastructure security (Claude Sonnet 3.5)",
       requiredApis: [
+        { envVar: "SECURITY_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Sonnet)", provider: "anthropic", required: true, configured: false },
         { envVar: "SECURITY_EXPERT_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "SECURITY_EXPERT_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "SECURITY_EXPERT_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
       ]
     },
     {
       name: "Privacy Guardian Agent",
-      description: "Data privacy and protection expert, GDPR/CCPA compliance",
+      description: "Data privacy and protection compliance (Claude Haiku)",
       requiredApis: [
+        { envVar: "PRIVACY_GUARDIAN_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
         { envVar: "PRIVACY_GUARDIAN_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
-        { envVar: "PRIVACY_GUARDIAN_ANTHROPIC_API_KEY", displayName: "Anthropic API", provider: "anthropic", required: false, configured: false },
         { envVar: "PRIVACY_GUARDIAN_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false }
+      ]
+    },
+
+    // =============================================================================
+    // 🎓 EDUCATION AND LEARNING AGENTS
+    // =============================================================================
+    {
+      name: "Music Coach Agent",
+      description: "Music education and instruction (Claude Haiku)",
+      requiredApis: [
+        { envVar: "MUSIC_COACH_ANTHROPIC_API_KEY", displayName: "Anthropic API (Claude Haiku)", provider: "anthropic", required: true, configured: false },
+        { envVar: "MUSIC_COACH_OPENAI_API_KEY", displayName: "OpenAI API", provider: "openai", required: false, configured: false },
+        { envVar: "MUSIC_COACH_GOOGLE_AI_API_KEY", displayName: "Google AI API", provider: "google", required: false, configured: false },
+        { envVar: "MUSIC_COACH_ELEVENLABS_API_KEY", displayName: "ElevenLabs API", provider: "elevenlabs", required: false, configured: false },
+        { envVar: "MUSIC_COACH_SUNO_API_KEY", displayName: "Suno API", provider: "suno", required: false, configured: false },
+        { envVar: "MUSIC_COACH_MOISES_API_KEY", displayName: "Moises API", provider: "moises", required: false, configured: false },
+        { envVar: "MUSIC_COACH_UBERCHORD_API_KEY", displayName: "Uberchord API", provider: "uberchord", required: false, configured: false }
       ]
     }
   ];
@@ -412,17 +468,31 @@ export default function ApiStatusPage() {
     const statusItem = status.find(s => s.envVar === envVar);
     
     if (!apiKey) {
-      return { icon: '❌', status: 'No Key' };
+      return { icon: '❌', status: 'No Key', color: '#ef4444' };
     }
     if (!statusItem) {
-      return { icon: '⏸️', status: 'Not Checked' };
+      return { icon: '⏸️', status: 'Not Checked', color: '#6b7280' };
     }
     if (!statusItem.configured) {
-      return { icon: '❌', status: 'No Key' };
+      return { icon: '❌', status: 'No Key', color: '#ef4444' };
     }
-    return statusItem.valid 
-      ? { icon: '✅', status: 'Connected' }
-      : { icon: '🔴', status: 'Invalid' };
+    
+    switch (statusItem.status) {
+      case 'valid':
+        return { icon: '✅', status: 'Connected', color: '#10b981' };
+      case 'invalid':
+        return { icon: '🔴', status: 'Invalid Key', color: '#ef4444' };
+      case 'rate_limited':
+        return { icon: '⚠️', status: 'Rate Limited', color: '#f59e0b' };
+      case 'network_error':
+        return { icon: '📡', status: 'Network Error', color: '#8b5cf6' };
+      case 'unknown_error':
+        return { icon: '❓', status: 'Failed to Verify', color: '#6b7280' };
+      case 'not_verified':
+        return { icon: '⏸️', status: 'Not Verified', color: '#6b7280' };
+      default:
+        return { icon: '❓', status: 'Unknown', color: '#6b7280' };
+    }
   };
 
   if (loading) {
@@ -752,7 +822,13 @@ export default function ApiStatusPage() {
                         }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                             <span style={{ fontSize: "16px" }}>{apiStatus.icon}</span>
-                            <span style={{ fontSize: "13px", color: "#ccc" }}>{apiStatus.status}</span>
+                            <span style={{ 
+                              fontSize: "13px", 
+                              color: apiStatus.color,
+                              fontWeight: apiStatus.status === 'Connected' ? '600' : '500'
+                            }}>
+                              {apiStatus.status}
+                            </span>
                           </div>
                         </td>
                         <td style={{

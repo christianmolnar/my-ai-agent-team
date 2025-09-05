@@ -125,7 +125,9 @@ export default function MusicCoachAgentPage() {
                 { icon: "🎓", title: "Music Education", desc: "Personalized learning and instruction" },
                 { icon: "🎭", title: "Improvisation", desc: "Creative improvisation techniques" },
                 { icon: "🎵", title: "Technique Training", desc: "Piano technique and skill development" },
-                { icon: "📚", title: "Music History", desc: "Cultural and historical context" }
+                { icon: "📚", title: "Music History", desc: "Cultural and historical context" },
+                { icon: "🎸", title: "Guitar Tablature", desc: "Search and download guitar tabs from 500k+ songs" },
+                { icon: "📋", title: "Piano Transcription", desc: "YouTube video to piano sheet music (beta)" }
               ].map((capability, index) => (
                 <div key={index} style={{
                   padding: "15px",
@@ -149,6 +151,126 @@ export default function MusicCoachAgentPage() {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div style={{
+            background: "#181a1b",
+            borderRadius: "10px",
+            border: "1px solid #333",
+            padding: "20px",
+            marginBottom: "25px"
+          }}>
+            <h2 style={{
+              color: "#ffb347",
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: "20px"
+            }}>
+              🎼 Music Transcription Tools
+            </h2>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "15px"
+            }}>
+              <Link
+                href="/guitar-tabs"
+                style={{
+                  display: "block",
+                  padding: "20px",
+                  background: "#232526",
+                  borderRadius: "12px",
+                  border: "1px solid #444",
+                  textDecoration: "none",
+                  color: "#f3f3f3",
+                  transition: "all 0.2s",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#2a2d2e";
+                  e.currentTarget.style.borderColor = "#ffb347";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#232526";
+                  e.currentTarget.style.borderColor = "#444";
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                  <span style={{ fontSize: "24px" }}>🎸</span>
+                  <span style={{ fontSize: "16px", fontWeight: "600", color: "#ffb347" }}>
+                    Guitar Tablature Search
+                  </span>
+                </div>
+                <p style={{ 
+                  fontSize: "14px", 
+                  color: "#ccc", 
+                  margin: 0,
+                  lineHeight: "1.5"
+                }}>
+                  Search and download guitar tabs from over 500,000 songs. Convert to MIDI, ASCII, or Guitar Pro formats.
+                </p>
+                <div style={{
+                  marginTop: "12px",
+                  padding: "6px 12px",
+                  background: "#0f4c1b",
+                  borderRadius: "6px",
+                  display: "inline-block"
+                }}>
+                  <span style={{ fontSize: "12px", color: "#4ade80", fontWeight: "600" }}>
+                    ✓ FREE - No API key required
+                  </span>
+                </div>
+              </Link>
+
+              <Link
+                href="/piano-transcription"
+                style={{
+                  display: "block",
+                  padding: "20px",
+                  background: "#232526",
+                  borderRadius: "12px",
+                  border: "1px solid #444",
+                  textDecoration: "none",
+                  color: "#f3f3f3",
+                  transition: "all 0.2s",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#2a2d2e";
+                  e.currentTarget.style.borderColor = "#ffb347";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#232526";
+                  e.currentTarget.style.borderColor = "#444";
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                  <span style={{ fontSize: "24px" }}>🎹</span>
+                  <span style={{ fontSize: "16px", fontWeight: "600", color: "#ffb347" }}>
+                    Piano Transcription
+                  </span>
+                </div>
+                <p style={{ 
+                  fontSize: "14px", 
+                  color: "#ccc", 
+                  margin: 0,
+                  lineHeight: "1.5"
+                }}>
+                  Convert YouTube piano videos to sheet music. Extract MIDI and generate treble/bass clef notation.
+                </p>
+                <div style={{
+                  marginTop: "12px",
+                  padding: "6px 12px",
+                  background: "#7c2d12",
+                  borderRadius: "6px",
+                  display: "inline-block"
+                }}>
+                  <span style={{ fontSize: "12px", color: "#fb7185", fontWeight: "600" }}>
+                    BETA - Limited availability
+                  </span>
+                </div>
+              </Link>
             </div>
           </div>
 
