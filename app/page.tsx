@@ -1,45 +1,137 @@
 "use client";
-import { useState } from "react";
+import Link from 'next/link';
 
 export default function Home() {
-  const [message, setMessage] = useState<string>("");
-
   return (
-    <div style={{
-      minHeight: "100vh",
-      width: "100vw",
-      background: "linear-gradient(135deg, #181a1b 0%, #232526 100%)",
-      color: "#f3f3f3",
-      fontFamily: "Segoe UI, Arial, sans-serif",
-      padding: 0,
-      margin: 0
-    }}>
-      <main style={{
-        maxWidth: "700px",
-        margin: "0 auto",
-        padding: "40px",
-        background: "rgba(34, 40, 49, 0.98)",
-        borderRadius: "20px",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-        minHeight: "600px"
-      }}>
-        <h1 style={{
-          textAlign: "center",
-          color: "#ffb347",
-          letterSpacing: "1px",
-          fontSize: "36px",
-          marginBottom: "8px"
-        }}>
-          AI Agent Team - Foundation
-        </h1>
-        
-        <p style={{
-          textAlign: "center",
-          color: "#ccc",
-          marginBottom: "40px"
-        }}>
-          Bare bones infrastructure ready for agent implementation
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="container mx-auto px-4 py-16">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-6xl font-bold text-white mb-4">
+            AI Agent Team
+          </h1>
+          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+            A comprehensive 20-agent AI system with specialized capabilities, 
+            coordinated by the Master Orchestrator for complex project delivery.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Link 
+              href="/agents" 
+              className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            >
+              View All Agents
+            </Link>
+            <Link 
+              href="/agents/orchestrator" 
+              className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+            >
+              Master Orchestrator
+            </Link>
+          </div>
+        </div>
+
+        {/* Core Team Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <Link href="/agents/orchestrator" className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all border border-white/20">
+            <div className="text-center">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-semibold text-white mb-2">Master Orchestrator</h3>
+              <p className="text-slate-300 text-sm">Central coordination for multi-agent projects</p>
+            </div>
+          </Link>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all border border-white/20">
+            <div className="text-center">
+              <div className="text-4xl mb-4">👤</div>
+              <h3 className="text-xl font-semibold text-white mb-2">Personal Assistant</h3>
+              <p className="text-slate-300 text-sm">Executive stakeholder interface and relationship management</p>
+            </div>
+          </div>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all border border-white/20">
+            <div className="text-center">
+              <div className="text-4xl mb-4">📊</div>
+              <h3 className="text-xl font-semibold text-white mb-2">Project Coordinator</h3>
+              <p className="text-slate-300 text-sm">Timeline management and resource allocation</p>
+            </div>
+          </div>
+          
+          <Link href="/agents/music-coach" className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all border border-white/20">
+            <div className="text-center">
+              <div className="text-4xl mb-4">🎹</div>
+              <h3 className="text-xl font-semibold text-white mb-2">Music Coach</h3>
+              <p className="text-slate-300 text-sm">Specialized music education and New Orleans piano</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* System Architecture */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/20 mb-16">
+          <h2 className="text-3xl font-bold text-white mb-6 text-center">System Architecture</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="text-5xl mb-4">🧠</div>
+              <h3 className="text-xl font-semibold text-white mb-3">CNS Architecture</h3>
+              <p className="text-slate-300">Each agent has a Central Nervous System with Brain, Memory, Reflexes, and Integration components for intelligent behavior.</p>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl mb-4">🔐</div>
+              <h3 className="text-xl font-semibold text-white mb-3">Secure Bridge</h3>
+              <p className="text-slate-300">Personal Assistant Bridge manages all API access with rate limiting, authentication, and audit logging for security.</p>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl mb-4">⚡</div>
+              <h3 className="text-xl font-semibold text-white mb-3">Real-time Coordination</h3>
+              <p className="text-slate-300">Master Orchestrator coordinates complex multi-agent workflows with real-time status tracking and quality assurance.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Access */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+            <h3 className="text-xl font-semibold text-white mb-4">Quick Actions</h3>
+            <div className="space-y-3">
+              <Link href="/agents/music-coach" className="block w-full p-3 bg-purple-600/20 text-purple-200 rounded-lg hover:bg-purple-600/30 transition-colors text-center">
+                Create New Orleans Piano Masterclass
+              </Link>
+              <Link href="/agents/orchestrator" className="block w-full p-3 bg-blue-600/20 text-blue-200 rounded-lg hover:bg-blue-600/30 transition-colors text-center">
+                Start New Project
+              </Link>
+              <Link href="/api-status" className="block w-full p-3 bg-green-600/20 text-green-200 rounded-lg hover:bg-green-600/30 transition-colors text-center">
+                System Status
+              </Link>
+            </div>
+          </div>
+          
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+            <h3 className="text-xl font-semibold text-white mb-4">Agent Categories</h3>
+            <div className="space-y-2 text-slate-300">
+              <div className="flex justify-between">
+                <span>Core Team (Priority 1):</span>
+                <span className="text-green-400">4 agents</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Supporting Team (Priority 2):</span>
+                <span className="text-yellow-400">4 agents</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Specialized Team (Priority 3):</span>
+                <span className="text-blue-400">12 agents</span>
+              </div>
+              <div className="border-t border-white/20 pt-2 mt-3">
+                <div className="flex justify-between font-semibold">
+                  <span>Total Active Agents:</span>
+                  <span className="text-white">20</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
         <div style={{
           background: "#232526",
