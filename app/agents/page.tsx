@@ -303,7 +303,7 @@ export default function AgentDashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">AI Agent Team Dashboard</h1>
+              <h1 className="text-4xl font-bold text-white mb-2">🚀 UPDATED AI Agent Team Dashboard</h1>
               <p className="text-gray-400">Manage and monitor your 20-agent AI team</p>
             </div>
             <button

@@ -63,6 +63,8 @@
 
 ### **🧠 cns/** - *Central Nervous System Learning Framework*
 
+> **Note:** Each agent has its own CNS (Central Neural System)—its own nervous system, memories, learning, and self-assessment. There is no global or shared CNS; all CNS data and learning are agent-specific and evolve independently.
+
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [`CNS-LEARNING-FRAMEWORK.md`](cns/CNS-LEARNING-FRAMEWORK.md) | Core CNS learning methodology and self-assessment protocols | ✅ Available |

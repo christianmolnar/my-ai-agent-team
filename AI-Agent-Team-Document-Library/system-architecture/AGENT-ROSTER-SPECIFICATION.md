@@ -1,6 +1,14 @@
 # AI Agent Team Complete Specification
 *Comprehensive definition of all 20 agents with capabilities, APIs, and integration requirements*
 
+---
+
+> **Central Neural System (CNS) Model**
+> 
+> Each agent has its own CNS—its own nervous system, personality, memories, reflexes, and learning protocols. The CNS is not a global system, but a per-agent structure that evolves as the agent operates. All references to CNS in this document refer to the agent-specific CNS, not a shared or global system.
+
+---
+
 ## 🎯 **Agent Team Architecture Overview**
 
 This document defines the complete 20-agent ecosystem with detailed specifications for each agent, their collaboration patterns, and integration with private repository infrastructure.
@@ -9,7 +17,7 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 - **Public Repository**: Contains agent framework, UI, and shareable logic
 - **Private Repository**: Contains personal data, identity information, and business operations
 - **Bridge Pattern**: Secure API interfaces connecting public agents to private data
-- **CNS Integration**: All agents implement Central Nervous System learning protocols
+- **CNS Integration**: All agents implement their own Central Nervous System (CNS) learning protocols
 
 ---
 
@@ -34,10 +42,10 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 - Private repository bridge for strategic context and user preferences
 
 #### **CNS Integration Requirements**
-- **Performance Metrics**: Track project success rates, agent utilization efficiency
-- **Learning Patterns**: Strategic decision patterns, resource allocation optimization
-- **Feedback Integration**: Human feedback on strategic decisions and plan quality
-- **Self-Assessment Protocol**: 6-point evaluation covering strategic accuracy and team coordination
+- **Performance Metrics**: Track project success rates, agent utilization efficiency (stored in the agent's own CNS)
+- **Learning Patterns**: Strategic decision patterns, resource allocation optimization (learned and stored per agent)
+- **Feedback Integration**: Human feedback on strategic decisions and plan quality (integrated into the agent's CNS)
+- **Self-Assessment Protocol**: 6-point evaluation covering strategic accuracy and team coordination (performed by the agent's CNS)
 
 #### **Private Repository Integration**
 - **Identity Data Access**: User goals, strategic priorities, decision-making preferences
@@ -68,10 +76,10 @@ This document defines the complete 20-agent ecosystem with detailed specificatio
 - Integration with calendar and scheduling systems
 
 #### **CNS Integration Requirements**
-- **Performance Metrics**: Project completion rates, timeline accuracy, quality scores
-- **Learning Patterns**: Project planning optimization, risk prediction accuracy
-- **Feedback Integration**: Agent feedback on task clarity, human feedback on communication
-- **Self-Assessment Protocol**: Project coordination effectiveness, communication clarity
+- **Performance Metrics**: Project completion rates, timeline accuracy, quality scores (stored in the agent's own CNS)
+- **Learning Patterns**: Project planning optimization, risk prediction accuracy (learned and stored per agent)
+- **Feedback Integration**: Agent feedback on task clarity, human feedback on communication (integrated into the agent's CNS)
+- **Self-Assessment Protocol**: Project coordination effectiveness, communication clarity (performed by the agent's CNS)
 
 #### **Private Repository Integration**
 - **Communication Preferences**: Status reporting style, meeting schedules, update frequency

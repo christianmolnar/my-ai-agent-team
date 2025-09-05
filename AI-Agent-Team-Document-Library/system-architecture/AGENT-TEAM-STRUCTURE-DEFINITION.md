@@ -1,6 +1,30 @@
 # AI Agent Team Structure Definition
 *Complete Agent Roster and Collaboration Framework*
 
+---
+
+## 🗂️ Standard Agent Folder Structure
+
+Each agent has its own folder with the following subfolders to support the per-agent CNS (Central Neural System) model:
+
+```
+/ai-team/[agent-name]/
+  /cns/                # The agent's own nervous system: personality, memories, reflexes, learning
+  /memory/             # Long-term and working memory
+  /brain/              # Reasoning, planning, and decision logic
+  /reflexes/           # Fast-response behaviors and triggers
+  /collaboration/      # Inter-agent communication and protocols
+  /incoming/           # Input tasks, messages, or files
+  /working/            # In-progress work and temporary state
+  /outgoing/           # Output tasks, deliverables, or messages
+```
+
+- The `/cns/` folder is unique to each agent and contains all files related to the agent's evolving nervous system, learning, and self-assessment.
+- No global or shared CNS folder exists; all CNS data is agent-specific.
+- This structure ensures each agent can grow, learn, and adapt independently.
+
+---
+
 ## 🎯 **Agent Team Architecture**
 
 ### **Core Management Agents**
