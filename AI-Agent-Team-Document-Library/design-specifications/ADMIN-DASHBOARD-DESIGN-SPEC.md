@@ -1,13 +1,13 @@
-# Agent Dashboard Design Specification
+# Admin Dashboard Design Specification
 
 ## Overview
-The agent dashboard provides a comprehensive interface for managing and monitoring the 20-agent AI team with intuitive organization and beautiful styling.
+The admin dashboard provides a comprehensive administrative interface for managing and monitoring the 20-agent AI team with intuitive organization and beautiful styling. This is the control center for system administrators and project coordinators to oversee team performance and status.
 
 ## Layout Structure
 
 ### Header Section
-- **Title**: "AI Agent Team Dashboard"
-- **Subtitle**: "Manage and monitor your 20-agent AI team"
+- **Title**: "AI Agent Team - Admin Dashboard"
+- **Subtitle**: "Monitor and manage your 20-agent AI team"
 - **Refresh Status Button**: Real-time status updates
 
 ### Agent Organization Hierarchy

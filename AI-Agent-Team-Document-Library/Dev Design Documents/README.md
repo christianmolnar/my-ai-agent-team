@@ -10,10 +10,11 @@
 
 ### **🎵 Specialized Agent Implementations**
 - **[MUSIC-COACH-AGENT-IMPLEMENTATION.md](./MUSIC-COACH-AGENT-IMPLEMENTATION.md)** - Comprehensive music education agent with Ultimate Guitar integration and TuxGuitar research
+- **[PERSONAL-ASSISTANT-IMPLEMENTATION-SPEC.md](./PERSONAL-ASSISTANT-IMPLEMENTATION-SPEC.md)** - Sophisticated conversational agent with team orchestration and contextual dialogue management
 
-### **📊 Progress & Status**
-- **[DEVELOPMENT-PROGRESS-SUMMARY.md](./DEVELOPMENT-PROGRESS-SUMMARY.md)** - Complete development progress and milestone tracking
-- **[CRITICAL-FIXES-APPLIED.md](./CRITICAL-FIXES-APPLIED.md)** - Critical bug fixes and system improvements
+### **📊 Related Documentation**
+For operational status, progress tracking, and learning reports, see:
+- **[status-updates/](../status-updates/)** - Development progress, fixes applied, and operational learnings
 
 ---
 
@@ -24,9 +25,9 @@
 2. **Progress Status**: [DEVELOPMENT-PROGRESS-SUMMARY.md](./DEVELOPMENT-PROGRESS-SUMMARY.md) - Current development status and next steps
 
 ### **Implementation Details**
-- **Claude Integration**: [CLAUDE-SDK-INTEGRATION-COMPLETE.md](./CLAUDE-SDK-INTEGRATION-COMPLETE.md)
 - **Music Coach**: [MUSIC-COACH-AGENT-IMPLEMENTATION.md](./MUSIC-COACH-AGENT-IMPLEMENTATION.md)
-- **Recent Fixes**: [CRITICAL-FIXES-APPLIED.md](./CRITICAL-FIXES-APPLIED.md)
+- **Personal Assistant**: [PERSONAL-ASSISTANT-IMPLEMENTATION-SPEC.md](./PERSONAL-ASSISTANT-IMPLEMENTATION-SPEC.md)
+- **Status Updates**: [status-updates/](../status-updates/) - Progress tracking and operational reports
 
 ### **Active Development**
 - **Current Focus**: Music Coach Agent with Ultimate Guitar integration ✅ COMPLETED
