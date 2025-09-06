@@ -38,15 +38,20 @@
 
 ---
 
-### **🛠️ implementation-guides/** - *Step-by-Step Implementation*
+### **🛠️ Dev Design Documents/** - *Consolidated Development Documentation*
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| [`MUSIC-COACH-AGENT-IMPLEMENTATION.md`](implementation-guides/MUSIC-COACH-AGENT-IMPLEMENTATION.md) | Comprehensive Music Coach Agent implementation guide | ✅ Available |
-| [`PERFORMANCE-METRICS-IMPLEMENTATION-STRATEGY.md`](implementation-guides/PERFORMANCE-METRICS-IMPLEMENTATION-STRATEGY.md) | Agent performance tracking and improvement systems | ✅ Available |
-| [`CLAUDE-MODEL-OPTIMIZATION-STRATEGY.md`](implementation-guides/CLAUDE-MODEL-OPTIMIZATION-STRATEGY.md) | Claude model tier assignments for optimal performance and cost | 📚 Available |
+| **[`MUSIC-COACH-AGENT-IMPLEMENTATION.md`](Dev%20Design%20Documents/MUSIC-COACH-AGENT-IMPLEMENTATION.md)** | **Complete Music Coach implementation** with Ultimate Guitar integration and TuxGuitar research | ✅ **COMPREHENSIVE** |
+| **[`CLAUDE-MODEL-AGENT-STRATEGY.md`](Dev%20Design%20Documents/CLAUDE-MODEL-AGENT-STRATEGY.md)** | **Strategic AI model selection** for optimal agent performance across all 20 agents | ✅ **STRATEGY** |
+| [`CLAUDE-SDK-INTEGRATION-COMPLETE.md`](Dev%20Design%20Documents/CLAUDE-SDK-INTEGRATION-COMPLETE.md) | Completed Claude SDK integration documentation | ✅ Complete |
+| [`CLAUDE-SDK-INTEGRATION-PLAN.md`](Dev%20Design%20Documents/CLAUDE-SDK-INTEGRATION-PLAN.md) | Technical integration plan for Claude SDK | 📚 Reference |
+| [`DEVELOPMENT-PROGRESS-SUMMARY.md`](Dev%20Design%20Documents/DEVELOPMENT-PROGRESS-SUMMARY.md) | Complete development progress and milestone tracking | 📊 Status |
+| [`CRITICAL-FIXES-APPLIED.md`](Dev%20Design%20Documents/CRITICAL-FIXES-APPLIED.md) | Critical bug fixes and system improvements | � Fixes |
 
-**Use When**: Implementing specific agents, setting up performance tracking, optimizing AI models
+**Use When**: Implementing agents, understanding development strategy, tracking progress, reviewing completed work
+
+**Recent Consolidation**: September 5, 2025 - Merged `implementation-documents/` and `implementation-guides/` into single organized location
 
 ---
 
@@ -94,7 +99,7 @@
 
 ### **For Agent Development**
 1. **Agent Specifications**: [`system-architecture/AGENT-ROSTER-SPECIFICATION.md`](system-architecture/AGENT-ROSTER-SPECIFICATION.md) - Detailed agent requirements
-2. **Implementation Examples**: [`implementation-guides/`](implementation-guides/) - Working implementation patterns
+2. **Implementation Examples**: [`Dev Design Documents/`](Dev%20Design%20Documents/) - Working implementation patterns and comprehensive guides
 3. **Development Standards**: [`standards/`](standards/) - Code quality and process requirements
 
 ### **For System Architecture**
