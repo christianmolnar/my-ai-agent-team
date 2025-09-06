@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 
 // Official Agent Teams from AGENT-ROSTER-SPECIFICATION.md
@@ -137,22 +137,98 @@ const agentTeams = {
 
 export default function Home() {
   const [message, setMessage] = useState<string>("");
-  const [chatHistory, setChatHistory] = useState([
+  const [chatHistory, setChatHistory] = useState<Array<{
+    role: string;
+    content: string;
+    metadata?: {
+      conversationType?: string;
+      suggestedFollowUps?: string[];
+      involvedAgents?: string[];
+      deliverables?: string[];
+    };
+  }>>([
     { role: 'assistant', content: 'Hello! I\'m your Personal Assistant. I can help coordinate projects across your entire AI agent team. What would you like to work on today?' }
   ]);
 
-  const handleSendMessage = () => {
+  // Create ref for auto-scrolling chat
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when chat history updates
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
+
+  // Function to start a new chat
+  const handleNewChat = () => {
+    setChatHistory([
+      { role: 'assistant', content: 'Hello! I\'m your Personal Assistant. I can help coordinate projects across your entire AI agent team. What would you like to work on today?' }
+    ]);
+  };
+
+  const handleSendMessage = async () => {
     if (message.trim()) {
-      setChatHistory([...chatHistory, { role: 'user', content: message }]);
+      const userMessage = message.trim();
+      setChatHistory([...chatHistory, { role: 'user', content: userMessage }]);
       setMessage('');
       
-      // Simulate assistant response
-      setTimeout(() => {
-        setChatHistory(prev => [...prev, { 
-          role: 'assistant', 
-          content: `I understand you want to "${message.trim()}". Let me coordinate with the appropriate agents from our team to help with this. I'll involve the Master Orchestrator to create a comprehensive plan and delegate tasks to the right specialists.` 
-        }]);
-      }, 1000);
+      // Add loading message
+      setChatHistory(prev => [...prev, { 
+        role: 'assistant', 
+        content: '🤔 Thinking...' 
+      }]);
+      
+      try {
+        // Call the actual Personal Assistant API
+        const response = await fetch('/api/personal-assistant', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message: userMessage })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Replace loading message with actual response
+          setChatHistory(prev => {
+            const newHistory = [...prev];
+            newHistory[newHistory.length - 1] = {
+              role: 'assistant',
+              content: data.response,
+              metadata: {
+                conversationType: data.conversationType,
+                suggestedFollowUps: data.suggestedFollowUps,
+                involvedAgents: data.involvedAgents,
+                deliverables: data.deliverables
+              }
+            };
+            return newHistory;
+          });
+        } else {
+          // Handle error
+          setChatHistory(prev => {
+            const newHistory = [...prev];
+            newHistory[newHistory.length - 1] = {
+              role: 'assistant',
+              content: `I apologize, but I encountered an error: ${data.error}. Please try again.`
+            };
+            return newHistory;
+          });
+        }
+      } catch (error) {
+        console.error('Error calling Personal Assistant:', error);
+        setChatHistory(prev => {
+          const newHistory = [...prev];
+          newHistory[newHistory.length - 1] = {
+            role: 'assistant',
+            content: 'I apologize, but I\'m having trouble connecting to my services right now. Please try again in a moment.'
+          };
+          return newHistory;
+        });
+      }
     }
   };
 
@@ -217,14 +293,15 @@ export default function Home() {
           </div>
 
           {/* Chat History */}
-          <div style={{
+          <div ref={chatContainerRef} style={{
             background: "#181a1b",
             borderRadius: "10px",
             border: "1px solid #333",
             padding: "20px",
             marginBottom: "20px",
             height: "300px",
-            overflowY: "auto"
+            overflowY: "auto",
+            scrollBehavior: "smooth"
           }}>
             {chatHistory.map((msg, index) => (
               <div key={index} style={{ marginBottom: "15px" }}>
@@ -257,6 +334,34 @@ export default function Home() {
                     lineHeight: "1.5"
                   }}>
                     {msg.content}
+                    
+                    {/* Show metadata for assistant responses */}
+                    {msg.role === 'assistant' && msg.metadata && (
+                      <div style={{
+                        marginTop: "10px",
+                        paddingTop: "10px",
+                        borderTop: "1px solid #444",
+                        fontSize: "12px",
+                        color: "#aaa"
+                      }}>
+                        {msg.metadata.conversationType && (
+                          <div>Type: <span style={{ color: "#ffb347" }}>{msg.metadata.conversationType}</span></div>
+                        )}
+                        {msg.metadata.involvedAgents && msg.metadata.involvedAgents.length > 0 && (
+                          <div>Agents: <span style={{ color: "#ffb347" }}>{msg.metadata.involvedAgents.join(', ')}</span></div>
+                        )}
+                        {msg.metadata.suggestedFollowUps && msg.metadata.suggestedFollowUps.length > 0 && (
+                          <details style={{ marginTop: "5px" }}>
+                            <summary style={{ cursor: "pointer", color: "#ffb347" }}>Follow-up suggestions</summary>
+                            <ul style={{ marginLeft: "20px", marginTop: "5px" }}>
+                              {msg.metadata.suggestedFollowUps.map((followUp, i) => (
+                                <li key={i} style={{ marginBottom: "2px" }}>{followUp}</li>
+                              ))}
+                            </ul>
+                          </details>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -264,7 +369,7 @@ export default function Home() {
           </div>
 
           {/* Chat Input */}
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
             <input
               type="text"
               placeholder="What project or task do you need help with?"
@@ -285,18 +390,59 @@ export default function Home() {
               onClick={handleSendMessage}
               disabled={!message.trim()}
               style={{
-                padding: "12px 20px",
+                padding: "12px 16px",
                 borderRadius: "8px",
                 border: "none",
                 cursor: message.trim() ? "pointer" : "not-allowed",
                 fontWeight: "600",
-                fontSize: "14px",
+                fontSize: "18px",
                 background: message.trim() ? "#ffb347" : "#555",
                 color: message.trim() ? "#000" : "#ccc",
-                transition: "all 0.2s"
+                transition: "all 0.2s",
+                minWidth: "50px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              title="Send message to Personal Assistant"
+              onMouseOver={(e) => {
+                if (message.trim()) {
+                  e.currentTarget.style.background = "#ffa500";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (message.trim()) {
+                  e.currentTarget.style.background = "#ffb347";
+                }
               }}
             >
-              Send
+              💬
+            </button>
+            <button
+              onClick={handleNewChat}
+              style={{
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "1px solid #555",
+                cursor: "pointer",
+                fontWeight: "600",
+                fontSize: "14px",
+                background: "#232526",
+                color: "#f3f3f3",
+                transition: "all 0.2s",
+                whiteSpace: "nowrap"
+              }}
+              title="Start a new conversation"
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = "#2a2d2e";
+                e.currentTarget.style.borderColor = "#777";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = "#232526";
+                e.currentTarget.style.borderColor = "#555";
+              }}
+            >
+              🔄 New Chat
             </button>
           </div>
         </div>

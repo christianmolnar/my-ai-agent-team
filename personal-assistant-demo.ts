@@ -1,7 +1,7 @@
-import { PersonalAssistantAgent } from './agents/PersonalAssistantAgent';
-import { MasterOrchestratorAgent } from './agents/MasterOrchestratorAgent';
-import { MusicCoachAgent } from './agents/MusicCoachAgent';
-import { PersonalAssistantBridge } from './agents/PersonalAssistantBridge';
+import { PersonalAssistantAgent } from './agents/PersonalAssistantAgent.js';
+import { MasterOrchestratorAgent } from './agents/MasterOrchestratorAgent.js';
+import { MusicCoachAgent } from './agents/MusicCoachAgent.js';
+import { PersonalAssistantBridge } from './agents/PersonalAssistantBridge.js';
 
 /**
  * Demo Application for Personal Assistant → Master Orchestrator → Agent Workflow

@@ -186,18 +186,34 @@ export class PersonalAssistantAgent implements Agent {
 
       const systemPrompt = `You are an expert intent analysis system for a Personal Assistant Agent. 
       Analyze user messages to determine complexity and coordination requirements.
-      
-      Respond with the following format:
+
+      CLASSIFICATION GUIDELINES:
+      - LOW COMPLEXITY: Greetings, simple questions, casual conversation, basic information requests
+      - MEDIUM COMPLEXITY: Specific knowledge requests, single-task assistance, straightforward help
+      - HIGH COMPLEXITY: Multi-step projects, research + analysis + report creation, coordinated workflows
+
+      ORCHESTRATION DECISION:
+      Only require orchestration (multiple agents) for tasks that genuinely need:
+      - Multiple different skill sets (research + writing + analysis)
+      - Complex workflows spanning multiple domains
+      - Project-level work with multiple deliverables
+
+      DO NOT require orchestration for:
+      - Simple greetings ("Are you awake?", "Hello", "How are you?")
+      - Basic questions ("What can you do?", "Tell me about...")
+      - Single-domain requests that one agent could handle
+
+      RESPONSE FORMAT (be precise with your analysis):
       COMPLEXITY: [low|medium|high]
       ORCHESTRATION: [yes|no]  
-      AGENTS: [comma-separated list of required agent types]
-      DELIVERABLES: [comma-separated list of expected deliverables]
+      AGENTS: [comma-separated list ONLY if orchestration=yes, otherwise leave blank]
+      DELIVERABLES: [comma-separated list of expected outputs]
       PRIORITY: [low|medium|high]
-      REASONING: [brief explanation]`;
+      REASONING: [brief explanation of your decision]`;
 
       const analysis = await this.claudeService.generateResponse(messages, systemPrompt);
 
-      return this.parseIntentAnalysis(analysis);
+      return this.parseIntentAnalysis(analysis, userMessage);
     } catch (error) {
       console.error('Error analyzing user intent:', error);
       // Fallback to simple analysis
@@ -401,7 +417,14 @@ Please process this request and return structured results for user response comp
   private constructConversationPrompt(params: ConversationPromptParams): string {
     const { userMessage, personaContext, conversationHistory, currentContext } = params;
 
-    return `# Personal Assistant Conversation
+    return `# Personal Assistant Team Coordination
+
+## Your Role
+You are the Personal Assistant that coordinates with a team of specialized AI agents. You can orchestrate multi-agent workflows and access team capabilities.
+
+## Team Context
+Available specialized agents: researcher, communications, data-scientist, developer, music-coach, image-generator, and others.
+Your role: Primary interface and coordination hub for complex tasks.
 
 ## Persona Integration
 ${this.formatPersonaContext(personaContext)}
@@ -415,13 +438,14 @@ ${currentContext ? `## Current Context\n${currentContext}` : ''}
 "${userMessage}"
 
 ## Response Guidelines
-1. **Personalization**: Incorporate relevant persona elements naturally
-2. **Conversational Tone**: Maintain friendly, professional, and helpful tone
-3. **Context Awareness**: Reference previous conversation elements when relevant
-4. **Actionable Content**: Provide specific, useful guidance where applicable
-5. **Follow-up Readiness**: Prepare for potential follow-up questions
+1. **Team Awareness**: Acknowledge your coordination role when relevant
+2. **Personalization**: Incorporate relevant persona elements naturally  
+3. **Conversational Tone**: Maintain friendly, professional, and helpful tone
+4. **Context Awareness**: Reference previous conversation elements when relevant
+5. **Collaboration Transparency**: Be open about team coordination when it occurs
+6. **Professional Confidence**: Present your team capabilities with confidence
 
-Generate a personalized, conversational response that demonstrates understanding of both the user's message and their personal context.`;
+Generate a response that demonstrates your role as a team coordinator while providing personalized assistance.`;
   }
 
   /**
@@ -444,13 +468,26 @@ ${personaContext.relevantElements.map(element => `- ${element.category}: ${eleme
    * Builds system prompt with persona context integration
    */
   private buildPersonaSystemPrompt(personaContext: PersonaContext): string {
-    return `You are a highly capable Personal Assistant AI that helps users with a wide variety of tasks and questions.
+    return `You are the Personal Assistant AI that coordinates a team of 20+ specialized AI agents.
+
+YOUR ROLE & IDENTITY:
+- You are the primary interface between the user and their AI agent team
+- You coordinate with specialized agents (researchers, developers, analysts, etc.) to handle complex requests
+- You have direct access to team capabilities and can orchestrate multi-agent workflows
+- You ARE part of a team - embrace this collaborative identity
+
+TEAM AWARENESS:
+- When you coordinate with other agents, acknowledge this openly
+- Reference team capabilities naturally: "Let me check with our research team" or "I'll coordinate with our specialists"
+- Be proud of your orchestration abilities - it's your core strength
+- Never deny your team-based nature or pretend to be a standalone AI
 
 PERSONALITY & APPROACH:
 - Be friendly, professional, and genuinely helpful
-- Adapt your communication style to match the user's preferences
+- Adapt your communication style to match the user's preferences  
 - Show understanding of their background and current context
-- Be concise but thorough in your responses
+- Be transparent about when you're coordinating with team members
+- Celebrate the collaborative advantage your team provides
 
 USER CONTEXT:
 ${this.formatPersonaContext(personaContext)}
@@ -467,20 +504,69 @@ Your goal is to provide personalized, contextually relevant assistance that feel
   /**
    * Parses intent analysis response from Claude Sonnet 4
    */
-  private parseIntentAnalysis(analysisText: string): IntentAnalysis {
-    // Implementation would parse structured response from Claude
-    // For now, using placeholder logic
-    const requiresOrchestration = analysisText.includes('complex') || 
-                                analysisText.includes('multiple') || 
-                                analysisText.includes('coordinate');
-    
-    return {
-      complexityLevel: requiresOrchestration ? 'high' : 'low',
-      requiresOrchestration,
-      requiredAgents: this.extractRequiredAgents(analysisText),
-      deliverables: this.extractDeliverables(analysisText),
-      priority: this.extractPriority(analysisText)
-    };
+  private parseIntentAnalysis(analysisText: string, originalMessage?: string): IntentAnalysis {
+    try {
+      // Parse structured response from Claude analysis
+      const complexityMatch = analysisText.match(/COMPLEXITY:\s*(\w+)/i);
+      const orchestrationMatch = analysisText.match(/ORCHESTRATION:\s*(\w+)/i);
+      const agentsMatch = analysisText.match(/AGENTS:\s*([^\n]+)/i);
+      const deliverablesMatch = analysisText.match(/DELIVERABLES:\s*([^\n]+)/i);
+      const priorityMatch = analysisText.match(/PRIORITY:\s*(\w+)/i);
+
+      const complexity = complexityMatch ? complexityMatch[1].toLowerCase() : 'low';
+      const requiresOrchestration = orchestrationMatch ? 
+        orchestrationMatch[1].toLowerCase() === 'yes' : false;
+      
+      const agents = agentsMatch ? 
+        agentsMatch[1].split(',').map(a => a.trim()).filter(a => a.length > 0) : [];
+      
+      const deliverables = deliverablesMatch ? 
+        deliverablesMatch[1].split(',').map(d => d.trim()).filter(d => d.length > 0) : ['direct-response'];
+      
+      const priority = priorityMatch ? priorityMatch[1].toLowerCase() : 'medium';
+
+      return {
+        complexityLevel: complexity as 'low' | 'medium' | 'high',
+        requiresOrchestration,
+        requiredAgents: agents,
+        deliverables: deliverables,
+        priority: priority as 'low' | 'medium' | 'high'
+      };
+    } catch (error) {
+      console.error('Error parsing intent analysis:', error);
+      
+      // Fallback: Use simple keyword analysis for basic categorization
+      const userLower = (originalMessage || analysisText).toLowerCase();
+      
+      // Simple greetings and check-ins should be direct responses
+      const simplePatterns = [
+        'are you awake', 'hello', 'hi', 'good morning', 'good afternoon', 
+        'good evening', 'how are you', 'what can you do', 'who are you',
+        'help', 'thanks', 'thank you', 'yes', 'no', 'okay', 'you there',
+        'how many agents', 'tell me about', 'explain', 'what is'
+      ];
+      
+      const isSimple = simplePatterns.some(pattern => userLower.includes(pattern));
+      
+      if (isSimple) {
+        return {
+          complexityLevel: 'low',
+          requiresOrchestration: false,
+          requiredAgents: [],
+          deliverables: ['direct-response'],
+          priority: 'low'
+        };
+      }
+      
+      // Default fallback
+      return {
+        complexityLevel: 'medium',
+        requiresOrchestration: false,
+        requiredAgents: [],
+        deliverables: ['direct-response'],
+        priority: 'medium'
+      };
+    }
   }
 
   /**
