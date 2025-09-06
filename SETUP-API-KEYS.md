@@ -25,8 +25,9 @@ Your Music Coach agent now has advanced capabilities:
 - **Multiple Formats**: Guitar Pro, MIDI, ASCII, ABC notation
 
 **Access URLs:**
-- Piano Transcription: http://localhost:3002/piano-transcription
-- Guitar Tabs: http://localhost:3002/guitar-tabs
+- Piano Transcription: http://localhost:30000/piano-transcription
+- Guitar Tabs: http://localhost:30000/guitar-tabs ✅ (Updated - now works with Ultimate Guitar)
+- **Ultimate Guitar API**: http://localhost:30000/api/ultimate-guitar
 
 ### 🔧 **Need API Keys For Claude Integration**
 
@@ -147,19 +148,17 @@ Your Music Coach is ready to use immediately:
 
 ```bash
 # Test piano transcription
-curl -X POST http://localhost:3002/api/transcribe-piano \
+curl -X POST http://localhost:30000/api/transcribe-piano \
   -H "Content-Type: application/json" \
   -d '{"youtubeUrl": "https://www.youtube.com/watch?v=4Tr0otuiQuU"}'
 
 # Test guitar tab search  
-curl -X POST http://localhost:3002/api/guitar-tabs \
-  -H "Content-Type: application/json" \
-  -d '{"action": "search", "query": "wonderwall", "limit": 5}'
+curl -X GET "http://localhost:30000/api/guitar-tabs-real?action=search&query=wonderwall&limit=5"
 ```
 
 **Or visit the web interfaces:**
-- 🎹 Piano: http://localhost:3002/piano-transcription
-- 🎸 Guitar: http://localhost:3002/guitar-tabs
+- 🎹 Piano: http://localhost:30000/piano-transcription
+- 🎸 Guitar: http://localhost:30000/guitar-tabs
 
 ---
 

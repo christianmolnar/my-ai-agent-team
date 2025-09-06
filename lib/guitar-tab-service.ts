@@ -71,8 +71,8 @@ export class GuitarTabService {
    */
   async searchTabs(query: TabSearchQuery): Promise<TabSearchResult[]> {
     try {
-      // Use Songsterr's public API endpoints
-      const searchUrl = `${this.baseUrl}ra/songs.json?pattern=${encodeURIComponent(query.query)}`;
+      // Use the correct Songsterr API endpoint
+      const searchUrl = `https://www.songsterr.com/a/ra/songs.json?pattern=${encodeURIComponent(query.query)}`;
       
       const response = await fetch(searchUrl, {
         headers: {
@@ -87,14 +87,14 @@ export class GuitarTabService {
 
       const data = await response.json();
       
-      // Convert to our format
+      // Convert to our format - data is an array of songs
       const results: TabSearchResult[] = data
         .slice(0, query.limit || 20)
         .map((item: any) => ({
           id: item.id,
           artist: item.artist?.name || 'Unknown Artist',
           title: item.title || 'Unknown Title',
-          url: `https://www.songsterr.com/a/wsa/${item.artist?.nameWithoutThePrefix?.toLowerCase().replace(/\s+/g, '-') || 'unknown'}-${item.title?.toLowerCase().replace(/\s+/g, '-') || 'unknown'}-tab-s${item.id}`,
+          url: `https://www.songsterr.com/a/wsa/${item.artist?.nameWithoutThePrefix || 'unknown'}-${item.title?.replace(/\s+/g, '-') || 'unknown'}-tab-s${item.id}`,
           instrument: this.determineInstrument(item),
           difficulty: this.determineDifficulty(item),
           hasGuitarPro: true, // Most Songsterr tabs have GP files

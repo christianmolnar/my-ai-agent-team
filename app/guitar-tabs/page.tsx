@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function GuitarTabsPage() {
@@ -16,14 +16,15 @@ export default function GuitarTabsPage() {
     setSearchResults([]);
     
     try {
-      const response = await fetch('/api/guitar-tabs', {
+      const response = await fetch('/api/ultimate-guitar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
           action: 'search', 
-          query: searchQuery 
+          query: searchQuery,
+          limit: 10
         }),
       });
 
@@ -42,33 +43,70 @@ export default function GuitarTabsPage() {
     }
   };
 
-  const downloadTab = async (songId: number, format: string) => {
+  const downloadTab = async (tabUrl: string, format: string, songInfo?: any) => {
     setLoading(true);
     setDownloadResult("");
     
     try {
-      const response = await fetch('/api/guitar-tabs', {
+      const response = await fetch('/api/ultimate-guitar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          action: 'download', 
-          songId: songId,
-          format: format
+          action: 'extract', 
+          url: tabUrl
         }),
       });
 
       const data = await response.json();
       
-      if (data.success) {
-        setDownloadResult(data.content);
+      if (data.success && data.tab) {
+        // Use song info from search results or fallback to extracted data
+        const title = songInfo?.song_name || songInfo?.title || data.tab.title || 'Unknown Title';
+        const artist = songInfo?.artist_name || songInfo?.artist || data.tab.artist_name || 'Unknown Artist';
+        
+        // Format the tab content for display
+        let formatted = `${artist} - ${title}\n`;
+        formatted += `Author: ${data.tab.author}\n`;
+        if (data.tab.difficulty) formatted += `Difficulty: ${data.tab.difficulty}\n`;
+        if (data.tab.capo) formatted += `Capo: ${data.tab.capo}\n`;
+        if (songInfo?.rating) formatted += `Rating: ⭐ ${songInfo.rating.toFixed(1)} (${songInfo.votes} votes)\n`;
+        formatted += `\n`;
+        
+        // Add the tab lines
+        data.tab.lines.forEach((line: any) => {
+          if (line.type === 'section') {
+            formatted += `\n[${line.section}]\n`;
+          } else if (line.type === 'chords') {
+            let chordLine = '';
+            line.chords.forEach((chord: any, index: number) => {
+              if (index > 0) chordLine += ' '.repeat(Math.max(1, chord.pre_spaces));
+              chordLine += chord.note;
+            });
+            formatted += chordLine + '\n';
+          } else if (line.type === 'lyric') {
+            formatted += line.lyric + '\n';
+          } else if (line.type === 'blank') {
+            formatted += '\n';
+          }
+        });
+        
+        setDownloadResult(formatted);
+        
+        // Scroll to the tab result after a short delay
+        setTimeout(() => {
+          const tabResult = document.getElementById('tab-result');
+          if (tabResult) {
+            tabResult.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
       } else {
-        alert(data.error || 'Download failed');
+        alert(data.error || 'Failed to extract tab');
       }
     } catch (error) {
-      console.error('Download error:', error);
-      alert('Download failed. Please try again.');
+      console.error('Extract error:', error);
+      alert('Failed to extract tab. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -136,7 +174,7 @@ export default function GuitarTabsPage() {
               margin: "0 auto",
               lineHeight: "1.6"
             }}>
-              Search and download guitar tabs from over 500,000 songs. Convert to MIDI, ASCII, or Guitar Pro formats.
+              Search and view guitar tabs from Ultimate Guitar. Get chords, lyrics, and tablature with ratings and community feedback.
             </p>
             <div style={{
               marginTop: "15px",
@@ -246,49 +284,68 @@ export default function GuitarTabsPage() {
                           fontWeight: "600",
                           marginBottom: "8px"
                         }}>
-                          {song.title}
+                          {song.song_name || song.title}
                         </h3>
                         <p style={{
                           color: "#ccc",
                           fontSize: "14px",
                           marginBottom: "8px"
                         }}>
-                          by {song.artist}
+                          by {song.artist_name || song.artist}
                         </p>
-                        {song.type && (
-                          <div style={{
-                            padding: "4px 8px",
-                            background: "#333",
-                            borderRadius: "4px",
-                            display: "inline-block",
-                            fontSize: "12px",
-                            color: "#aaa"
-                          }}>
-                            {song.type}
-                          </div>
-                        )}
+                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                          {song.type && (
+                            <div style={{
+                              padding: "4px 8px",
+                              background: "#333",
+                              borderRadius: "4px",
+                              fontSize: "12px",
+                              color: "#aaa"
+                            }}>
+                              {song.type}
+                            </div>
+                          )}
+                          {song.rating && (
+                            <div style={{
+                              padding: "4px 8px",
+                              background: "#0f4c1b",
+                              borderRadius: "4px",
+                              fontSize: "12px",
+                              color: "#4ade80"
+                            }}>
+                              ⭐ {song.rating.toFixed(1)}
+                            </div>
+                          )}
+                          {song.votes && (
+                            <div style={{
+                              padding: "4px 8px",
+                              background: "#1e3a8a",
+                              borderRadius: "4px",
+                              fontSize: "12px",
+                              color: "#60a5fa"
+                            }}>
+                              {song.votes} votes
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                        {['gp5', 'midi', 'ascii'].map((format) => (
-                          <button
-                            key={format}
-                            onClick={() => downloadTab(song.id, format)}
-                            disabled={loading}
-                            style={{
-                              padding: "8px 12px",
-                              background: loading ? "#444" : "#333",
-                              color: loading ? "#999" : "#f3f3f3",
-                              border: "1px solid #555",
-                              borderRadius: "6px",
-                              fontSize: "12px",
-                              fontWeight: "600",
-                              cursor: loading ? "not-allowed" : "pointer",
-                              textTransform: "uppercase"
-                            }}
-                          >
-                            {format}
-                          </button>
-                        ))}
+                        <button
+                          onClick={() => downloadTab(song.tab_url, 'tab', song)}
+                          disabled={loading}
+                          style={{
+                            padding: "8px 16px",
+                            background: loading ? "#444" : "#ffb347",
+                            color: loading ? "#999" : "#1a1a1a",
+                            border: "none",
+                            borderRadius: "6px",
+                            fontSize: "12px",
+                            fontWeight: "600",
+                            cursor: loading ? "not-allowed" : "pointer"
+                          }}
+                        >
+                          View Tab
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -299,7 +356,7 @@ export default function GuitarTabsPage() {
 
           {/* Download Result */}
           {downloadResult && (
-            <div style={{
+            <div id="tab-result" style={{
               background: "#181a1b",
               borderRadius: "12px",
               border: "1px solid #333",
@@ -311,13 +368,15 @@ export default function GuitarTabsPage() {
                 fontWeight: "600",
                 marginBottom: "20px"
               }}>
-                📋 Download Result
+                🎸 Guitar Tab
               </h2>
               <div style={{
                 background: "#232526",
                 border: "1px solid #444",
                 borderRadius: "8px",
-                padding: "15px"
+                padding: "15px",
+                maxHeight: "500px",
+                overflowY: "auto"
               }}>
                 <pre style={{
                   color: "#f3f3f3",
@@ -330,6 +389,43 @@ export default function GuitarTabsPage() {
                 }}>
                   {downloadResult}
                 </pre>
+              </div>
+              <div style={{
+                marginTop: "15px",
+                display: "flex",
+                gap: "10px",
+                flexWrap: "wrap"
+              }}>
+                <button
+                  onClick={() => navigator.clipboard.writeText(downloadResult)}
+                  style={{
+                    padding: "8px 16px",
+                    background: "#4ade80",
+                    color: "#000",
+                    border: "none",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  📋 Copy to Clipboard
+                </button>
+                <button
+                  onClick={() => setDownloadResult("")}
+                  style={{
+                    padding: "8px 16px",
+                    background: "#ef4444",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  ✖ Close Tab
+                </button>
               </div>
             </div>
           )}
