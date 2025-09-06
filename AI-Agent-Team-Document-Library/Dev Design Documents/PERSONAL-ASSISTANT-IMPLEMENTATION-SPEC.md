@@ -89,21 +89,108 @@ interface AgentCapability {
   activeProjects: Project[];
   specializations: string[];
   apiAccess: APIService[];
+  cnsStructure: CNSStructure;
+  fileSystemCapabilities: FileSystemCapabilities;
 }
 
-// Example capability query
-const teamCapabilities = await AgentRegistry.getCurrentCapabilities({
-  includeRecent: true,
-  filterBy: 'available',
-  detailed: true
+interface CNSStructure {
+  learningFiles: LearningFile[];
+  performanceMetrics: PerformanceMetric[];
+  skillDatabase: SkillEntry[];
+  memoryPatterns: MemoryPattern[];
+  selfReflectionData: ReflectionEntry[];
+  capabilityGaps: CapabilityGap[];
+}
+
+interface FileSystemCapabilities {
+  workingDirectory: DirectoryStructure;
+  incomingQueue: QueuedTask[];
+  outgoingDeliverables: Deliverable[];
+  resourceAccess: ResourceAccess[];
+  toolAvailability: Tool[];
+}
+
+// Example capability query with deep inspection
+const agentCapabilities = await AgentRegistry.inspectAgentCapabilities('data-scientist', {
+  includeCNS: true,
+  includeFileSystem: true,
+  analyzeRecent: true,
+  assessGaps: true
 });
 ```
 
+### **Deep Agent Inspection System**
+```typescript
+class AgentInspector {
+  async inspectAgentCNS(agentId: string): Promise<CNSAnalysis> {
+    const cnsPath = `agents/${agentId}/cns/`;
+    const learnings = await this.readLearningFiles(cnsPath);
+    const skills = await this.analyzeSkillDatabase(cnsPath);
+    const gaps = await this.identifyCapabilityGaps(cnsPath);
+    
+    return {
+      currentCapabilities: skills,
+      recentLearnings: learnings,
+      knowledgeGaps: gaps,
+      confidenceLevels: await this.assessConfidence(skills),
+      recommendedEnhancements: await this.suggestImprovements(gaps)
+    };
+  }
+  
+  async queryAgentCapability(agentId: string, query: string): Promise<CapabilityAssessment> {
+    const cnsAnalysis = await this.inspectAgentCNS(agentId);
+    const fileSystemState = await this.inspectFileSystem(agentId);
+    
+    // Use Claude to analyze the query against actual agent state
+    return await this.claudeAnalyzer.assessCapability({
+      query,
+      cnsData: cnsAnalysis,
+      fileSystem: fileSystemState,
+      agentProfile: await this.getAgentProfile(agentId)
+    });
+  }
+}
+```
+
 ### **Dynamic Capability Presentation**
-- **Conversational Format**: Natural language capability descriptions
-- **Interactive Exploration**: "Tell me more about what the Music Coach can do"
+- **Conversational Format**: Natural language capability descriptions based on actual CNS data
+- **Interactive Exploration**: "Tell me more about what the Music Coach can do" → Deep CNS inspection
 - **Live Status**: Real-time agent availability and current workload
 - **Recent Enhancements**: New skills added to agent CNS systems
+- **File System Awareness**: Understanding of agent's working directory, tools, and resources
+- **Capability Confidence**: Assessment of how well an agent can handle specific tasks
+- **Gap Identification**: Clear understanding of what agents cannot currently do
+
+### **Intelligent Query Processing**
+```typescript
+// Example: "Will the data scientist agent be able to analyze cryptocurrency market data?"
+async processCapabilityQuery(query: string): Promise<CapabilityResponse> {
+  // Parse the query to identify agent and task
+  const parsedQuery = await this.parseCapabilityQuery(query);
+  const { agentId, taskDescription, requiredCapabilities } = parsedQuery;
+  
+  // Inspect the agent's actual capabilities
+  const agentInspection = await this.agentInspector.inspectAgentCNS(agentId);
+  const fileSystemState = await this.agentInspector.inspectFileSystem(agentId);
+  
+  // Analyze capability match
+  const assessment = await this.claudeAnalyzer.assessTaskFeasibility({
+    task: taskDescription,
+    agentCapabilities: agentInspection,
+    availableTools: fileSystemState.toolAvailability,
+    apiAccess: fileSystemState.resourceAccess,
+    recentLearnings: agentInspection.recentLearnings
+  });
+  
+  return {
+    canPerform: assessment.feasible,
+    confidenceLevel: assessment.confidence,
+    requiredPreparation: assessment.gapAnalysis,
+    estimatedEffort: assessment.effort,
+    recommendedApproach: assessment.approach,
+    fallbackOptions: assessment.alternatives
+  };
+}
 
 ---
 
@@ -300,8 +387,10 @@ class PersonalAssistant extends Agent {
 - ✅ **Basic Conversation Management**: Context-aware dialogue
 - ✅ **Team Capability Queries**: "What can your team do today?"
 - ✅ **Interactive Capability Exploration**: Deep-dive into agent abilities
+- ✅ **CNS Inspection System**: Real-time analysis of agent CNS files and capabilities
+- ✅ **Intelligent Capability Assessment**: "Will the data scientist be able to..." queries
 - ✅ **Package Builder Foundation**: Basic request formulation
-- ✅ **Agent Registry Integration**: Live capability access
+- ✅ **Agent Registry Integration**: Live capability access with file system awareness
 - ❌ **Master Orchestrator Integration**: Deferred (state "not available")
 
 ### **Key Conversation Flows (Tonight)**
@@ -344,6 +433,60 @@ I can see our Music Coach has extensive capabilities here - Ultimate Guitar inte
 Walk me through your vision, and I'll help you craft this into a detailed project package our team can execute."
 ```
 
+#### **3. Intelligent Capability Assessment**
+```
+User: "Will the data scientist agent be able to analyze cryptocurrency market data and create predictive models?"
+
+PA: "Let me check the data scientist's current capabilities by inspecting their CNS and available tools...
+
+*[Inspects data-scientist/cns/skill-database.json and working directory]*
+
+Based on my inspection:
+
+**Current Capabilities:**
+- Statistical analysis libraries: ✅ pandas, numpy, scikit-learn available
+- Machine learning frameworks: ✅ TensorFlow and PyTorch access confirmed
+- Data visualization: ✅ matplotlib, seaborn, plotly in toolkit
+- API integration skills: ✅ Recent learning shows REST API consumption patterns
+
+**For Cryptocurrency Analysis Specifically:**
+- Financial data APIs: ⚠️ No current cryptocurrency API integrations in CNS
+- Time series analysis: ✅ Strong - recent ARIMA and LSTM model successes logged
+- Market data patterns: ⚠️ Limited - mostly worked with general datasets
+
+**Assessment:**
+The data scientist can definitely handle this with ~85% confidence. They would need:
+1. Cryptocurrency API access (CoinGecko, Binance API keys)
+2. Brief learning cycle on crypto market specifics (~2-3 hours based on similar past learning patterns)
+
+Would you like me to have them start the preparation work, or explore other agents who might complement this analysis?"
+```
+
+#### **4. CNS-Informed Project Planning**
+```
+User: "I need a comprehensive market research report on AI tools for small businesses"
+
+PA: "Perfect! Let me analyze which agents are best positioned for this based on their current CNS state and recent learnings...
+
+*[Inspects multiple agent CNS systems]*
+
+**Researcher Agent Assessment:**
+- Web scraping capabilities: ✅ Strong - recent updates to Beautiful Soup and Selenium patterns
+- Market research methodologies: ✅ Extensive - competitive analysis frameworks in CNS
+- AI industry knowledge: ✅ Excellent - tracks AI trends, has OpenAI/Anthropic API knowledge
+
+**Communications Agent Assessment:**
+- Report writing: ✅ Outstanding - recent business report templates in working directory  
+- Small business focus: ✅ Good - SMB communication patterns learned from recent projects
+- Technical translation: ✅ Strong - converts complex tech into business language
+
+**Data Scientist Assessment:**
+- Survey design: ✅ Available - statistical sampling methods in CNS
+- Market analysis: ✅ Good - consumer behavior modeling experience
+- Visualization: ✅ Excellent - professional dashboard creation capabilities
+
+This is an ideal match for our current capabilities. All three agents have the necessary skills with high confidence levels. Should I start building the project package?"
+```
 ---
 
 ## 🔧 **Technical Implementation Details**
@@ -378,19 +521,54 @@ interface ConversationStore {
 
 ### **Agent Registry Integration**
 ```typescript
-// Real-time agent capability access
+// Real-time agent capability access with CNS inspection
 class AgentRegistry {
   async getCurrentCapabilities(): Promise<AgentCapability[]> {
     const agents = await this.getAllAgents();
     const capabilities = await Promise.all(
-      agents.map(agent => this.getAgentCapabilities(agent.id))
+      agents.map(async agent => {
+        const cnsData = await this.inspectAgentCNS(agent.id);
+        const fileSystem = await this.inspectAgentFileSystem(agent.id);
+        return this.buildCapabilityProfile(agent, cnsData, fileSystem);
+      })
     );
     return capabilities;
   }
   
-  async getAgentStatus(agentId: string): Promise<AgentStatus> {
-    // Get real-time status from agent CNS
-    return await this.queryAgentCNS(agentId);
+  async inspectAgentCNS(agentId: string): Promise<CNSData> {
+    const cnsPath = `agents/${agentId}/cns/`;
+    return {
+      skills: await this.readJSONFile(`${cnsPath}skills.json`),
+      learnings: await this.readJSONFile(`${cnsPath}learnings.json`),
+      performance: await this.readJSONFile(`${cnsPath}performance.json`),
+      memory: await this.readJSONFile(`${cnsPath}memory.json`),
+      selfReflection: await this.readJSONFile(`${cnsPath}self-reflection.json`)
+    };
+  }
+  
+  async inspectAgentFileSystem(agentId: string): Promise<FileSystemState> {
+    const agentPath = `agents/${agentId}/`;
+    return {
+      workingFiles: await this.listDirectory(`${agentPath}working/`),
+      incomingTasks: await this.listDirectory(`${agentPath}incoming/`),
+      completedWork: await this.listDirectory(`${agentPath}outgoing/`),
+      tools: await this.analyzeToolAvailability(agentPath),
+      apiKeys: await this.checkAPIAccess(agentId)
+    };
+  }
+  
+  async querySpecificCapability(agentId: string, capability: string): Promise<CapabilityAssessment> {
+    const cnsData = await this.inspectAgentCNS(agentId);
+    const fileSystem = await this.inspectAgentFileSystem(agentId);
+    
+    // Use Claude to analyze the specific capability against agent's actual state
+    return await this.claudeAnalyzer.assess({
+      agent: agentId,
+      requestedCapability: capability,
+      currentCNS: cnsData,
+      availableResources: fileSystem,
+      confidenceThreshold: 0.8
+    });
   }
 }
 ```
@@ -403,8 +581,10 @@ class AgentRegistry {
 1. **Interactive Conversation**: Personal Assistant can maintain context across multiple message exchanges
 2. **Team Capability Queries**: Responds accurately to "what can your team do" questions
 3. **Agent-Specific Deep Dives**: Can discuss individual agent capabilities in detail
-4. **Package Builder Foundation**: Helps formulate basic project requests
-5. **No Mock Responses**: Everything stated must be real or explicitly marked as unavailable
+4. **CNS Inspection Capability**: Can inspect and analyze agent CNS files for accurate capability assessment
+5. **Intelligent Capability Queries**: Can answer "Will agent X be able to do Y?" questions accurately
+6. **Package Builder Foundation**: Helps formulate basic project requests
+7. **No Mock Responses**: Everything stated must be real or explicitly marked as unavailable
 
 ### **🔄 Next Phase (This Week)**
 1. **Master Orchestrator Integration**: Full planning and orchestration capabilities
