@@ -25,7 +25,10 @@ export class PersonalAssistantBridge implements Agent {
   ];
 
   private privateRepoPath: string;
-  private auditLog: Array<{timestamp: string, action: string, agent: string, dataType: string}> = [];
+  private auditLogPath: string;
+  
+  // Persistent audit log that survives across requests
+  private static persistentAuditLog: Array<{timestamp: string, action: string, agent: string, dataType: string}> = [];
   
   // Security and privacy settings
   private readonly ALLOWED_DATA_TYPES = [
@@ -45,7 +48,9 @@ export class PersonalAssistantBridge implements Agent {
 
   constructor() {
     this.privateRepoPath = '/Users/christian/Repos/my-personal-assistant-private';
+    this.auditLogPath = path.join(this.privateRepoPath, 'working', 'bridge-audit.json');
     this.initializeBridge();
+    this.loadAuditLogFromFile();
   }
 
   private initializeBridge() {
@@ -62,8 +67,9 @@ export class PersonalAssistantBridge implements Agent {
 
   async handleTask(task: AgentTask): Promise<AgentTaskResult> {
     try {
-      // Log all access attempts
-      this.logAuditEvent(task.type, task.payload?.requestingAgent || 'unknown', task.payload?.dataType || 'unspecified');
+      // Log task-specific summaries
+      const summary = this.getTaskSummary(task);
+      this.logAuditEvent(task.type, task.payload?.requestingAgent || 'unknown', task.payload?.dataType || 'general-access', summary);
 
       switch (task.type) {
         case 'get-identity-data':
@@ -86,6 +92,30 @@ export class PersonalAssistantBridge implements Agent {
         
         case 'get-audit-log':
           return this.getAuditLog();
+        
+        case 'apply-feedback-improvements':
+          return await this.applyFeedbackImprovements(task.payload);
+        
+        case 'add-agent-capability':
+          return await this.addAgentCapability(task.payload);
+        
+        case 'add-agent-reflex':
+          return await this.addAgentReflex(task.payload);
+        
+        case 'enhance-agent-memory':
+          return await this.enhanceAgentMemory(task.payload);
+        
+        case 'remove-behavior':
+          return await this.removeBehavior(task.payload);
+        
+        case 'analyze-cns-state':
+          return await this.analyzeCNSState(task.payload);
+        
+        case 'create-cns-backup':
+          return await this.createCNSBackup(task.payload);
+        
+        case 'restore-cns-backup':
+          return await this.restoreCNSBackup(task.payload);
 
         default:
           throw new Error(`Unknown task type: ${task.type}`);
@@ -134,6 +164,7 @@ export class PersonalAssistantBridge implements Agent {
         result: basicInfo
       };
     } catch (error) {
+      this.logAuditEvent('error', payload.requestingAgent, 'identity-data-error', `Failed to retrieve identity data: ${error}`);
       return { success: false, result: null, error: `Failed to retrieve identity data: ${error}` };
     }
   }
@@ -174,6 +205,7 @@ export class PersonalAssistantBridge implements Agent {
         result: styleGuide
       };
     } catch (error) {
+      this.logAuditEvent('error', payload.requestingAgent, 'communications-style-error', `Failed to retrieve communications style: ${error}`);
       return { success: false, result: null, error: `Failed to retrieve communications style: ${error}` };
     }
   }
@@ -209,6 +241,7 @@ export class PersonalAssistantBridge implements Agent {
         result: context
       };
     } catch (error) {
+      this.logAuditEvent('error', payload.requestingAgent, 'project-context-error', `Failed to retrieve project context: ${error}`);
       return { success: false, result: null, error: `Failed to retrieve project context: ${error}` };
     }
   }
@@ -247,13 +280,37 @@ export class PersonalAssistantBridge implements Agent {
         'cns'
       );
 
-      // For now, return basic CNS structure - we'll enhance this in Sub-Phase 6.1.2
-      const cnsData = {
+      // Read actual CNS files
+      const cnsData: any = {
         performance_metrics: {},
         learning_patterns: {},
         feedback_integration: {},
         self_assessment: {}
       };
+
+      // Load formatting guidelines if requested
+      if (payload.section === 'brain' || payload.section === 'all') {
+        try {
+          const formattingPath = path.join(agentCNSPath, 'brain', 'formatting-guidelines.md');
+          if (fs.existsSync(formattingPath)) {
+            cnsData.formatting_guidelines = fs.readFileSync(formattingPath, 'utf8');
+          }
+        } catch (error) {
+          console.warn('CNS: Could not load formatting guidelines:', error.message);
+        }
+      }
+
+      // Load conversation patterns if requested
+      if (payload.section === 'memory' || payload.section === 'all') {
+        try {
+          const conversationPath = path.join(agentCNSPath, 'memory', 'procedural', 'conversation-patterns.md');
+          if (fs.existsSync(conversationPath)) {
+            cnsData.conversation_patterns = fs.readFileSync(conversationPath, 'utf8');
+          }
+        } catch (error) {
+          console.warn('CNS: Could not load conversation patterns:', error.message);
+        }
+      }
 
       return {
         success: true,
@@ -285,15 +342,18 @@ export class PersonalAssistantBridge implements Agent {
    * Get audit log (restricted access)
    */
   private getAuditLog(): AgentTaskResult {
+    // Refresh from file to get latest entries from other instances
+    this.loadAuditLogFromFile();
+    
     return {
       success: true,
       result: {
-        total_entries: this.auditLog.length,
-        recent_entries: this.auditLog.slice(-10), // Last 10 entries only
+        total_entries: PersonalAssistantBridge.persistentAuditLog.length,
+        recent_entries: PersonalAssistantBridge.persistentAuditLog, // Return ALL entries - no hardcoded limits
         summary: {
-          bridge_initializations: this.auditLog.filter(e => e.action === 'bridge-initialized').length,
-          data_access_requests: this.auditLog.filter(e => e.action.includes('get-')).length,
-          errors: this.auditLog.filter(e => e.action === 'error').length
+          bridge_initializations: PersonalAssistantBridge.persistentAuditLog.filter(e => e.action === 'bridge-initialized').length,
+          data_access_requests: PersonalAssistantBridge.persistentAuditLog.filter(e => e.action.includes('get-')).length,
+          errors: PersonalAssistantBridge.persistentAuditLog.filter(e => e.action === 'error').length
         }
       }
     };
@@ -314,6 +374,7 @@ export class PersonalAssistantBridge implements Agent {
       'researcher-agent': ['identity-basic', 'project-context', 'learning-patterns'],
       'master-orchestrator': ['identity-basic', 'project-context', 'learning-patterns'],
       'project-coordinator': ['identity-basic', 'project-context', 'learning-patterns'],
+      'personal-assistant': ['identity-basic', 'identity-communications', 'project-context', 'learning-patterns'],
       'personal-assistant-bridge': ['identity-basic', 'identity-communications', 'project-context', 'learning-patterns']
     };
 
@@ -322,33 +383,700 @@ export class PersonalAssistantBridge implements Agent {
   }
 
   /**
-   * Log audit events for security and compliance
+   * Log audit events for security and compliance with interaction summaries
    */
-  private logAuditEvent(action: string, agent: string, dataType: string) {
+  private logAuditEvent(action: string, agent: string, dataType: string, summary?: string) {
     const auditEntry = {
       timestamp: new Date().toISOString(),
       action,
       agent,
-      dataType
+      dataType,
+      summary: summary || this.generateInteractionSummary(action, dataType)
     };
     
-    this.auditLog.push(auditEntry);
+    PersonalAssistantBridge.persistentAuditLog.push(auditEntry);
     
     // Keep audit log size manageable
-    if (this.auditLog.length > 1000) {
-      this.auditLog = this.auditLog.slice(-500); // Keep last 500 entries
+    if (PersonalAssistantBridge.persistentAuditLog.length > 1000) {
+      PersonalAssistantBridge.persistentAuditLog = PersonalAssistantBridge.persistentAuditLog.slice(-500); // Keep last 500 entries
     }
 
-    // In production, this would also write to persistent audit log
+    // Save to persistent file storage
+    this.saveAuditLogToFile();
+
     console.log(`🔍 Bridge Audit: ${action} by ${agent} for ${dataType}`);
   }
 
   /**
-   * Check if a file path is restricted
+   * Generate meaningful summaries for bridge interactions
    */
-  private isRestrictedPath(filePath: string): boolean {
-    return this.RESTRICTED_PATHS.some(restrictedPath => 
-      filePath.includes(restrictedPath)
-    );
+  private generateInteractionSummary(action: string, dataType: string): string {
+    switch (action) {
+      case 'get-identity-data':
+        return 'Retrieved user identity and preferences to personalize the response';
+      case 'get-communications-style':
+        return 'Accessed communication style preferences to match user\'s preferred tone and format';
+      case 'get-project-context':
+        return 'Loaded current project information to provide contextually relevant assistance';
+      case 'get-cns-data':
+        if (dataType.includes('formatting')) {
+          return 'Retrieved formatting guidelines to structure response appropriately';
+        } else if (dataType.includes('conversation')) {
+          return 'Accessed conversation patterns to improve natural dialogue flow';
+        } else {
+          return 'Loaded conversational neural system data to enhance interaction quality';
+        }
+      case 'bridge-initialized':
+        return 'Established secure connection to private data repository';
+      case 'get-audit-log':
+        return 'Retrieved interaction history for transparency and monitoring';
+      default:
+        return `Performed ${action.replace(/-/g, ' ')} operation to assist with user request`;
+    }
+  }
+
+  /**
+   * Generate context-aware summaries for bridge tasks
+   */
+  private getTaskSummary(task: AgentTask): string {
+    const userMessage = task.payload?.userMessage || '';
+    const conversationContext = task.payload?.conversationContext || '';
+    
+    switch (task.type) {
+      case 'get-identity-data':
+        return `Retrieved user identity and preferences to personalize response${userMessage ? ` about "${userMessage.substring(0, 50)}..."` : ''}`;
+      case 'get-communications-style':
+        return `Accessed communication style preferences to match user's preferred tone${userMessage ? ` for query about "${userMessage.substring(0, 50)}..."` : ''}`;
+      case 'get-project-context':
+        return `Loaded current project information to provide relevant context${userMessage ? ` for question about "${userMessage.substring(0, 50)}..."` : ''}`;
+      case 'get-cns-data':
+        return `Retrieved conversational neural system data to enhance interaction quality${userMessage ? ` for user query: "${userMessage.substring(0, 50)}..."` : ''}`;
+      case 'bridge-initialized':
+        return 'Established secure connection to private data repository for conversation session';
+      case 'get-audit-log':
+        return 'Retrieved interaction history for transparency and monitoring purposes';
+      default:
+        return `Performed ${task.type.replace(/-/g, ' ')} operation${userMessage ? ` in response to: "${userMessage.substring(0, 50)}..."` : ' to assist with user request'}`;
+    }
+  }
+
+  /**
+   * Apply feedback improvements to agent CNS
+   */
+  private async applyFeedbackImprovements(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient CNS update permissions' };
+    }
+
+    try {
+      const { agentType, behaviorChange, reasoning, priority } = payload;
+      const cnsPath = path.join(this.privateRepoPath, 'ai-team', agentType, 'conversation-patterns.md');
+      
+      if (!fs.existsSync(cnsPath)) {
+        return { success: false, result: null, error: `CNS file not found for agent: ${agentType}` };
+      }
+
+      // Read existing CNS content
+      let cnsContent = fs.readFileSync(cnsPath, 'utf8');
+      
+      // Add feedback improvement section
+      const improvementEntry = `\n\n## Behavioral Improvement (${new Date().toISOString()})\n\n` +
+        `**Priority**: ${priority}\n\n` +
+        `**Improvement**: ${behaviorChange}\n\n` +
+        `**Reasoning**: ${reasoning}\n\n` +
+        `**Applied by**: ${payload.requestingAgent}\n`;
+      
+      cnsContent += improvementEntry;
+      
+      // Write back to file
+      fs.writeFileSync(cnsPath, cnsContent, 'utf8');
+      
+      this.logAuditEvent('feedback-improvement', payload.requestingAgent, `${agentType}-cns`);
+      
+      return {
+        success: true,
+        result: { 
+          updated: true, 
+          agentType,
+          timestamp: new Date().toISOString(),
+          improvement: behaviorChange
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to apply feedback improvements: ${error}` };
+    }
+  }
+
+  /**
+   * Add new capability to agent CNS
+   */
+  private async addAgentCapability(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient CNS update permissions' };
+    }
+
+    try {
+      const { agentType, skill, proficiency, description, examples } = payload;
+      const cnsPath = path.join(this.privateRepoPath, 'ai-team', agentType, 'conversation-patterns.md');
+      
+      if (!fs.existsSync(cnsPath)) {
+        return { success: false, result: null, error: `CNS file not found for agent: ${agentType}` };
+      }
+
+      // Read existing CNS content
+      let cnsContent = fs.readFileSync(cnsPath, 'utf8');
+      
+      // Add new capability section
+      const capabilityEntry = `\n\n## New Capability: ${skill} (${new Date().toISOString()})\n\n` +
+        `**Proficiency Level**: ${proficiency}/1.0\n\n` +
+        `**Description**: ${description}\n\n` +
+        `**Examples**: ${examples.join(', ')}\n\n` +
+        `**Added by**: ${payload.requestingAgent}\n`;
+      
+      cnsContent += capabilityEntry;
+      
+      // Write back to file
+      fs.writeFileSync(cnsPath, cnsContent, 'utf8');
+      
+      this.logAuditEvent('capability-addition', payload.requestingAgent, `${agentType}-cns`);
+      
+      return {
+        success: true,
+        result: { 
+          updated: true, 
+          agentType,
+          skill,
+          proficiency,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to add agent capability: ${error}` };
+    }
+  }
+
+  /**
+   * Add new reflex to agent CNS
+   */
+  private async addAgentReflex(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient CNS update permissions' };
+    }
+
+    try {
+      const { agentType, trigger, response } = payload;
+      const cnsPath = path.join(this.privateRepoPath, 'ai-team', agentType, 'conversation-patterns.md');
+      
+      if (!fs.existsSync(cnsPath)) {
+        return { success: false, result: null, error: `CNS file not found for agent: ${agentType}` };
+      }
+
+      // Read existing CNS content
+      let cnsContent = fs.readFileSync(cnsPath, 'utf8');
+      
+      // Add new reflex section
+      const reflexEntry = `\n\n## New Reflex Pattern (${new Date().toISOString()})\n\n` +
+        `**Trigger**: ${trigger}\n\n` +
+        `**Response**: ${response}\n\n` +
+        `**Added by**: ${payload.requestingAgent}\n`;
+      
+      cnsContent += reflexEntry;
+      
+      // Write back to file
+      fs.writeFileSync(cnsPath, cnsContent, 'utf8');
+      
+      this.logAuditEvent('reflex-addition', payload.requestingAgent, `${agentType}-cns`);
+      
+      return {
+        success: true,
+        result: { 
+          updated: true, 
+          agentType,
+          trigger,
+          response,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to add agent reflex: ${error}` };
+    }
+  }
+
+  /**
+   * Enhance agent memory patterns
+   */
+  private async enhanceAgentMemory(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient CNS update permissions' };
+    }
+
+    try {
+      const { agentType, memoryType, content, importance } = payload;
+      const cnsPath = path.join(this.privateRepoPath, 'ai-team', agentType, 'conversation-patterns.md');
+      
+      if (!fs.existsSync(cnsPath)) {
+        return { success: false, result: null, error: `CNS file not found for agent: ${agentType}` };
+      }
+
+      // Read existing CNS content
+      let cnsContent = fs.readFileSync(cnsPath, 'utf8');
+      
+      // Add memory enhancement section
+      const memoryEntry = `\n\n## Memory Enhancement: ${memoryType} (${new Date().toISOString()})\n\n` +
+        `**Type**: ${memoryType}\n\n` +
+        `**Importance**: ${importance}/1.0\n\n` +
+        `**Content**: ${content}\n\n` +
+        `**Added by**: ${payload.requestingAgent}\n`;
+      
+      cnsContent += memoryEntry;
+      
+      // Write back to file
+      fs.writeFileSync(cnsPath, cnsContent, 'utf8');
+      
+      this.logAuditEvent('memory-enhancement', payload.requestingAgent, `${agentType}-cns`);
+      
+      return {
+        success: true,
+        result: { 
+          updated: true, 
+          agentType,
+          memoryType,
+          importance,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to enhance agent memory: ${error}` };
+    }
+  }
+
+  /**
+   * Remove specific behaviors from agent CNS
+   */
+  private async removeBehavior(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient permissions for behavior removal' };
+    }
+
+    try {
+      const agentType = payload.agentType || 'personal-assistant';
+      const targetFiles = payload.targetFiles || ['conversation-patterns.md'];
+      const removalStrategy = payload.removalStrategy || 'deprecation_replacement';
+      const filesModified: string[] = [];
+
+      for (const fileName of targetFiles) {
+        const filePath = path.join(this.privateRepoPath, 'ai-team', agentType, fileName);
+        
+        if (!fs.existsSync(filePath)) {
+          console.warn(`CNS file not found: ${filePath}`);
+          continue;
+        }
+
+        let fileContent = fs.readFileSync(filePath, 'utf8');
+        let modified = false;
+
+        // Apply removal strategy
+        switch (removalStrategy) {
+          case 'surgical_removal':
+            // Precisely remove specific patterns
+            for (const targetBehavior of payload.targetBehaviors || []) {
+              const escapedBehavior = targetBehavior.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const removalRegex = new RegExp(`## .*${escapedBehavior}.*?(?=##|$)`, 'gis');
+              if (removalRegex.test(fileContent)) {
+                fileContent = fileContent.replace(removalRegex, '');
+                modified = true;
+              }
+            }
+            break;
+
+          case 'deprecation_replacement':
+            // Mark as deprecated and add replacement
+            const deprecationSection = `\n\n## Deprecated Patterns (${new Date().toISOString().split('T')[0]})\n\n` +
+              `### ❌ REMOVED: ${payload.behaviorDescription}\n` +
+              `- **Reason**: ${payload.behaviorDescription}\n` +
+              `- **Status**: No longer apply this pattern\n` +
+              `- **Requesting Agent**: ${payload.requestingAgent}\n\n`;
+            
+            // Add replacement behaviors if provided
+            if (payload.replacementBehaviors && payload.replacementBehaviors.length > 0) {
+              let replacementSection = `## Replacement Behaviors (${new Date().toISOString().split('T')[0]})\n\n`;
+              for (const replacement of payload.replacementBehaviors) {
+                replacementSection += `### ✅ NEW: ${replacement}\n` +
+                  `- **Trigger**: ${payload.behaviorDescription} situation\n` +
+                  `- **Response**: ${replacement}\n` +
+                  `- **Added by**: ${payload.requestingAgent}\n\n`;
+              }
+              fileContent += deprecationSection + replacementSection;
+            } else {
+              fileContent += deprecationSection;
+            }
+            modified = true;
+            break;
+
+          case 'conditional_removal':
+            // Add conditional blocks
+            const conditionalSection = `\n\n## Conditional Behavior Removal (${new Date().toISOString().split('T')[0]})\n\n` +
+              `### ⚠️ CONDITIONAL: ${payload.behaviorDescription}\n` +
+              `- **Condition**: Do not apply when: ${payload.behaviorDescription}\n` +
+              `- **Alternative**: ${payload.replacementBehaviors?.[0] || 'Use default behavior'}\n` +
+              `- **Added by**: ${payload.requestingAgent}\n\n`;
+            fileContent += conditionalSection;
+            modified = true;
+            break;
+
+          default:
+            // Default to deprecation replacement
+            fileContent += `\n\n## Behavior Removal (${new Date().toISOString().split('T')[0]})\n\n` +
+              `**Removed**: ${payload.behaviorDescription}\n` +
+              `**Strategy**: ${removalStrategy}\n` +
+              `**By**: ${payload.requestingAgent}\n\n`;
+            modified = true;
+        }
+
+        if (modified) {
+          fs.writeFileSync(filePath, fileContent, 'utf8');
+          filesModified.push(fileName);
+        }
+      }
+
+      this.logAuditEvent('behavior-removal', payload.requestingAgent, `${agentType}-cns-removal`);
+
+      return {
+        success: true,
+        result: {
+          filesModified,
+          agentType,
+          removalStrategy,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to remove behavior: ${error}` };
+    }
+  }
+
+  /**
+   * Analyze current CNS state for removal operations
+   */
+  private async analyzeCNSState(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient permissions for CNS analysis' };
+    }
+
+    try {
+      const agentType = payload.agentType || 'personal-assistant';
+      const agentPath = path.join(this.privateRepoPath, 'ai-team', agentType);
+      
+      if (!fs.existsSync(agentPath)) {
+        return { success: false, result: null, error: `Agent directory not found: ${agentType}` };
+      }
+
+      const currentBehaviors: string[] = [];
+      const behaviorDependencies: { [key: string]: string[] } = {};
+      const fileContents: { [filename: string]: string } = {};
+
+      // Scan CNS files for current behaviors
+      const cnsFiles = ['conversation-patterns.md', 'brain/capabilities.md', 'brain/formatting-guidelines.md'];
+      
+      for (const fileName of cnsFiles) {
+        const filePath = path.join(agentPath, fileName);
+        if (fs.existsSync(filePath)) {
+          const content = fs.readFileSync(filePath, 'utf8');
+          fileContents[fileName] = content;
+          
+          // Extract behavior patterns from content
+          const behaviors = this.extractBehaviorsFromContent(content);
+          currentBehaviors.push(...behaviors);
+          
+          // Simple dependency analysis (looking for cross-references)
+          for (const behavior of behaviors) {
+            behaviorDependencies[behavior] = this.findBehaviorDependencies(behavior, content);
+          }
+        }
+      }
+
+      return {
+        success: true,
+        result: {
+          currentBehaviors: [...new Set(currentBehaviors)], // Remove duplicates
+          behaviorDependencies,
+          fileContents
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to analyze CNS state: ${error}` };
+    }
+  }
+
+  /**
+   * Create backup of current CNS state
+   */
+  private async createCNSBackup(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient permissions for backup creation' };
+    }
+
+    try {
+      const agentType = payload.agentType || 'personal-assistant';
+      const backupId = payload.backupId;
+      const agentPath = path.join(this.privateRepoPath, 'ai-team', agentType);
+      const backupPath = path.join(this.privateRepoPath, 'backups', agentType, backupId);
+
+      // Create backup directory
+      fs.mkdirSync(backupPath, { recursive: true });
+
+      // Copy all CNS files to backup location
+      const filesToBackup = [
+        'conversation-patterns.md',
+        'brain/capabilities.md', 
+        'brain/formatting-guidelines.md',
+        'memory/procedural/',
+        'memory/episodic/',
+        'reflexes/'
+      ];
+
+      for (const file of filesToBackup) {
+        const sourcePath = path.join(agentPath, file);
+        const destPath = path.join(backupPath, file);
+        
+        if (fs.existsSync(sourcePath)) {
+          if (fs.statSync(sourcePath).isDirectory()) {
+            // Copy directory recursively
+            this.copyDirectoryRecursive(sourcePath, destPath);
+          } else {
+            // Copy individual file
+            fs.mkdirSync(path.dirname(destPath), { recursive: true });
+            fs.copyFileSync(sourcePath, destPath);
+          }
+        }
+      }
+
+      // Create backup metadata
+      const metadata = {
+        backupId,
+        agentType,
+        timestamp: payload.timestamp || new Date().toISOString(),
+        requestingAgent: payload.requestingAgent,
+        description: `CNS backup before behavior removal`
+      };
+      
+      fs.writeFileSync(
+        path.join(backupPath, 'backup-metadata.json'),
+        JSON.stringify(metadata, null, 2),
+        'utf8'
+      );
+
+      this.logAuditEvent('cns-backup-created', payload.requestingAgent, `${agentType}-backup-${backupId}`);
+
+      return {
+        success: true,
+        result: {
+          backupId,
+          backupPath,
+          timestamp: metadata.timestamp
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to create CNS backup: ${error}` };
+    }
+  }
+
+  /**
+   * Restore CNS from backup
+   */
+  private async restoreCNSBackup(payload: any): Promise<AgentTaskResult> {
+    if (!this.validateDataAccess(payload.requestingAgent, 'learning-patterns')) {
+      return { success: false, result: null, error: 'Access denied: insufficient permissions for backup restoration' };
+    }
+
+    try {
+      const agentType = payload.agentType || 'personal-assistant';
+      const backupId = payload.backupId;
+      const agentPath = path.join(this.privateRepoPath, 'ai-team', agentType);
+      const backupPath = path.join(this.privateRepoPath, 'backups', agentType, backupId);
+
+      if (!fs.existsSync(backupPath)) {
+        return { success: false, result: null, error: `Backup not found: ${backupId}` };
+      }
+
+      // Read backup metadata
+      const metadataPath = path.join(backupPath, 'backup-metadata.json');
+      let metadata = {};
+      if (fs.existsSync(metadataPath)) {
+        metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+      }
+
+      // Restore files from backup
+      const backupFiles = fs.readdirSync(backupPath, { recursive: true });
+      
+      for (const file of backupFiles) {
+        if (typeof file === 'string' && file !== 'backup-metadata.json') {
+          const sourcePath = path.join(backupPath, file);
+          const destPath = path.join(agentPath, file);
+          
+          if (fs.statSync(sourcePath).isFile()) {
+            fs.mkdirSync(path.dirname(destPath), { recursive: true });
+            fs.copyFileSync(sourcePath, destPath);
+          }
+        }
+      }
+
+      this.logAuditEvent('cns-backup-restored', payload.requestingAgent, `${agentType}-restore-${backupId}`);
+
+      return {
+        success: true,
+        result: {
+          backupId,
+          restoredFrom: backupPath,
+          metadata,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      return { success: false, result: null, error: `Failed to restore CNS backup: ${error}` };
+    }
+  }
+
+  /**
+   * Helper method to extract behaviors from CNS content
+   */
+  private extractBehaviorsFromContent(content: string): string[] {
+    const behaviors: string[] = [];
+    const lines = content.split('\n');
+    
+    for (const line of lines) {
+      // Look for behavior patterns (headers, capabilities, etc.)
+      if (line.match(/^##\s+/)) {
+        const behavior = line.replace(/^##\s+/, '').trim();
+        if (behavior && !behavior.includes('(') && behavior.length > 10) {
+          behaviors.push(behavior);
+        }
+      }
+    }
+    
+    return behaviors;
+  }
+
+  /**
+   * Helper method to find behavior dependencies
+   */
+  private findBehaviorDependencies(behavior: string, content: string): string[] {
+    const dependencies: string[] = [];
+    const behaviorSection = this.extractBehaviorSection(behavior, content);
+    
+    // Look for references to other behaviors
+    const referenceMatches = behaviorSection.match(/refers? to|depends on|uses|builds on|requires/gi);
+    if (referenceMatches) {
+      // Extract potential dependency names (simplified)
+      const words = behaviorSection.split(/\s+/);
+      for (let i = 0; i < words.length - 1; i++) {
+        if (referenceMatches.some(ref => words[i].toLowerCase().includes(ref.toLowerCase()))) {
+          const potentialDependency = words[i + 1];
+          if (potentialDependency && potentialDependency.length > 5) {
+            dependencies.push(potentialDependency);
+          }
+        }
+      }
+    }
+    
+    return dependencies;
+  }
+
+  /**
+   * Helper method to extract specific behavior section from content
+   */
+  private extractBehaviorSection(behavior: string, content: string): string {
+    const lines = content.split('\n');
+    let inSection = false;
+    let section = '';
+    
+    for (const line of lines) {
+      if (line.includes(behavior)) {
+        inSection = true;
+      }
+      
+      if (inSection) {
+        section += line + '\n';
+        
+        // Stop at next major section
+        if (line.match(/^##\s+/) && !line.includes(behavior)) {
+          break;
+        }
+      }
+    }
+    
+    return section;
+  }
+
+  /**
+   * Helper method to copy directory recursively
+   */
+  private copyDirectoryRecursive(src: string, dest: string): void {
+    if (!fs.existsSync(src)) return;
+    
+    fs.mkdirSync(dest, { recursive: true });
+    
+    const items = fs.readdirSync(src);
+    for (const item of items) {
+      const srcPath = path.join(src, item);
+      const destPath = path.join(dest, item);
+      
+      if (fs.statSync(srcPath).isDirectory()) {
+        this.copyDirectoryRecursive(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+  }
+
+  /**
+   * Load audit log from persistent file storage with concurrency safety
+   */
+  private loadAuditLogFromFile() {
+    try {
+      if (fs.existsSync(this.auditLogPath)) {
+        const data = fs.readFileSync(this.auditLogPath, 'utf8');
+        const loadedLog = JSON.parse(data);
+        
+        // Merge with existing log instead of replacing
+        const existingEntries = PersonalAssistantBridge.persistentAuditLog;
+        const existingTimestamps = new Set(existingEntries.map(e => e.timestamp));
+        
+        // Add only new entries that aren't already in memory
+        const newEntries = loadedLog.filter((entry: any) => !existingTimestamps.has(entry.timestamp));
+        
+        if (newEntries.length > 0) {
+          PersonalAssistantBridge.persistentAuditLog = [...existingEntries, ...newEntries]
+            .sort((a, b) => a.timestamp.localeCompare(b.timestamp)); // Keep chronological order
+          console.log(`🔍 Bridge: Merged ${newEntries.length} new audit entries from file (total: ${PersonalAssistantBridge.persistentAuditLog.length})`);
+        } else {
+          console.log(`🔍 Bridge: Audit log already synchronized (${existingEntries.length} entries)`);
+        }
+      }
+    } catch (error) {
+      console.log(`🔍 Bridge: Could not load audit log from file: ${error}`);
+      if (PersonalAssistantBridge.persistentAuditLog.length === 0) {
+        PersonalAssistantBridge.persistentAuditLog = [];
+      }
+    }
+  }
+
+  /**
+   * Save audit log to persistent file storage with atomic updates
+   */
+  private saveAuditLogToFile() {
+    try {
+      const dir = path.dirname(this.auditLogPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
+      // Use atomic write with temp file to prevent corruption
+      const tempPath = this.auditLogPath + '.tmp';
+      fs.writeFileSync(tempPath, JSON.stringify(PersonalAssistantBridge.persistentAuditLog, null, 2));
+      fs.renameSync(tempPath, this.auditLogPath);
+    } catch (error) {
+      console.log(`🔍 Bridge: Could not save audit log to file: ${error}`);
+    }
   }
 }

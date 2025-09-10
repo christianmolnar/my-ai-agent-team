@@ -2,6 +2,59 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import LearningFeedback from "../components/learning/LearningFeedback";
+import SimpleInteractionLogs from "../components/SimpleInteractionLogs";
+
+// Function to convert markdown-like formatting to HTML
+const formatMessageContent = (content: string) => {
+  if (!content) return content;
+  
+  let formatted = content;
+  
+  // Remove or reduce headings - convert ### to just bold text instead
+  formatted = formatted.replace(/^### (.+)$/gm, '<strong style="font-weight: 600; color: #ffb347; display: block; margin: 4px 0 2px 0;">$1:</strong>');
+  
+  // Convert **bold** to <strong>
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight: 600; color: #ffb347;">$1</strong>');
+  
+  // BEFORE bullet conversion, group consecutive bullets and clean spacing between them
+  formatted = formatted.replace(/(^• .+$(\n• .+$)*)/gm, (match) => {
+    // Remove line breaks between consecutive bullet points
+    const cleanBullets = match.replace(/\n(?=• )/g, '\n');
+    return cleanBullets;
+  });
+  
+  // Convert • bullet points to proper list items with zero spacing
+  formatted = formatted.replace(/^• (.+)$/gm, '<div style="margin: 0; padding-left: 12px; position: relative; line-height: 1.4;"><span style="position: absolute; left: 0; color: #ffb347;">•</span>$1</div>');
+  
+  // Convert numbered lists (1. 2. 3. etc) with zero spacing
+  formatted = formatted.replace(/^(\d+)\. (.+)$/gm, '<div style="margin: 0; padding-left: 16px; position: relative; line-height: 1.4;"><span style="position: absolute; left: 0; color: #ffb347; font-weight: 600;">$1.</span>$2</div>');
+  
+  // Aggressively clean up line breaks - remove excessive spacing
+  formatted = formatted.replace(/\n{4,}/g, '\n\n');
+  formatted = formatted.replace(/\n{3}/g, '\n\n');
+  
+  // Special cleanup: Remove extra line breaks around bullet lists
+  formatted = formatted.replace(/\n+(<div style="margin: 0; padding-left: 12px[^>]*>)/g, '\n$1');
+  formatted = formatted.replace(/(<\/div>)\n+(?=<div style="margin: 0; padding-left: 12px)/g, '$1\n');
+  
+  // Convert double line breaks to minimal paragraph breaks
+  formatted = formatted.replace(/\n\n/g, '</p><p style="margin: 2px 0; line-height: 1.5;">');
+  
+  // Convert single line breaks to minimal breaks
+  formatted = formatted.replace(/\n/g, '<br>');
+  
+  // Clean up excessive <br> tags more aggressively, especially around bullet lists
+  formatted = formatted.replace(/(<br>\s*){3,}/g, '<br>');
+  formatted = formatted.replace(/(<br>\s*){2}/g, '<br>');
+  formatted = formatted.replace(/<br>(?=<div style="margin: 0; padding-left: 12px)/g, '');
+  formatted = formatted.replace(/(<\/div>)<br>/g, '$1');
+  
+  // Wrap in paragraph tags with minimal margins
+  formatted = `<div style="line-height: 1.5;">${formatted}</div>`;
+  
+  return formatted;
+};
 
 // Official Agent Teams from AGENT-ROSTER-SPECIFICATION.md
 const agentTeams = {
@@ -137,6 +190,18 @@ const agentTeams = {
 
 export default function Home() {
   const [message, setMessage] = useState<string>("");
+  const [newBehavior, setNewBehavior] = useState<string>("");
+  const [feedback, setFeedback] = useState<string>("");
+  const [pendingLearningId, setPendingLearningId] = useState<string | null>(null);
+  const [showLearningHistory, setShowLearningHistory] = useState<boolean>(false);
+  const [showInteractionLogs, setShowInteractionLogs] = useState<boolean>(false);
+
+  // Log when showInteractionLogs changes (can be removed in production)
+  useEffect(() => {
+    if (showInteractionLogs) {
+      console.log('Interaction Logs opened');
+    }
+  }, [showInteractionLogs]);
   const [chatHistory, setChatHistory] = useState<Array<{
     role: string;
     content: string;
@@ -167,6 +232,90 @@ export default function Home() {
     ]);
   };
 
+  // Handle teaching new behavior
+  const handleTeachBehavior = async () => {
+    if (!newBehavior.trim()) {
+      alert('Please describe the behavior you want me to learn.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/personal-assistant/methodology', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          area: 'behavior-modification',
+          improvement: newBehavior.trim()
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`✅ ${data.message}`);
+        
+        // If we got a learning ID, set it for feedback
+        if (data.learningId) {
+          setPendingLearningId(data.learningId);
+        }
+        
+        setNewBehavior('');
+      } else {
+        alert(`❌ Failed to teach behavior: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error teaching behavior:', error);
+      alert('❌ Error teaching behavior. Please try again.');
+    }
+  };
+
+  // Handle sending feedback
+  const handleSendFeedback = async () => {
+    if (!feedback.trim()) {
+      alert('Please provide your feedback.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/personal-assistant/methodology', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          area: 'performance-feedback',
+          improvement: feedback.trim()
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`✅ ${data.message}`);
+        
+        // If we got a learning ID, set it for feedback
+        if (data.learningId) {
+          setPendingLearningId(data.learningId);
+        }
+        
+        setFeedback('');
+      } else {
+        alert(`❌ Failed to send feedback: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error sending feedback:', error);
+      alert('❌ Error sending feedback. Please try again.');
+    }
+  };
+
+  // Handle learning feedback submission
+  const handleLearningFeedback = (learningId: string, action: 'internalize' | 'forget') => {
+    console.log(`Learning ${learningId} ${action}d`);
+    
+    // Clear pending learning ID if it matches
+    if (pendingLearningId === learningId) {
+      setPendingLearningId(null);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (message.trim()) {
       const userMessage = message.trim();
@@ -180,13 +329,16 @@ export default function Home() {
       }]);
       
       try {
-        // Call the actual Personal Assistant API
+        // Call the actual Personal Assistant API with conversation history
         const response = await fetch('/api/personal-assistant', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ message: userMessage })
+          body: JSON.stringify({ 
+            message: userMessage,
+            conversationHistory: chatHistory.filter(msg => msg.role !== 'assistant' || !msg.content.includes('🤔 Thinking...'))
+          })
         });
         
         const data = await response.json();
@@ -241,7 +393,8 @@ export default function Home() {
       <main style={{
         maxWidth: "1400px",
         margin: "0 auto",
-        color: "#f3f3f3"
+        color: "#f3f3f3",
+        fontFamily: "var(--font-geist-sans), system-ui, -apple-system, sans-serif"
       }}>
         {/* Header */}
         <div style={{
@@ -299,7 +452,7 @@ export default function Home() {
             border: "1px solid #333",
             padding: "20px",
             marginBottom: "20px",
-            height: "300px",
+            height: "600px",
             overflowY: "auto",
             scrollBehavior: "smooth"
           }}>
@@ -333,7 +486,11 @@ export default function Home() {
                     fontSize: "14px",
                     lineHeight: "1.5"
                   }}>
-                    {msg.content}
+                    <div 
+                      dangerouslySetInnerHTML={{
+                        __html: formatMessageContent(msg.content)
+                      }}
+                    />
                     
                     {/* Show metadata for assistant responses */}
                     {msg.role === 'assistant' && msg.metadata && (
@@ -447,349 +604,363 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Agent Teams */}
-        <div style={{ display: "grid", gap: "30px" }}>
-          
-          {/* Management and Coordination Team */}
-          <div style={{
-            background: "#232526",
-            borderRadius: "20px",
-            padding: "30px",
-            border: "1px solid #444"
-          }}>
-            <div style={{
-              textAlign: "center",
-              marginBottom: "25px"
-            }}>
-              <h2 style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#ffb347",
-                marginBottom: "8px"
-              }}>
-                🏛️ Management and Coordination
-              </h2>
-              <p style={{
-                color: "#ccc",
-                fontSize: "14px"
-              }}>
-                Strategic oversight, project management, and secure data integration
-              </p>
-            </div>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: "15px"
-            }}>
-              {agentTeams.management.map((agent) => (
-                <Link
-                  key={agent.id}
-                  href={`/agents/${agent.id}`}
-                  style={{
-                    display: "block",
-                    padding: "16px",
-                    background: "#181a1b",
-                    border: "1px solid #333",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    color: "#f3f3f3",
-                    transition: "all 0.2s",
-                    cursor: "pointer"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#1f2122";
-                    e.currentTarget.style.borderColor = "#555";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#181a1b";
-                    e.currentTarget.style.borderColor = "#333";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                    <span style={{ fontSize: "20px" }}>{agent.emoji}</span>
-                    <span style={{ fontSize: "14px", fontWeight: "600", color: "#ffb347" }}>
-                      {agent.name}
-                    </span>
-                  </div>
-                  <p style={{ 
-                    fontSize: "12px", 
-                    color: "#ccc", 
-                    margin: 0,
-                    lineHeight: "1.4"
-                  }}>
-                    {agent.description}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Education and Learning Team */}
-          <div style={{
-            background: "#232526",
-            borderRadius: "20px",
-            padding: "30px",
-            border: "1px solid #444"
-          }}>
-            <div style={{
-              textAlign: "center",
-              marginBottom: "25px"
-            }}>
-              <h2 style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#ffb347",
-                marginBottom: "8px"
-              }}>
-                🎓 Education and Learning
-              </h2>
-              <p style={{
-                color: "#ccc",
-                fontSize: "14px"
-              }}>
-                Specialized educational support and skill development
-              </p>
-            </div>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: "15px"
-            }}>
-              {agentTeams.education.map((agent) => (
-                <Link
-                  key={agent.id}
-                  href={`/agents/${agent.id}`}
-                  style={{
-                    display: "block",
-                    padding: "16px",
-                    background: "#181a1b",
-                    border: "1px solid #333",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    color: "#f3f3f3",
-                    transition: "all 0.2s",
-                    cursor: "pointer"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#1f2122";
-                    e.currentTarget.style.borderColor = "#555";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#181a1b";
-                    e.currentTarget.style.borderColor = "#333";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                    <span style={{ fontSize: "20px" }}>{agent.emoji}</span>
-                    <span style={{ fontSize: "14px", fontWeight: "600", color: "#ffb347" }}>
-                      {agent.name}
-                    </span>
-                  </div>
-                  <p style={{ 
-                    fontSize: "12px", 
-                    color: "#ccc", 
-                    margin: 0,
-                    lineHeight: "1.4"
-                  }}>
-                    {agent.description}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Product Development Team */}
-          <div style={{
-            background: "#232526",
-            borderRadius: "20px",
-            padding: "30px",
-            border: "1px solid #444"
-          }}>
-            <div style={{
-              textAlign: "center",
-              marginBottom: "25px"
-            }}>
-              <h2 style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#ffb347",
-                marginBottom: "8px"
-              }}>
-                💻 Product Development
-              </h2>
-              <p style={{
-                color: "#ccc",
-                fontSize: "14px"
-              }}>
-                Complete software development lifecycle from strategy to delivery
-              </p>
-            </div>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: "15px"
-            }}>
-              {agentTeams.productDevelopment.map((agent) => (
-                <Link
-                  key={agent.id}
-                  href={`/agents/${agent.id}`}
-                  style={{
-                    display: "block",
-                    padding: "16px",
-                    background: "#181a1b",
-                    border: "1px solid #333",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    color: "#f3f3f3",
-                    transition: "all 0.2s",
-                    cursor: "pointer"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#1f2122";
-                    e.currentTarget.style.borderColor = "#555";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#181a1b";
-                    e.currentTarget.style.borderColor = "#333";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                    <span style={{ fontSize: "20px" }}>{agent.emoji}</span>
-                    <span style={{ fontSize: "14px", fontWeight: "600", color: "#ffb347" }}>
-                      {agent.name}
-                    </span>
-                  </div>
-                  <p style={{ 
-                    fontSize: "12px", 
-                    color: "#ccc", 
-                    margin: 0,
-                    lineHeight: "1.4"
-                  }}>
-                    {agent.description}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Operations and Infrastructure Team */}
-          <div style={{
-            background: "#232526",
-            borderRadius: "20px",
-            padding: "30px",
-            border: "1px solid #444"
-          }}>
-            <div style={{
-              textAlign: "center",
-              marginBottom: "25px"
-            }}>
-              <h2 style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#ffb347",
-                marginBottom: "8px"
-              }}>
-                🔧 Operations and Infrastructure
-              </h2>
-              <p style={{
-                color: "#ccc",
-                fontSize: "14px"
-              }}>
-                Production operations, security, monitoring, and creative content
-              </p>
-            </div>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: "15px"
-            }}>
-              {agentTeams.operations.map((agent) => (
-                <Link
-                  key={agent.id}
-                  href={`/agents/${agent.id}`}
-                  style={{
-                    display: "block",
-                    padding: "16px",
-                    background: "#181a1b",
-                    border: "1px solid #333",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    color: "#f3f3f3",
-                    transition: "all 0.2s",
-                    cursor: "pointer"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#1f2122";
-                    e.currentTarget.style.borderColor = "#555";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#181a1b";
-                    e.currentTarget.style.borderColor = "#333";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                    <span style={{ fontSize: "20px" }}>{agent.emoji}</span>
-                    <span style={{ fontSize: "14px", fontWeight: "600", color: "#ffb347" }}>
-                      {agent.name}
-                    </span>
-                  </div>
-                  <p style={{ 
-                    fontSize: "12px", 
-                    color: "#ccc", 
-                    margin: 0,
-                    lineHeight: "1.4"
-                  }}>
-                    {agent.description}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-        </div>
-
-        {/* Footer Actions */}
+        {/* Teach Me New Behaviors & Feedback Section */}
         <div style={{
-          textAlign: "center",
-          marginTop: "40px",
-          padding: "30px",
-          background: "#232526",
-          borderRadius: "20px",
-          border: "1px solid #444"
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+          gap: "20px",
+          marginBottom: "30px"
         }}>
-          <h3 style={{
-            fontSize: "18px",
-            fontWeight: "600",
-            color: "#ffb347",
-            marginBottom: "15px"
+          {/* Teach Me New Behaviors */}
+          <div style={{
+            background: "#232526",
+            borderRadius: "10px",
+            border: "1px solid #444",
+            padding: "20px"
           }}>
-            🔧 System Configuration
-          </h3>
-          <Link
-            href="/api-status"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "12px 24px",
-              background: "#ffb347",
-              color: "#000",
-              borderRadius: "8px",
-              textDecoration: "none",
+            <h3 style={{
+              color: "#ffb347",
+              fontSize: "18px",
               fontWeight: "600",
+              marginBottom: "10px",
+              textAlign: "center"
+            }}>
+              🧠 Teach Me New Behaviors
+            </h3>
+            <p style={{
+              color: "#ccc",
               fontSize: "14px",
-              transition: "all 0.2s"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#f59e0b";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#ffb347";
-            }}
-          >
-            🔑 Configure API Keys & System Status
-          </Link>
+              textAlign: "center",
+              marginBottom: "15px",
+              lineHeight: "1.4"
+            }}>
+              Help me learn new ways to assist you better.
+            </p>
+            <textarea
+              value={newBehavior}
+              onChange={(e) => setNewBehavior(e.target.value)}
+              style={{
+                width: "100%",
+                height: "80px",
+                background: "#181a1b",
+                border: "1px solid #555",
+                borderRadius: "8px",
+                color: "#f3f3f3",
+                fontSize: "14px",
+                padding: "12px",
+                marginBottom: "15px",
+                resize: "vertical",
+                fontFamily: "var(--font-geist-sans), system-ui, -apple-system, sans-serif",
+                outline: "none"
+              }}
+              placeholder="Describe a new behavior or skill you'd like me to learn..."
+            />
+            <button 
+              onClick={handleTeachBehavior}
+              disabled={!newBehavior.trim()}
+              style={{
+                width: "100%",
+                padding: "12px 20px",
+                background: newBehavior.trim() ? "#ffb347" : "#666",
+                border: "none",
+                borderRadius: "8px",
+                color: newBehavior.trim() ? "#000" : "#ccc",
+                fontSize: "14px",
+                fontWeight: "600",
+                cursor: newBehavior.trim() ? "pointer" : "not-allowed",
+                transition: "all 0.2s"
+              }}
+              onMouseOver={(e) => {
+                if (newBehavior.trim()) {
+                  e.currentTarget.style.background = "#ffa500";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (newBehavior.trim()) {
+                  e.currentTarget.style.background = "#ffb347";
+                }
+              }}
+            >
+              Teach Behavior
+            </button>
+          </div>
+
+          {/* Provide Feedback */}
+          <div style={{
+            background: "#232526",
+            borderRadius: "10px",
+            border: "1px solid #444",
+            padding: "20px"
+          }}>
+            <h3 style={{
+              color: "#ffb347",
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: "10px",
+              textAlign: "center"
+            }}>
+              🗣️ Provide Feedback
+            </h3>
+            <p style={{
+              color: "#ccc",
+              fontSize: "14px",
+              textAlign: "center",
+              marginBottom: "15px",
+              lineHeight: "1.4"
+            }}>
+              Your feedback helps me improve my performance.
+            </p>
+            <textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              style={{
+                width: "100%",
+                height: "80px",
+                background: "#181a1b",
+                border: "1px solid #555",
+                borderRadius: "8px",
+                color: "#f3f3f3",
+                fontSize: "14px",
+                padding: "12px",
+                marginBottom: "15px",
+                resize: "vertical",
+                fontFamily: "var(--font-geist-sans), system-ui, -apple-system, sans-serif",
+                outline: "none"
+              }}
+              placeholder="What did I do well? What could I do better?"
+            />
+            <button 
+              onClick={handleSendFeedback}
+              disabled={!feedback.trim()}
+              style={{
+                width: "100%",
+                padding: "12px 20px",
+                background: feedback.trim() ? "#ffb347" : "#666",
+                border: "none",
+                borderRadius: "8px",
+                color: feedback.trim() ? "#000" : "#ccc",
+                fontSize: "14px",
+                fontWeight: "600",
+                cursor: feedback.trim() ? "pointer" : "not-allowed",
+                transition: "all 0.2s"
+              }}
+              onMouseOver={(e) => {
+                if (feedback.trim()) {
+                  e.currentTarget.style.background = "#ffa500";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (feedback.trim()) {
+                  e.currentTarget.style.background = "#ffb347";
+                }
+              }}
+            >
+              Send Feedback
+            </button>
+          </div>
         </div>
+
+        {/* Learning Management Section */}
+        <div style={{ marginBottom: "30px" }}>
+          {/* Pending Learning Feedback */}
+          {pendingLearningId && (
+            <LearningFeedback 
+              learningId={pendingLearningId}
+              onFeedbackSubmitted={handleLearningFeedback}
+            />
+          )}
+          
+          {/* Learning History Toggle */}
+          <div style={{
+            background: "#232526",
+            borderRadius: "10px",
+            border: "1px solid #444",
+            padding: "20px",
+            marginTop: pendingLearningId ? "20px" : "0"
+          }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: showLearningHistory ? "20px" : "0"
+            }}>
+              <h3 style={{
+                color: "#ffb347",
+                fontSize: "18px",
+                fontWeight: "600",
+                margin: 0
+              }}>
+                📚 Learning Management
+              </h3>
+              <button 
+                onClick={() => setShowLearningHistory(!showLearningHistory)}
+                style={{
+                  padding: "8px 16px",
+                  background: showLearningHistory ? "#ff6b6b" : "#ffb347",
+                  border: "none",
+                  borderRadius: "6px",
+                  color: "#000",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = showLearningHistory ? "#ff5252" : "#ffa500";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = showLearningHistory ? "#ff6b6b" : "#ffb347";
+                }}
+              >
+                {showLearningHistory ? "Hide History" : "Show History"}
+              </button>
+            </div>
+            
+            {showLearningHistory && (
+              <LearningFeedback 
+                showHistory={true}
+                onFeedbackSubmitted={handleLearningFeedback}
+              />
+            )}
+          </div>
+
+          {/* Interaction Logs Section */}
+          <div style={{
+            background: "#232526",
+            borderRadius: "10px",
+            border: "1px solid #444",
+            padding: "20px",
+            marginTop: "20px"
+          }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <h3 style={{
+                color: "#ffb347",
+                fontSize: "18px",
+                fontWeight: "600",
+                margin: 0
+              }}>
+                📋 Agent Interaction Logs
+              </h3>
+              <button 
+                onClick={() => setShowInteractionLogs(true)}
+                style={{
+                  padding: "10px 20px",
+                  background: "#4CAF50",
+                  border: "none",
+                  borderRadius: "6px",
+                  color: "#fff",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = "#45a049";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = "#4CAF50";
+                }}
+              >
+                🔍 View Interaction Logs
+              </button>
+            </div>
+            <p style={{
+              color: "#ccc",
+              fontSize: "14px",
+              margin: "10px 0 0 0",
+              lineHeight: "1.4"
+            }}>
+              View detailed logs of every agent interaction, task assignment, and execution results from all your conversations.
+            </p>
+          </div>
+        </div>
+
+        {/* Agent Team Sections */}
+        <div style={{ marginBottom: "30px" }}>
+          {Object.entries(agentTeams).map(([teamName, agents]) => (
+            <div key={teamName} style={{ marginBottom: "30px" }}>
+              <h2 style={{
+                color: "#ffb347",
+                fontSize: "24px",
+                fontWeight: "600",
+                marginBottom: "20px"
+              }}>
+                {teamName === 'management' && '🏛️'}
+                {teamName === 'education' && '🎓'}
+                {teamName === 'productDevelopment' && '💻'}
+                {teamName === 'operations' && '🔧'}
+                {` ${teamName.charAt(0).toUpperCase() + teamName.slice(1).replace(/([A-Z])/g, ' $1')}`}
+              </h2>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "20px"
+              }}>
+                {agents.map(agent => (
+                  <Link 
+                    key={agent.id} 
+                    href={`/agents/${agent.id}`} 
+                    style={{
+                      display: "block",
+                      padding: "20px",
+                      background: "#232526",
+                      borderRadius: "10px",
+                      border: "1px solid #444",
+                      textDecoration: "none",
+                      color: "inherit",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = "#2a2d2e";
+                      e.currentTarget.style.borderColor = "#555";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = "#232526";
+                      e.currentTarget.style.borderColor = "#444";
+                    }}
+                  >
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      marginBottom: "10px"
+                    }}>
+                      <span style={{ fontSize: "24px" }}>{agent.emoji}</span>
+                      <h3 style={{
+                        color: "#ffb347",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        margin: 0
+                      }}>
+                        {agent.name}
+                      </h3>
+                    </div>
+                    <p style={{
+                      color: "#ccc",
+                      fontSize: "14px",
+                      margin: 0,
+                      lineHeight: "1.4"
+                    }}>
+                      {agent.description}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Interaction Logs Viewer */}
+        {showInteractionLogs && (
+          <SimpleInteractionLogs 
+            isOpen={showInteractionLogs}
+            onClose={() => setShowInteractionLogs(false)}
+          />
+        )}
       </main>
     </div>
   );

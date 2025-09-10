@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Interaction Logs Button</title>
+</head>
+<body>
+    <h1>Testing Interaction Logs Button</h1>
+    <p>This will test clicking the "View Interaction Logs" button on the main page.</p>
+    
+    <script>
+        // Open the main page
+        window.open('http://localhost:3001', '_blank');
+        
+        // After a delay, try to click the button
+        setTimeout(() => {
+            const button = document.querySelector('[onclick*="showInteractionLogs"]');
+            if (button) {
+                console.log('Found button, clicking it...');
+                button.click();
+            } else {
+                console.log('Button not found');
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

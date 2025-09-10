@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "PORT=30000 next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.61.0",
+    "auto-pandoc": "^1.0.3",
     "axios": "^1.10.0",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",

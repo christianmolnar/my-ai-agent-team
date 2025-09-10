@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interaction Logs Button Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .button { 
+            padding: 10px 20px; 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 10px;
+        }
+        .test-result { 
+            padding: 20px; 
+            margin: 20px 0; 
+            border: 2px solid #ccc; 
+            border-radius: 5px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Interaction Logs Button Test</h1>
+    
+    <p>This page tests if the interaction logs button is working by opening the main page and attempting to trigger the button click.</p>
+    
+    <button class="button" onclick="testButton()">Test Button Click</button>
+    
+    <div id="results" class="test-result">
+        <h3>Test Results:</h3>
+        <div id="log"></div>
+    </div>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+        }
+        
+        function testButton() {
+            log('Opening main page in new window...');
+            
+            const mainPage = window.open('http://localhost:3001', '_blank');
+            
+            setTimeout(() => {
+                if (mainPage) {
+                    log('Attempting to test interaction logs functionality...');
+                    
+                    // Try to execute a script in the opened window
+                    try {
+                        // This might not work due to cross-origin restrictions, but worth trying
+                        const buttons = mainPage.document.querySelectorAll('button');
+                        log('Found ' + buttons.length + ' buttons on main page');
+                        
+                        buttons.forEach((btn, index) => {
+                            if (btn.textContent.includes('View Interaction Logs')) {
+                                log('Found "View Interaction Logs" button! Attempting to click...');
+                                btn.click();
+                                log('Button clicked successfully!');
+                            }
+                        });
+                    } catch (error) {
+                        log('Error accessing main page (likely due to security restrictions): ' + error.message);
+                        log('Please manually click the "View Interaction Logs" button on the main page');
+                        log('Look for console logs and a red overlay with yellow border');
+                    }
+                } else {
+                    log('Failed to open main page');
+                }
+            }, 2000);
+        }
+        
+        log('Test page loaded. Click "Test Button Click" to begin testing.');
+    </script>
+</body>
+</html>

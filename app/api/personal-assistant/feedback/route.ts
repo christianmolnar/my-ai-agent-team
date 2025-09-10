@@ -12,24 +12,33 @@ export async function POST(req: NextRequest) {
     // Initialize Personal Assistant
     const assistant = new PersonalAssistantAgent();
     
-    // Process the feedback for learning
-    const learningResult = await assistant.processUserFeedback(feedback, {
-      sessionId: sessionId || `session-${Date.now()}`,
-      userMessage: userMessage || 'N/A',
-      agentResponse: agentResponse || 'N/A',
-      context: context || {}
+    // Process the feedback for learning through the enhanced learning system
+    const learningResult = await assistant.learningSystem.processUserFeedback(feedback, {
+      sessionId: sessionId || 'default',
+      userMessage: userMessage || '',
+      agentResponse: agentResponse || '',
+      category: context?.category || 'general',
+      ...context
     });
     
-    return NextResponse.json({
+    // Prepare response
+    const response: any = {
       success: learningResult.success,
       message: 'Feedback processed and learned from successfully',
       learningDetails: {
-        changes: learningResult.changes,
-        appliedTo: learningResult.analysis,
+        improvementsApplied: learningResult.improvementsApplied || [],
+        category: context?.category || 'general',
         confidenceBoost: 'Moderate improvement in similar contexts',
-        updatedFiles: learningResult.updatedFiles
+        error: learningResult.error || null
       }
-    });
+    };
+
+    // Include detailed learning report in development mode
+    if (learningResult.detailedLearningReport && (process.env.DEVELOPMENT_MODE === 'true' || process.env.LEARNING_FEEDBACK_ENABLED === 'true')) {
+      response.learningReport = learningResult.detailedLearningReport;
+    }
+
+    return NextResponse.json(response);
     
   } catch (error) {
     console.error('Personal Assistant Feedback API Error:', error);

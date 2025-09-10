@@ -1,192 +1,138 @@
-# AI Agent Team Document Library
-*Comprehensive, organized documentation for 20-agent ecosystem with clean separation of concerns*
+# AI Agent Team - Documentation Library
+*Comprehensive documentation for the AI Agent Team system*
 
-## 📚 **Document Organization Status**
+## 🎯 **Quick Start Documents**
 
-✅ **REORGANIZATION COMPLETE** - All architecture separated from migration planning
-✅ **CLEAN DOCUMENTATION** - Each document has single, focused purpose  
-✅ **COMPREHENSIVE SPECIFICATIONS** - Complete 20-agent definitions with capabilities
-✅ **INTEGRATION STRATEGY** - Secure public-private repository bridge pattern
+### **Essential Reading**
+- **[FEATURE-OVERVIEW.md](FEATURE-OVERVIEW.md)** - Complete product features and capabilities overview
+- **[INTERACTION-LOGGING-SERVICE.md](INTERACTION-LOGGING-SERVICE.md)** - Enhanced security and audit logging system
 
----
+### **System Architecture**
+- **[system-architecture/CNS-LEARNING-FRAMEWORK.md](system-architecture/CNS-LEARNING-FRAMEWORK.md)** - Enhanced learning system with behavior teaching
+- **[system-architecture/AGENT-TEAM-STRUCTURE-DEFINITION.md](system-architecture/AGENT-TEAM-STRUCTURE-DEFINITION.md)** - Agent hierarchy and organization
 
-## 🎯 **Navigation by Purpose**
+## 📁 **Document Organization**
 
-### **🏗️ system-architecture/** - *Core System Specifications*
+### **Core Documentation**
+```
+/FEATURE-OVERVIEW.md                     # Complete product features guide
+/INTERACTION-LOGGING-SERVICE.md          # Security audit and logging system  
+```
 
-| Document | Purpose | Status |
-|----------|---------|--------|
-| **[`AGENT-ROSTER-SPECIFICATION.md`](system-architecture/AGENT-ROSTER-SPECIFICATION.md)** | **Complete specification of all 20 agents** with capabilities, APIs, CNS requirements, and collaboration framework | ✅ **MASTER DOC** |
-| **[`PRIVATE-INTEGRATION-STRATEGY.md`](system-architecture/PRIVATE-INTEGRATION-STRATEGY.md)** | **Secure bridge pattern** for public-private repository integration with security, privacy, and audit controls | ✅ **INTEGRATION** |
-| [`AGENT-TEAM-STRUCTURE-DEFINITION.md`](system-architecture/AGENT-TEAM-STRUCTURE-DEFINITION.md) | Original agent structure (superseded by Agent Roster Specification) | ⚠️ Legacy |
-| [`Multi-Agent-Research-System.md`](system-architecture/Multi-Agent-Research-System.md) | Multi-agent research methodology and collaboration patterns | 📚 Reference |
-| [`API-Key-Procurement-Guide.md`](system-architecture/API-Key-Procurement-Guide.md) | Guide for obtaining required API keys for all agent services | 📚 Reference |
-| [`Environment-Variables-Structure.md`](system-architecture/Environment-Variables-Structure.md) | Complete environment variable structure for all 20 agents | 📚 Reference |
+### **Development Documentation**
+```
+/Dev Design Documents/                   # Design specifications and plans
+├── CLAUDE-SDK-INTEGRATION-COMPLETE.md   # Official Anthropic SDK integration
+├── PERSONAL-ASSISTANT-IMPLEMENTATION-SPEC.md
+└── [Other design documents]
+```
 
-**Use When**: Designing agents, understanding capabilities, implementing CNS, setting up integration
+### **System Architecture**
+```  
+/system-architecture/                   # Core system design
+├── CNS-LEARNING-FRAMEWORK.md          # Enhanced learning capabilities
+├── AGENT-TEAM-STRUCTURE-DEFINITION.md # Agent organization
+├── PRIVATE-INTEGRATION-STRATEGY.md    # Privacy-first architecture
+└── [Other architecture documents]
+```
 
----
+### **Current Status**
+```
+/status-updates/                        # Current development status
+├── CNS-MASTER-ORCHESTRATOR-LEARNINGS.md
+├── CNS-TEST-EXPERT-LEARNINGS.md
+├── PERFORMANCE-UX-IMPROVEMENTS.md
+└── [Other status documents]
+```
 
-### **📋 migration-plans/** - *Migration Execution Strategy*
+### **Cleanup Area**
+```
+/To Delete/                             # Outdated documents for cleanup
+├── README.md                          # Cleanup process documentation
+├── CRITICAL-FIXES-APPLIED.md          # Historical fixes (now integrated)
+└── [Other outdated documents]
+```
 
-| Document | Purpose | Status |
-|----------|---------|--------|
-| **[`AI-AGENT-TEAM-MIGRATION-PLAN-CLEAN.md`](migration-plans/AI-AGENT-TEAM-MIGRATION-PLAN-CLEAN.md)** | **Clean, execution-focused migration strategy** with clear phases and action items | ✅ **EXECUTION** |
-| [`AGENT-TEAM-MIGRATION-PLAN.md`](migration-plans/AGENT-TEAM-MIGRATION-PLAN.md) | Original migration plan with mixed concerns (architecture included) | ⚠️ Legacy |
+## 🚀 **Recent Major Updates**
 
-**Use When**: Planning implementation phases, tracking progress, understanding current status
+### **December 2024 Enhancements**
+- ✅ **Enhanced Interaction Logging**: Complete audit transparency with meaningful summaries
+- ✅ **CNS Learning System**: Advanced behavior teaching and preference learning  
+- ✅ **Security Framework**: Privacy-first architecture with local data storage
+- ✅ **Documentation Cleanup**: Organized structure with clear purpose and ownership
 
----
+### **Key Features Implemented**
+- **View Interaction Logs**: Real-time transparency of system operations
+- **Behavior Teaching**: Natural language instruction of new behaviors
+- **Session Boundaries**: Intelligent conversation separation and context management
+- **Performance Optimization**: 48% response time improvement through parallel processing
 
-### **🛠️ Dev Design Documents/** - *Consolidated Development Documentation*
+## � **Finding Information**
 
-| Document | Purpose | Status |
-|----------|---------|--------|
-| **[`MUSIC-COACH-AGENT-IMPLEMENTATION.md`](Dev%20Design%20Documents/MUSIC-COACH-AGENT-IMPLEMENTATION.md)** | **Complete Music Coach implementation** with Ultimate Guitar integration and TuxGuitar research | ✅ **COMPREHENSIVE** |
-| **[`CLAUDE-MODEL-AGENT-STRATEGY.md`](Dev%20Design%20Documents/CLAUDE-MODEL-AGENT-STRATEGY.md)** | **Strategic AI model selection** for optimal agent performance across all 20 agents | ✅ **STRATEGY** |
-| [`CLAUDE-SDK-INTEGRATION-COMPLETE.md`](Dev%20Design%20Documents/CLAUDE-SDK-INTEGRATION-COMPLETE.md) | Completed Claude SDK integration documentation | ✅ Complete |
-| [`CLAUDE-SDK-INTEGRATION-PLAN.md`](Dev%20Design%20Documents/CLAUDE-SDK-INTEGRATION-PLAN.md) | Technical integration plan for Claude SDK | 📚 Reference |
-| [`DEVELOPMENT-PROGRESS-SUMMARY.md`](Dev%20Design%20Documents/DEVELOPMENT-PROGRESS-SUMMARY.md) | Complete development progress and milestone tracking | 📊 Status |
-| [`CRITICAL-FIXES-APPLIED.md`](Dev%20Design%20Documents/CRITICAL-FIXES-APPLIED.md) | Critical bug fixes and system improvements | � Fixes |
+### **For Users**
+- **Getting Started**: FEATURE-OVERVIEW.md → Core System Features
+- **Understanding Operations**: INTERACTION-LOGGING-SERVICE.md
+- **Teaching Behaviors**: system-architecture/CNS-LEARNING-FRAMEWORK.md
 
-**Use When**: Implementing agents, understanding development strategy, tracking progress, reviewing completed work
+### **For Developers**  
+- **System Design**: system-architecture/ folder
+- **Implementation Details**: Dev Design Documents/ folder
+- **Current Status**: status-updates/ folder
+- **Architecture Decisions**: design-specifications/ folder
 
-**Recent Consolidation**: September 5, 2025 - Merged `implementation-documents/` and `implementation-guides/` into single organized location
+## 📊 **Documentation Standards**
 
----
+### **File Naming Conventions**
+- **ALL-CAPS-WITH-HYPHENS.md** for major documents
+- **Descriptive names** that clearly indicate purpose
+- **Version info** in document headers where relevant
 
-### **📏 standards/** - *Development Standards and Guidelines*
+### **Content Structure**
+- **Clear headers** with emoji indicators for easy scanning
+- **Status indicators** (✅ Complete, 🔄 In Progress, ❌ Blocked)
+- **Update timestamps** and version information
+- **Cross-references** to related documents
 
-| Document | Purpose | Status |
-|----------|---------|--------|
-| [`Agent Operational Requirements`](standards/) | CNS integration and communication standards for all agents | ✅ Available |
-| [`Development Workflow Standards`](standards/) | Code quality and development process standards | ✅ Available |
+### **Maintenance Process**
+- **Regular Reviews**: Monthly documentation reviews for accuracy
+- **Update Coordination**: Related documents updated together
+- **Cleanup Process**: Outdated documents moved to "To Delete" with explanations
+- **Version Control**: Git history preserves all document evolution
 
-**Use When**: Maintaining code quality, following development processes, ensuring consistency
+## 🎯 **System Highlights**
 
----
+### **Privacy-First Architecture**
+- All personal data stored locally
+- Complete audit transparency
+- User control over all operations
+- Zero external data transmission
 
-### **🧠 cns/** - *Central Nervous System Learning Framework*
+### **Enhanced User Experience**
+- Real-time interaction logging with meaningful summaries
+- Context-aware behavior application
+- Session boundary detection for clean conversation management
+- Professional UI with dark theme consistency
 
-> **Note:** Each agent has its own CNS (Central Neural System)—its own nervous system, memories, learning, and self-assessment. There is no global or shared CNS; all CNS data and learning are agent-specific and evolve independently.
+### **Developer-Friendly**
+- Comprehensive API documentation
+- Clear system architecture documentation
+- Performance metrics and optimization guides
+- Troubleshooting and best practice guides
 
-| Document | Purpose | Status |
-|----------|---------|--------|
-| [`CNS-LEARNING-FRAMEWORK.md`](cns/CNS-LEARNING-FRAMEWORK.md) | Core CNS learning methodology and self-assessment protocols | ✅ Available |
-| [`CNS-MASTER-ORCHESTRATOR-LEARNINGS.md`](cns/CNS-MASTER-ORCHESTRATOR-LEARNINGS.md) | Master Orchestrator learning patterns and optimization data | 📚 Archive |
-| [`CNS-PROJECT-COORDINATOR-LEARNINGS.md`](cns/CNS-PROJECT-COORDINATOR-LEARNINGS.md) | Project Coordinator learning patterns and performance data | 📚 Archive |
-| [`CNS-COMMUNICATIONS-AGENT-LEARNINGS.md`](cns/CNS-COMMUNICATIONS-AGENT-LEARNINGS.md) | Communications Agent learning and writing optimization patterns | 📚 Archive |
-| [`CNS-TEST-EXPERT-LEARNINGS.md`](cns/CNS-TEST-EXPERT-LEARNINGS.md) | Test Expert learning patterns and quality improvement data | 📚 Archive |
+## � **Contributing to Documentation**
 
-**Use When**: Implementing agent learning capabilities, analyzing performance patterns, optimizing agent behavior
+### **Document Updates**
+1. **Read existing docs** to understand current structure
+2. **Update related documents** when making changes
+3. **Follow naming conventions** and content structure
+4. **Add update timestamps** and version information
 
----
-
-### **🗂️ temp/** - *Temporary Working Documents*
-
-**Purpose**: Staging area for documents under development  
-**Current Contents**: Cleanup documentation and work-in-progress items
-**Use When**: Developing new documentation, organizing work items
-
----
-
-## 🚀 **Quick Start by Role**
-
-### **For New Developers**
-1. **Start Here**: [`migration-plans/AI-AGENT-TEAM-MIGRATION-PLAN-CLEAN.md`](migration-plans/AI-AGENT-TEAM-MIGRATION-PLAN-CLEAN.md) - Current status and next steps
-2. **Understand Agents**: [`system-architecture/AGENT-ROSTER-SPECIFICATION.md`](system-architecture/AGENT-ROSTER-SPECIFICATION.md) - Complete 20-agent specification
-3. **Setup Integration**: [`system-architecture/PRIVATE-INTEGRATION-STRATEGY.md`](system-architecture/PRIVATE-INTEGRATION-STRATEGY.md) - Public-private repository connection
-
-### **For Agent Development**
-1. **Agent Specifications**: [`system-architecture/AGENT-ROSTER-SPECIFICATION.md`](system-architecture/AGENT-ROSTER-SPECIFICATION.md) - Detailed agent requirements
-2. **Implementation Examples**: [`Dev Design Documents/`](Dev%20Design%20Documents/) - Working implementation patterns and comprehensive guides
-3. **Development Standards**: [`standards/`](standards/) - Code quality and process requirements
-
-### **For System Architecture**
-1. **Complete System Overview**: [`system-architecture/AGENT-ROSTER-SPECIFICATION.md`](system-architecture/AGENT-ROSTER-SPECIFICATION.md) - Full 20-agent ecosystem
-2. **Integration Architecture**: [`system-architecture/PRIVATE-INTEGRATION-STRATEGY.md`](system-architecture/PRIVATE-INTEGRATION-STRATEGY.md) - Security and data flow
-3. **Learning Systems**: [`cns/CNS-LEARNING-FRAMEWORK.md`](cns/CNS-LEARNING-FRAMEWORK.md) - Agent intelligence framework
-
----
-
-## 📊 **Documentation Status Dashboard**
-
-### ✅ **Complete and Current (5 documents)**
-- **Agent Roster Specification**: Complete 20-agent definitions with capabilities and integration
-- **Private Integration Strategy**: Comprehensive security and bridge pattern documentation
-- **Clean Migration Plan**: Execution-focused implementation strategy
-- **Music Coach Implementation**: Complete specialized agent implementation guide
-- **CNS Learning Framework**: Agent intelligence and self-improvement methodology
-
-### 📚 **Reference Materials (8 documents)**
-- Multi-Agent Research System methodology
-- API Key procurement guides for all services
-- Environment variable structure for 20-agent system
-- Performance metrics implementation strategy
-- Claude model optimization with tier assignments
-- Agent operational requirements and CNS standards
-- Development workflow standards and quality guidelines
-- Historical CNS learning archives for implemented agents
-
-### ⚠️ **Legacy Documents (2 documents)**
-- Original Agent Team Structure Definition (superseded by Agent Roster Specification)
-- Original Migration Plan with mixed concerns (superseded by clean execution plan)
-
-### 📋 **Future Expansion Areas**
-- UI/UX design specifications for agent interfaces
-- Database schema and data modeling documentation
-- Production deployment and scaling guides
-- Advanced CNS learning algorithms and optimization techniques
+### **New Documents**
+1. **Check for existing coverage** to avoid duplication
+2. **Choose appropriate folder** based on document purpose
+3. **Follow established format** with clear headers and structure
+4. **Update this README** to reference new documents
 
 ---
-
-## 🎯 **Key Integration Points**
-
-### **Master Architecture Document**
-[`system-architecture/AGENT-ROSTER-SPECIFICATION.md`](system-architecture/AGENT-ROSTER-SPECIFICATION.md) contains the complete system definition including:
-- All 20 agents with detailed capabilities and API requirements
-- Claude model assignments (Opus/Sonnet/Haiku) for optimal performance
-- CNS integration requirements for continuous learning
-- Inter-agent collaboration and review frameworks
-- Implementation priorities and success metrics
-
-### **Security and Privacy Framework**
-[`system-architecture/PRIVATE-INTEGRATION-STRATEGY.md`](system-architecture/PRIVATE-INTEGRATION-STRATEGY.md) provides comprehensive security including:
-- Personal Assistant Bridge (Agent #6) as security gateway
-- Role-based access control and data classification
-- Complete audit logging and compliance monitoring
-- Privacy-preserving data access with anonymization
-- Production security hardening and incident response
-
-### **Implementation Strategy**
-[`migration-plans/AI-AGENT-TEAM-MIGRATION-PLAN-CLEAN.md`](migration-plans/AI-AGENT-TEAM-MIGRATION-PLAN-CLEAN.md) defines execution approach including:
-- Phase 4 (Current): Public repository clonability with setup scripts
-- Phase 6 (Next): Agent implementation with Claude optimization
-- Performance metrics: >85% approval rate, <15% correction rate
-- Security validation: Zero privacy incidents, complete audit trails
-
----
-
-## 🔄 **Document Maintenance**
-
-### **Living Documentation Policy**
-- All documents evolve with project development
-- Architecture changes trigger documentation updates
-- Implementation guides updated based on real development experience
-- Performance data continuously integrated into learning frameworks
-
-### **Quality Assurance**
-- Technical accuracy validated through implementation
-- Security documentation audited by security experts
-- User experience validated through developer onboarding
-- Compliance verified through privacy and security assessments
-
-### **Version Control Integration**
-- All changes tracked through git history
-- Major updates trigger stakeholder review
-- Breaking changes documented with migration paths
-- Historical versions preserved for reference and rollback
-
----
-
-*This document library provides the complete foundation for building, implementing, and maintaining a sophisticated 20-agent AI ecosystem with secure private data integration, continuous learning capabilities, and production-ready security and privacy controls.*
+*Last Updated: December 2024*  
+*Version: 3.0 - Enhanced Documentation with Interaction Logging*

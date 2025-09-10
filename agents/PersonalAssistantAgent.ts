@@ -1,6 +1,7 @@
 import { Agent, AgentTask, AgentTaskResult } from './Agent';
 import { MasterOrchestratorAgent } from './MasterOrchestratorAgent';
 import { PersonalAssistantBridge } from './PersonalAssistantBridge';
+import { EnhancedGlobalLearningSystem } from './GlobalAgentLearningSystem';
 import { ClaudeService } from '../lib/claude/ClaudeService';
 import { AgentClaudeClientFactory } from '../lib/claude/AgentClaudeClients';
 import Anthropic from '@anthropic-ai/sdk';
@@ -29,6 +30,7 @@ export class PersonalAssistantAgent implements Agent {
   private claudeService: ClaudeService;
   private personaBridge: PersonalAssistantBridge;
   private masterOrchestrator: MasterOrchestratorAgent;
+  public learningSystem: EnhancedGlobalLearningSystem;
   
   // Configuration
   private readonly maxContextTokens = 200000; // Claude Sonnet context window
@@ -44,6 +46,9 @@ export class PersonalAssistantAgent implements Agent {
 
     // Initialize persona bridge for private repo data
     this.personaBridge = new PersonalAssistantBridge();
+    
+    // Initialize learning system
+    this.learningSystem = new EnhancedGlobalLearningSystem('personal-assistant', this.personaBridge);
 
     // Initialize Master Orchestrator connection
     this.masterOrchestrator = new MasterOrchestratorAgent();
@@ -95,11 +100,29 @@ export class PersonalAssistantAgent implements Agent {
    */
   async handleUserConversation(userMessage: string, conversationContext?: ConversationContext): Promise<PersonalAssistantResponse> {
     try {
+      console.log('🤖 Personal Assistant - Handling conversation:');
+      console.log('  📝 User Message:', userMessage);
+      console.log('  📚 Conversation Context:', conversationContext ? 
+        `${conversationContext.history.length} previous messages` : 'No context');
+      
       // Step 1: Load persona context from private repository
       const personaContext = await this.getPersonaContext(userMessage);
       
       // Step 2: Analyze user intent and complexity
       const intentAnalysis = await this.analyzeUserIntent(userMessage, conversationContext);
+      
+      // Step 2.5: Load CNS data and check if we should ask clarifying questions
+      const cnsData = await this.loadCNSData();
+      const shouldAskQuestions = await this.shouldAskClarifyingQuestions(userMessage, intentAnalysis, cnsData);
+      
+      if (shouldAskQuestions.shouldAsk && shouldAskQuestions.questions.length > 0) {
+        return {
+          response: await this.formatClarifyingQuestionsFromCNS(shouldAskQuestions.questions, personaContext),
+          conversationType: 'direct', 
+          suggestedFollowUps: shouldAskQuestions.questions,
+          personaInfluence: ['question-asking-protocol']
+        };
+      }
       
       // Step 3: Determine response strategy
       if (intentAnalysis.requiresOrchestration) {
@@ -123,19 +146,19 @@ export class PersonalAssistantAgent implements Agent {
       // Get identity data
       const identityResult = await this.personaBridge.handleTask({
         type: 'get-identity-data',
-        payload: { requestingAgent: 'personal-assistant', userMessage }
+        payload: { requestingAgent: 'personal-assistant', dataType: 'user-identity', userMessage }
       });
 
       // Get communications style
       const commResult = await this.personaBridge.handleTask({
         type: 'get-communications-style',
-        payload: { requestingAgent: 'personal-assistant' }
+        payload: { requestingAgent: 'personal-assistant', dataType: 'communication-preferences', userMessage }
       });
 
       // Get project context
       const projectResult = await this.personaBridge.handleTask({
         type: 'get-project-context',
-        payload: { requestingAgent: 'personal-assistant' }
+        payload: { requestingAgent: 'personal-assistant', dataType: 'current-projects', userMessage }
       });
 
       // Construct persona context from bridge responses
@@ -356,7 +379,7 @@ REASONING: [brief explanation]`;
       { role: 'user', content: conversationPrompt }
     ];
 
-    const systemPrompt = this.buildPersonaSystemPrompt(personaContext);
+    const systemPrompt = await this.buildPersonaSystemPrompt(personaContext, userMessage);
 
     try {
       const response = await this.claudeService.generateResponse(
@@ -430,7 +453,9 @@ Your role: Primary interface and coordination hub for complex tasks.
 ${this.formatPersonaContext(personaContext)}
 
 ## Conversation Context
-${conversationHistory.length > 0 ? this.formatConversationHistory(conversationHistory) : 'Starting new conversation'}
+${conversationHistory.length > 0 ? 
+  `**IMPORTANT**: This is a continuing conversation. Previous context:\n${this.formatConversationHistory(conversationHistory)}\n\n**Current user message builds on this context.**` : 
+  'Starting new conversation'}
 
 ${currentContext ? `## Current Context\n${currentContext}` : ''}
 
@@ -465,9 +490,47 @@ ${personaContext.relevantElements.map(element => `- ${element.category}: ${eleme
   }
 
   /**
-   * Builds system prompt with persona context integration
+   * Builds system prompt with persona context integration and CNS learnings
    */
-  private buildPersonaSystemPrompt(personaContext: PersonaContext): string {
+  private async buildPersonaSystemPrompt(personaContext: PersonaContext, userMessage?: string): Promise<string> {
+    // Load active learnings from private repo CNS via bridge
+    let cnsLearnings = '';
+    try {
+      const cnsResult = await this.personaBridge.handleTask({
+        type: 'get-cns-data',
+        payload: {
+          requestingAgent: 'personal-assistant',
+          dataType: 'learning-data',
+          agentType: 'personal-assistant-agent',
+          section: 'all',
+          userMessage
+        }
+      });
+
+      if (cnsResult.success && cnsResult.result) {
+        const cnsData = cnsResult.result;
+        let learningText = '';
+        
+        if (cnsData.formatting_guidelines) {
+          learningText += `## FORMATTING GUIDELINES\n${cnsData.formatting_guidelines}\n\n`;
+          console.log('✅ CNS: Loaded formatting guidelines:', cnsData.formatting_guidelines.length, 'characters');
+        }
+        
+        if (cnsData.conversation_patterns) {
+          learningText += `## CONVERSATION PATTERNS\n${cnsData.conversation_patterns}\n\n`;
+          console.log('✅ CNS: Loaded conversation patterns:', cnsData.conversation_patterns.length, 'characters');
+        }
+        
+        cnsLearnings = learningText || 'CNS learning files not available';
+        console.log('✅ CNS: Total learning data length:', cnsLearnings.length, 'characters');
+      } else {
+        console.log('❌ CNS: Bridge call failed:', cnsResult.error || 'No result');
+      }
+    } catch (error) {
+      console.warn('CNS: Bridge access failed:', error.message);
+      cnsLearnings = 'CNS learning files not available - bridge error';
+    }
+    
     return `You are the Personal Assistant AI that coordinates a team of 20+ specialized AI agents.
 
 YOUR ROLE & IDENTITY:
@@ -498,7 +561,35 @@ COMMUNICATION GUIDELINES:
 - Consider their current projects and ongoing work
 - Provide responses that are actionable and relevant to their role as ${personaContext.role}
 
-Your goal is to provide personalized, contextually relevant assistance that feels natural and helpful.`;
+LEARNED BEHAVIORS AND FORMATTING GUIDELINES:
+${cnsLearnings}
+
+🚨🚨🚨 CRITICAL FORMATTING ENFORCEMENT 🚨🚨🚨
+THE USER HAS COMPLAINED MULTIPLE TIMES ABOUT UNFORMATTED RESPONSES.
+YOU MUST FORMAT EVERY RESPONSE PROPERLY OR IT WILL BE REJECTED.
+
+MANDATORY RULES - NO EXCEPTIONS:
+• NEVER write sentences longer than 20 words
+• ALWAYS use bullet points (•) for lists
+• ALWAYS add blank lines between sections
+• ALWAYS break long text into short paragraphs
+• ALWAYS use **bold** for emphasis
+
+❌ FORBIDDEN: "I understand this is about your son's ongoing health situation. Let me coordinate with our team to provide helpful information while being mindful of the sensitivity of this topic. **Initial Response**: I'm concerned about your son's three-year struggle with symptoms. To help provide the most relevant information: 1. **Clarifying Questions**: • Which specific symptoms has your son been experiencing? • Have you received any medical evaluations or diagnoses? • Are you looking for research-based information, specialist resources, or support options?"
+
+✅ REQUIRED FORMAT:
+I understand this is about your son's ongoing health situation.
+
+Let me coordinate with our team to provide helpful information.
+
+**Initial Questions:**
+• Which specific symptoms has your son been experiencing?
+• Have you received any medical evaluations or diagnoses? 
+• Are you looking for research-based information or support options?
+
+EVERY response must be broken into short, readable segments like this.
+
+Your goal is to provide personalized assistance with PERFECT formatting that the user can easily read.`;
   }
 
   /**
@@ -612,7 +703,7 @@ The response should feel like a natural conversation while delivering all reques
       { role: 'user', content: responsePrompt }
     ];
 
-    const systemPrompt = this.buildPersonaSystemPrompt(personaContext);
+    const systemPrompt = await this.buildPersonaSystemPrompt(personaContext, originalRequest);
 
     try {
       const finalResponse = await this.claudeService.generateResponse(
@@ -643,6 +734,32 @@ The response should feel like a natural conversation while delivering all reques
     };
   }
 
+  /**
+   * Formats clarifying questions using CNS formatting guidelines
+   */
+  private async formatClarifyingQuestions(questions: string[], personaContext: PersonaContext): Promise<string> {
+    try {
+      // Format according to the learned preferences
+      let formattedResponse = `I'd like to ask a few clarifying questions to better understand your request:\n\n`;
+      
+      questions.forEach((question, index) => {
+        formattedResponse += `**${index + 1}. ${question}**\n\n`;
+      });
+      
+      formattedResponse += `These questions will help me coordinate the right team members and provide you with the most relevant and useful information.\n\n`;
+      formattedResponse += `Please let me know your thoughts on any or all of these questions, and I'll get started on your research right away.`;
+      
+      return formattedResponse;
+    } catch (error) {
+      // Fallback formatting if CNS loading fails
+      let fallbackResponse = `I'd like to ask a few questions to better help you:\n\n`;
+      questions.forEach((question, index) => {
+        fallbackResponse += `${index + 1}. ${question}\n\n`;
+      });
+      return fallbackResponse;
+    }
+  }
+
   // Helper methods for intent analysis parsing
   private extractRequiredAgents(analysisText: string): string[] {
     // Implementation would extract agent requirements from analysis
@@ -661,6 +778,80 @@ The response should feel like a natural conversation while delivering all reques
 
   private formatConversationHistory(history: ConversationMessage[]): string {
     return history.map(msg => `**${msg.role}**: ${msg.content}`).join('\n\n');
+  }
+
+  /**
+   * Load CNS data from private repository
+   */
+  private async loadCNSData(): Promise<any> {
+    try {
+      const cnsResult = await this.personaBridge.handleTask({
+        type: 'get-cns-data',
+        payload: {
+          requestingAgent: 'personal-assistant',
+          dataType: 'conversation-patterns',
+          agentType: 'personal-assistant-agent',
+          section: 'all'
+        }
+      });
+
+      if (cnsResult.success && cnsResult.result) {
+        console.log('✅ CNS: Data loaded successfully');
+        return cnsResult.result;
+      } else {
+        console.log('❌ CNS: Failed to load data:', cnsResult.error);
+        return {};
+      }
+    } catch (error) {
+      console.error('Error loading CNS data:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Check if clarifying questions should be asked based on CNS patterns
+   */
+  private async shouldAskClarifyingQuestions(userMessage: string, intentAnalysis: any, cnsData: any): Promise<{shouldAsk: boolean, questions: string[]}> {
+    try {
+      // Use the learning system to check for clarifying questions
+      const questionCheck = await this.learningSystem.shouldAskClarifyingQuestions(
+        intentAnalysis.complexityLevel === 'high' ? 'complex-research' : 'general',
+        userMessage
+      );
+
+      return {
+        shouldAsk: questionCheck.shouldAsk,
+        questions: questionCheck.questions
+      };
+    } catch (error) {
+      console.error('Error checking clarifying questions:', error);
+      return { shouldAsk: false, questions: [] };
+    }
+  }
+
+  /**
+   * Format clarifying questions using CNS formatting guidelines
+   */
+  private async formatClarifyingQuestionsFromCNS(questions: string[], personaContext: any): Promise<string> {
+    try {
+      let formattedResponse = `I'd like to ask a few clarifying questions to ensure I coordinate the right team members and provide exactly what you need:\n\n`;
+      
+      questions.forEach((question, index) => {
+        formattedResponse += `**${index + 1}. ${question}**\n\n`;
+      });
+      
+      formattedResponse += `These questions will help me coordinate our team's expertise effectively. Please let me know your preferences, and I'll get our specialists working on your request right away.`;
+      
+      return formattedResponse;
+    } catch (error) {
+      console.error('Error formatting clarifying questions:', error);
+      // Fallback formatting
+      let fallbackResponse = `I'd like to ask a few questions to better help you:\n\n`;
+      questions.forEach((question, index) => {
+        fallbackResponse += `${index + 1}. ${question}\n\n`;
+      });
+      return fallbackResponse;
+    }
   }
 }
 
