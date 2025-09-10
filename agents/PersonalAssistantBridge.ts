@@ -375,7 +375,8 @@ export class PersonalAssistantBridge implements Agent {
       'master-orchestrator': ['identity-basic', 'project-context', 'learning-patterns'],
       'project-coordinator': ['identity-basic', 'project-context', 'learning-patterns'],
       'personal-assistant': ['identity-basic', 'identity-communications', 'project-context', 'learning-patterns'],
-      'personal-assistant-bridge': ['identity-basic', 'identity-communications', 'project-context', 'learning-patterns']
+      'personal-assistant-bridge': ['identity-basic', 'identity-communications', 'project-context', 'learning-patterns'],
+      'global-learning-system': ['identity-basic', 'project-context', 'learning-patterns']
     };
 
     const allowedDataTypes = agentPermissions[requestingAgent] || [];

@@ -18,8 +18,8 @@ export class LearningTrackingService {
   private backupDir: string;
 
   constructor() {
-    this.logFilePath = path.join(process.cwd(), 'learning-history.jsonl');
-    this.backupDir = path.join(process.cwd(), 'learning-backups');
+    this.logFilePath = path.join(process.cwd(), 'data', 'learning', 'learning-history.jsonl');
+    this.backupDir = path.join(process.cwd(), 'data', 'backups');
     this.ensureDirectoriesExist();
   }
 
