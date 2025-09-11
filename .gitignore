@@ -26,6 +26,8 @@ build/
 
 # IDE
 .vscode/
+!.vscode/copilot-behavior.md
+!.vscode/copilot-verification.md
 .idea/
 
 # OS

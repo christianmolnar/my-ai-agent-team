@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { LearningHistoryEntry, LearningStats } from '../../types/learning-tracking';
+import LearningReversalModal from './LearningReversalModal';
 
 interface LearningFeedbackProps {
   learningId?: string;
@@ -23,9 +24,10 @@ export default function LearningFeedback({
   const [stats, setStats] = useState<LearningStats | null>(null);
   const [selectedLearning, setSelectedLearning] = useState<string | null>(learningId || null);
   const [showConfirmation, setShowConfirmation] = useState<{ action: 'internalize' | 'forget'; learningId: string } | null>(null);
+  const [showReversalModal, setShowReversalModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('active');
 
   useEffect(() => {
     if (showHistory) {
@@ -107,6 +109,32 @@ export default function LearningFeedback({
     setShowConfirmation({ action, learningId });
   };
 
+  const handleReversalAction = async (learningId: string, action: 'revert' | 'keep', reason?: string) => {
+    try {
+      const response = await fetch('/api/learning-management', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: action === 'revert' ? 'rollback' : 'enable',
+          learningId,
+          reason: reason || ''
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        await loadLearningHistory();
+        await loadLearningStats();
+        setShowReversalModal(null);
+        alert(`✅ Learning ${action === 'revert' ? 'reverted' : 'kept active'} successfully!`);
+      } else {
+        alert(`❌ Failed to ${action} learning: ${result.error}`);
+      }
+    } catch (error) {
+      alert(`❌ Error ${action}ing learning: ${error}`);
+    }
+  };
+
   const rollbackLearning = async (learningId: string, reason: string) => {
     if (!confirm(`Are you sure you want to rollback this learning? This will restore the previous behavior.`)) {
       return;
@@ -141,7 +169,17 @@ export default function LearningFeedback({
 
   const filteredHistory = history.filter(item => {
     const matchesSearch = item.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    let matchesStatus = false;
+    
+    if (statusFilter === 'all') {
+      matchesStatus = true;
+    } else if (statusFilter === 'active') {
+      // Active includes both pending and internalized learnings
+      matchesStatus = item.status === 'pending' || item.status === 'internalized';
+    } else {
+      matchesStatus = item.status === statusFilter;
+    }
+    
     return matchesSearch && matchesStatus;
   });
 
@@ -572,10 +610,11 @@ export default function LearningFeedback({
               cursor: "pointer"
             }}
           >
-            <option value="all">All Status</option>
+            <option value="active">Active (Pending + Internalized)</option>
             <option value="pending">Pending</option>
             <option value="internalized">Internalized</option>
             <option value="reverted">Forgotten</option>
+            <option value="all">All Status</option>
           </select>
         </div>
 
@@ -598,28 +637,34 @@ export default function LearningFeedback({
             </div>
           ) : (
             filteredHistory.map((item) => (
-              <div key={item.id} style={{
-                background: "#181a1b",
-                border: "1px solid #555",
-                borderRadius: "8px",
-                padding: "12px",
-                transition: "all 0.2s"
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = "#ffb347";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = "#555";
-              }}>
+              <div 
+                key={item.id} 
+                onClick={() => setShowReversalModal(item.id)}
+                style={{
+                  background: "#181a1b",
+                  border: "1px solid #555",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  transition: "all 0.2s",
+                  cursor: "pointer"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.borderColor = "#ffb347";
+                  e.currentTarget.style.backgroundColor = "#1f2122";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.borderColor = "#555";
+                  e.currentTarget.style.backgroundColor = "#181a1b";
+                }}>
                 <div style={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "flex-start",
                   gap: "15px"
                 }}>
-                  {/* Left Column: Status and Description */}
+                  {/* Learning Info - Now takes full width */}
                   <div style={{ 
-                    flex: "2",
+                    flex: "1",
                     minWidth: "0"
                   }}>
                     <div style={{
@@ -635,6 +680,13 @@ export default function LearningFeedback({
                       }}>
                         {new Date(item.timestamp).toLocaleString()}
                       </span>
+                      <span style={{
+                        fontSize: "11px",
+                        color: "#666",
+                        fontStyle: "italic"
+                      }}>
+                        Files: {item.filesModified?.length || 0}
+                      </span>
                     </div>
                     <p style={{
                       color: "#f3f3f3",
@@ -643,61 +695,14 @@ export default function LearningFeedback({
                       margin: "0",
                       lineHeight: "1.3"
                     }}>{item.description}</p>
-                  </div>
-
-                  {/* Center Column: Files (2x3 grid) */}
-                  <div style={{
-                    flex: "2",
-                    minWidth: "0"
-                  }}>
-                    {item.filesModified && item.filesModified.length > 0 ? (
-                      <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "4px",
-                        fontSize: "11px",
-                        color: "#888"
-                      }}>
-                        {item.filesModified.slice(0, 6).map((file, index) => (
-                          <div key={index} style={{
-                            padding: "2px 6px",
-                            background: "#232526",
-                            borderRadius: "3px",
-                            border: "1px solid #444",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            fontSize: "10px"
-                          }}>
-                            📄 {file.split('/').pop() || file}
-                          </div>
-                        ))}
-                        {item.filesModified.length > 6 && (
-                          <div style={{
-                            padding: "2px 6px",
-                            background: "#333",
-                            borderRadius: "3px",
-                            border: "1px solid #555",
-                            fontSize: "10px",
-                            color: "#aaa",
-                            fontStyle: "italic",
-                            textAlign: "center"
-                          }}>
-                            +{item.filesModified.length - 6} more
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <p style={{
-                        fontSize: "11px",
-                        color: "#666",
-                        margin: "0",
-                        fontStyle: "italic",
-                        textAlign: "center"
-                      }}>
-                        No files modified
-                      </p>
-                    )}
+                    <div style={{
+                      fontSize: "11px",
+                      color: "#888",
+                      marginTop: "5px",
+                      fontStyle: "italic"
+                    }}>
+                      Click to view details and manage learning
+                    </div>
                   </div>
 
                   {/* Right Column: Action Buttons */}
@@ -706,7 +711,9 @@ export default function LearningFeedback({
                     gap: "8px",
                     flexShrink: "0",
                     alignItems: "flex-start"
-                  }}>
+                  }}
+                  onClick={(e) => e.stopPropagation()} // Prevent modal opening when clicking buttons
+                  >
                     {item.status === 'pending' && (
                       <>
                         <button
@@ -765,38 +772,34 @@ export default function LearningFeedback({
                       </>
                     )}
 
-                    {item.status === 'internalized' && item.canRollback && (
-                      <button
-                        onClick={() => {
-                          const reason = prompt('Reason for rollback:');
-                          if (reason) rollbackLearning(item.id, reason);
-                        }}
-                        disabled={loading}
-                        style={{
-                          padding: "6px 12px",
-                          background: loading ? "#666" : "#ffa500",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "6px",
-                          fontSize: "12px",
-                          fontWeight: "600",
-                          cursor: loading ? "not-allowed" : "pointer",
-                          transition: "all 0.2s"
-                        }}
-                        onMouseOver={(e) => {
-                          if (!loading) {
-                            e.currentTarget.style.background = "#ff8c00";
-                          }
-                        }}
-                        onMouseOut={(e) => {
-                          if (!loading) {
-                            e.currentTarget.style.background = "#ffa500";
-                          }
-                        }}
-                      >
-                        🔄 Rollback
-                      </button>
-                    )}
+                    {/* Reverse Action button for all learnings */}
+                    <button
+                      onClick={() => setShowReversalModal(item.id)}
+                      disabled={loading}
+                      style={{
+                        padding: "6px 12px",
+                        background: loading ? "#666" : "#ffa500",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: "600",
+                        cursor: loading ? "not-allowed" : "pointer",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseOver={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.background = "#ff8c00";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.background = "#ffa500";
+                        }
+                      }}
+                    >
+                      🔄 Reverse Action
+                    </button>
                   </div>
                 </div>
               </div>
@@ -909,6 +912,35 @@ export default function LearningFeedback({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Learning Reversal Modal */}
+      {showReversalModal && (
+        <LearningReversalModal
+          isOpen={!!showReversalModal}
+          onClose={() => setShowReversalModal(null)}
+          learningId={showReversalModal}
+          learningData={(() => {
+            const item = history.find(item => item.id === showReversalModal);
+            if (item) {
+              return {
+                id: item.id,
+                description: item.description,
+                status: item.status,
+                timestamp: item.timestamp instanceof Date ? item.timestamp.toISOString() : item.timestamp,
+                filesModified: item.filesModified || []
+              };
+            }
+            return {
+              id: showReversalModal,
+              description: 'Loading...',
+              status: 'unknown',
+              timestamp: new Date().toISOString(),
+              filesModified: []
+            };
+          })()}
+          onAction={handleReversalAction}
+        />
       )}
     </div>
   );

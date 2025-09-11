@@ -3,8 +3,9 @@
  * Manages behavior modification history, user feedback, and rollback capabilities
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
+import { LearningProcessor } from './learning-processor';
 import { 
   LearningEvent, 
   LearningChange, 
@@ -47,6 +48,25 @@ export class LearningTrackingService {
 
     // Append to learning log
     this.appendToLog(learningEvent);
+
+    // IMMEDIATE MATERIALIZATION: Create CNS files instantly
+    if (event.claudeAnalysis) {
+      try {
+        // Parse claudeAnalysis string into object
+        const analysisData = typeof event.claudeAnalysis === 'string' 
+          ? JSON.parse(event.claudeAnalysis) 
+          : event.claudeAnalysis;
+        
+        const createdFiles = await LearningProcessor.materializeLearning(learningEvent.id, analysisData);
+        // Update the learning event with materialized files
+        learningEvent.filesModified = [...learningEvent.filesModified, ...createdFiles];
+        // Re-log with updated files list
+        this.appendToLog(learningEvent);
+        console.log(`🎓 Learning materialized with ${createdFiles.length} CNS files`);
+      } catch (error) {
+        console.error(`❌ Failed to materialize learning ${learningEvent.id}:`, error);
+      }
+    }
 
     console.log(`🎓 Learning Event Logged: ${learningEvent.id} - ${event.description}`);
     return learningEvent.id;

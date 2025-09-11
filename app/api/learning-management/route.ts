@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { learningTracker } from '../../../lib/learning-tracker';
 import { UserFeedback } from '../../../types/learning-tracking';
+import LearningReversalManager from '../../../lib/learning-reversal-manager';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -36,10 +37,38 @@ export async function GET(request: NextRequest) {
         const searchResults = learningTracker.searchLearningHistory(query, filters);
         return NextResponse.json({ success: true, data: searchResults });
 
+      case 'getFileContent':
+        const learningId = searchParams.get('learningId');
+        const filePath = searchParams.get('filePath');
+        
+        if (!learningId || !filePath) {
+          return NextResponse.json({
+            success: false,
+            error: 'learningId and filePath are required'
+          }, { status: 400 });
+        }
+
+        const reversalManager = new LearningReversalManager();
+        const fileResult = await reversalManager.getFileContent(learningId, filePath);
+        
+        if (fileResult.success) {
+          return NextResponse.json({
+            success: true,
+            content: fileResult.content,
+            size: fileResult.size,
+            path: fileResult.path
+          });
+        } else {
+          return NextResponse.json({
+            success: false,
+            error: fileResult.error
+          }, { status: 404 });
+        }
+
       default:
         return NextResponse.json({
           success: false,
-          error: 'Invalid action. Supported actions: history, stats, search'
+          error: 'Invalid action. Supported actions: history, stats, search, getFileContent'
         }, { status: 400 });
     }
   } catch (error) {
