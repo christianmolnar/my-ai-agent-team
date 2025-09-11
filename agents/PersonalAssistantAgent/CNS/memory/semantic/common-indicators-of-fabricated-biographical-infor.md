@@ -4,7 +4,7 @@
 **Importance**: 0.8  
 **Operation**: add  
 **Source**: information-accuracy: This Robert Johnson data appears to be fabricated  
-**Applied**: 2025-09-10T23:03:43.229Z
+**Applied**: 2025-09-11T00:16:34.236Z
 
 ## Memory Content
 Common indicators of fabricated biographical information

@@ -445,17 +445,7 @@ const postTaskCNSUpdate: CNSUpdateProtocol = {
 
 ### **Advanced Learning and Behavior Modification Architecture**
 
-The CNS includes sophisticated behavior modification capabilities with real-time learning, automatic file materialization, conflict detection, and backup/restore functionality. **Complete technical implementation documented in [LEARNING-MATERIALIZATION-SYSTEM.md](./LEARNING-MATERIALIZATION-SYSTEM.md)**.
-
-#### **Learning Materialization Pipeline**
-```typescript
-interface LearningMaterializationPipeline {
-  detectInternalizedLearnings(): Promise<LearningEntry[]>;
-  materializeLearning(entry: LearningEntry): Promise<MaterializationResult>;
-  createCNSFiles(analysisData: ClaudeAnalysis): Promise<string[]>;
-  updateLearningHistory(filesCreated: string[]): Promise<void>;
-}
-```
+The CNS now includes sophisticated behavior modification capabilities that allow real-time learning and behavior removal with conflict detection and backup/restore functionality.
 
 #### **Behavior Learning System Components:**
 
