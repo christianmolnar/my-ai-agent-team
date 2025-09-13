@@ -1,0 +1,26 @@
+{
+  "domainExpertise": {
+    "coreCompetencies": [],
+    "specializedKnowledge": {},
+    "bestPractices": {},
+    "methodologies": {}
+  },
+  "executiveContext": {
+    "stakeholderPreferences": {},
+    "successPatterns": [],
+    "satisfactionMetrics": {},
+    "relationshipHistory": []
+  },
+  "collaborationKnowledge": {
+    "agentTeamDynamics": {},
+    "workflowIntegration": {},
+    "communicationProtocols": {},
+    "qualityStandards": {}
+  },
+  "continuousLearning": {
+    "experientialKnowledge": [],
+    "improvementOpportunities": [],
+    "expertiseExpansion": [],
+    "performanceMetrics": {}
+  }
+}

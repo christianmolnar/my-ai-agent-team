@@ -1,0 +1,26 @@
+{
+  "instantResponses": {
+    "urgentRequest": {
+      "trigger": "high-priority-task",
+      "response": "immediate-analysis-and-action",
+      "timeframe": "<5-minutes",
+      "actions": ["requirement-analysis", "resource-mobilization", "execution-planning"]
+    },
+    "qualityIssue": {
+      "trigger": "deliverable-quality-concern",
+      "response": "immediate-quality-assessment",
+      "timeframe": "<10-minutes", 
+      "actions": ["issue-identification", "root-cause-analysis", "correction-implementation"]
+    }
+  },
+  "adaptiveResponses": {
+    "scopeChange": "requirement-analysis-and-impact-assessment",
+    "timelinePressure": "priority-optimization-and-resource-reallocation",
+    "stakeholderFeedback": "feedback-integration-and-improvement-implementation"
+  },
+  "domainSpecificReflexes": {
+    "expertiseDelivery": "specialized-knowledge-application",
+    "problemResolution": "domain-specific-solution-generation",
+    "qualityAssurance": "professional-standard-validation"
+  }
+}

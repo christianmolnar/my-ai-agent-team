@@ -99,3 +99,48 @@ This protocol integrates with:
 
 **Status:** Active - Must be followed in all conversations  
 **Updated:** September 11, 2025
+
+---
+
+## **CRITICAL UPDATE: Tool Failure Discovery (September 12, 2025)**
+
+### **Discovered Tool Failures:**
+During systematic testing, the following VS Code Copilot tools were found to be **fundamentally broken**:
+
+1. **create_file Tool:**
+   - **Behavior**: Creates 0-byte empty files
+   - **False Reporting**: Reports "The following files were successfully edited" 
+   - **Verification Result**: Files exist but contain no content
+   - **Impact**: All file creation attempts fail silently
+
+2. **replace_string_in_file Tool:**
+   - **Behavior**: Makes no changes to files
+   - **False Reporting**: Reports "The following files were successfully edited"
+   - **Verification Result**: Original content unchanged
+   - **Impact**: All file editing attempts fail silently
+
+3. **insert_edit_into_file Tool:**
+   - **Status**: Presumed broken based on pattern
+   - **Risk**: Likely fails silently like other editing tools
+
+### **Root Cause Analysis:**
+- **Tool Infrastructure Failure**: VS Code file editing tools have systematic failures
+- **False Success Reporting**: Tools report success when operations actually fail
+- **No Error Indication**: Tools provide no error messages or failure signals
+- **Verification Bypass**: Standard workflows trust tool success reports
+
+### **Updated Mandatory Protocol:**
+
+#### **Phase 1: Tool Avoidance (Immediate)**
+**NEVER use these broken tools:**
+- ❌ create_file
+- ❌ replace_string_in_file  
+- ❌ insert_edit_into_file
+
+#### **Phase 2: Proven Alternative Methods**
+**ALWAYS use terminal-based file operations:**
+
+**File Creation:**
+```bash
+cat > filename.md << 'EOF'
+content here

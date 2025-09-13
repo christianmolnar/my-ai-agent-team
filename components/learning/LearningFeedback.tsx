@@ -109,16 +109,46 @@ export default function LearningFeedback({
     setShowConfirmation({ action, learningId });
   };
 
-  const handleReversalAction = async (learningId: string, action: 'revert' | 'keep', reason?: string) => {
+  const handleReversalAction = async (action: 'revert' | 'keep', reason?: string) => {
+    const learningId = showReversalModal;
+    if (!learningId) return;
+    
     try {
+      let apiAction: string;
+      let feedbackAction: string;
+      
+      // Ensure we always have a reason, even if empty
+      const finalReason = reason || `User chose to ${action} learning via modal`;
+      
+      if (action === 'revert') {
+        apiAction = 'revert';
+        feedbackAction = 'revert';
+      } else {
+        // For 'keep', we'll use the feedback action to mark it as helpful
+        apiAction = 'feedback';
+        feedbackAction = 'internalize';
+      }
+
+      const requestBody: any = {
+        action: apiAction,
+        learningId,
+        reason: finalReason
+      };
+
+      // If keeping the learning, structure it as feedback
+      if (action === 'keep') {
+        requestBody.feedback = {
+          action: feedbackAction,
+          rating: 5,
+          comments: finalReason,
+          wasHelpful: true
+        };
+      }
+
       const response = await fetch('/api/learning-management', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: action === 'revert' ? 'rollback' : 'enable',
-          learningId,
-          reason: reason || ''
-        })
+        body: JSON.stringify(requestBody)
       });
 
       const result = await response.json();
@@ -208,200 +238,7 @@ export default function LearningFeedback({
     );
   };
 
-  if (!showHistory && selectedLearning) {
-    // Simple feedback interface for single learning
-    return (
-      <div style={{
-        background: "#232526",
-        border: "1px solid #444",
-        borderRadius: "10px",
-        padding: "20px",
-        marginTop: "20px"
-      }}>
-        <h3 style={{
-          fontSize: "18px",
-          fontWeight: "600",
-          color: "#ffb347",
-          marginBottom: "15px"
-        }}>
-          🎓 How was this learning?
-        </h3>
-        <p style={{
-          color: "#ccc",
-          marginBottom: "15px",
-          lineHeight: "1.4"
-        }}>
-          The agent has learned a new behavior. Would you like to keep this learning or have it forgotten?
-        </p>
-        
-        <div style={{
-          display: "flex",
-          gap: "10px"
-        }}>
-          <button
-            onClick={() => handleActionClick(selectedLearning, 'internalize')}
-            disabled={loading}
-            style={{
-              flex: "1",
-              background: loading ? "#666" : "#4CAF50",
-              color: "#fff",
-              border: "none",
-              padding: "12px 16px",
-              borderRadius: "8px",
-              fontWeight: "600",
-              cursor: loading ? "not-allowed" : "pointer",
-              transition: "all 0.2s"
-            }}
-            onMouseOver={(e) => {
-              if (!loading) {
-                e.currentTarget.style.background = "#45a049";
-              }
-            }}
-            onMouseOut={(e) => {
-              if (!loading) {
-                e.currentTarget.style.background = "#4CAF50";
-              }
-            }}
-          >
-            ✅ Internalize Behavior
-          </button>
-          
-          <button
-            onClick={() => handleActionClick(selectedLearning, 'forget')}
-            disabled={loading}
-            style={{
-              flex: "1",
-              background: loading ? "#666" : "#ff6b6b",
-              color: "#fff",
-              border: "none",
-              padding: "12px 16px",
-              borderRadius: "8px",
-              fontWeight: "600",
-              cursor: loading ? "not-allowed" : "pointer",
-              transition: "all 0.2s"
-            }}
-            onMouseOver={(e) => {
-              if (!loading) {
-                e.currentTarget.style.background = "#ff5252";
-              }
-            }}
-            onMouseOut={(e) => {
-              if (!loading) {
-                e.currentTarget.style.background = "#ff6b6b";
-              }
-            }}
-          >
-            🗑️ Forget Behavior
-          </button>
-        </div>
-
-        {showConfirmation && (
-          <div style={{
-            position: "fixed",
-            top: "0",
-            left: "0",
-            right: "0",
-            bottom: "0",
-            background: "rgba(0, 0, 0, 0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: "1000"
-          }}>
-            <div style={{
-              background: "#232526",
-              borderRadius: "10px",
-              border: "1px solid #444",
-              padding: "25px",
-              maxWidth: "400px",
-              margin: "20px"
-            }}>
-              <h4 style={{
-                fontSize: "18px",
-                fontWeight: "600",
-                color: "#ffb347",
-                marginBottom: "15px"
-              }}>
-                Confirm {showConfirmation.action === 'internalize' ? 'Internalize' : 'Forget'} Behavior
-              </h4>
-              <p style={{
-                color: "#ccc",
-                marginBottom: "20px",
-                lineHeight: "1.4"
-              }}>
-                {showConfirmation.action === 'internalize' 
-                  ? 'This will permanently keep this behavior as part of the agent\'s capabilities.'
-                  : 'This will remove this behavior and restore the previous state. This action will undo the learning.'}
-              </p>
-              
-              <div style={{
-                display: "flex",
-                gap: "10px"
-              }}>
-                <button
-                  onClick={() => submitFeedback(showConfirmation.learningId, showConfirmation.action)}
-                  disabled={loading}
-                  style={{
-                    flex: "1",
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    color: "#fff",
-                    border: "none",
-                    cursor: loading ? "not-allowed" : "pointer",
-                    transition: "all 0.2s",
-                    background: loading ? "#666" : (showConfirmation.action === 'internalize' ? "#4CAF50" : "#ff6b6b")
-                  }}
-                  onMouseOver={(e) => {
-                    if (!loading) {
-                      e.currentTarget.style.background = showConfirmation.action === 'internalize' ? "#45a049" : "#ff5252";
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (!loading) {
-                      e.currentTarget.style.background = showConfirmation.action === 'internalize' ? "#4CAF50" : "#ff6b6b";
-                    }
-                  }}
-                >
-                  {loading ? 'Processing...' : 'Confirm'}
-                </button>
-                
-                <button
-                  onClick={() => setShowConfirmation(null)}
-                  disabled={loading}
-                  style={{
-                    flex: "1",
-                    background: loading ? "#555" : "#666",
-                    color: loading ? "#888" : "#ccc",
-                    border: "none",
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    cursor: loading ? "not-allowed" : "pointer",
-                    transition: "all 0.2s"
-                  }}
-                  onMouseOver={(e) => {
-                    if (!loading) {
-                      e.currentTarget.style.background = "#777";
-                      e.currentTarget.style.color = "#fff";
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (!loading) {
-                      e.currentTarget.style.background = "#666";
-                      e.currentTarget.style.color = "#ccc";
-                    }
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  // Removed the "How was this learning?" interface - users now use Show History
 
   if (!showHistory) {
     return null;
@@ -685,7 +522,7 @@ export default function LearningFeedback({
                         color: "#666",
                         fontStyle: "italic"
                       }}>
-                        Files: {item.filesModified?.length || 0}
+                        Files: {item.filesModified?.length || 0} {item.status === 'pending' ? '(files created when internalized)' : ''}
                       </span>
                     </div>
                     <p style={{

@@ -111,7 +111,7 @@ async function verifyIntegration() {
     
     try {
       const { PersonalAssistantAgent } = await import('../agents/PersonalAssistantAgent.js');
-      const { MasterOrchestratorAgent } = await import('../agents/MasterOrchestratorAgent.js');
+      const { MasterOrchestratorAgent } = await import('../agents/master-orchestrator-agent.js');
       
       const personalAgent = new PersonalAssistantAgent();
       const orchestratorAgent = new MasterOrchestratorAgent();

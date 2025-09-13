@@ -11,16 +11,24 @@ export interface ClaudeConfig {
 }
 
 export class ClaudeService {
-  private client: Anthropic;
+  private client: Anthropic | null;
   private config: ClaudeConfig;
+  private isMock: boolean;
   
   constructor(config: ClaudeConfig) {
     this.config = config;
-    this.client = new Anthropic({
-      apiKey: config.apiKey,
-      maxRetries: config.maxRetries,
-      timeout: config.timeout
-    });
+    this.isMock = config.apiKey.includes('mock-development-key');
+    
+    if (this.isMock) {
+      // Don't create real Anthropic client for mock services
+      this.client = null;
+    } else {
+      this.client = new Anthropic({
+        apiKey: config.apiKey,
+        maxRetries: config.maxRetries,
+        timeout: config.timeout
+      });
+    }
   }
 
   async generateResponse(
@@ -28,6 +36,11 @@ export class ClaudeService {
     systemPrompt?: string,
     tools?: Anthropic.Tool[]
   ): Promise<string> {
+    // If this is a mock service, the generateResponse will be overridden by the factory
+    if (this.isMock || !this.client) {
+      throw new Error('Mock service should have generateResponse overridden');
+    }
+    
     try {
       const response = await this.client.messages.create({
         model: this.config.model,
@@ -52,6 +65,10 @@ export class ClaudeService {
     systemPrompt?: string,
     onChunk?: (chunk: string) => void
   ): Promise<string> {
+    if (this.isMock || !this.client) {
+      throw new Error('Mock service does not support streaming');
+    }
+    
     try {
       const stream = await this.client.messages.create({
         model: this.config.model,
@@ -83,6 +100,10 @@ export class ClaudeService {
     tools: Anthropic.Tool[],
     systemPrompt?: string
   ): Promise<{ response: string; toolCalls: any[] }> {
+    if (this.isMock || !this.client) {
+      throw new Error('Mock service does not support tools');
+    }
+    
     try {
       const response = await this.client.messages.create({
         model: this.config.model,
@@ -120,6 +141,11 @@ export class ClaudeService {
 
   // Helper method to validate configuration
   static validateConfig(config: ClaudeConfig): boolean {
+    // Allow mock keys for development
+    if (config.apiKey.includes('mock-development-key')) {
+      return true;
+    }
+    
     if (!config.apiKey || !config.apiKey.startsWith('sk-ant-')) {
       throw new Error('Invalid Anthropic API key format');
     }

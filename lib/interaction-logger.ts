@@ -12,6 +12,7 @@ import {
   InteractionSummary,
   LogViewerConfig 
 } from '../types/interaction-logging';
+import { logger as enhancedLogger } from './enhanced-agent-logger';
 
 export class InteractionLoggingService {
   private logsDir: string;
@@ -68,6 +69,18 @@ export class InteractionLoggingService {
 
     // Create initial log file
     await this.writeSessionLog(session);
+
+    // Also log to enhanced agent logger for real-time display
+    enhancedLogger.logInteraction({
+      agentName: 'Project Coordinator',
+      agentType: 'coordinator',
+      actionType: 'task_received',
+      action: 'Session Started',
+      details: `New chat session started for: "${userRequest}"`,
+      inputData: { userId, userRequest, requestSummary: session.requestSummary },
+      outputData: { sessionId, chatId },
+      status: 'success'
+    }, sessionId);
 
     console.log(`🎯 Started chat session: ${sessionId} for user request: "${userRequest}"`);
     
@@ -147,6 +160,18 @@ export class InteractionLoggingService {
     // Log the assignment
     await this.writeSessionLog(session);
     
+    // Also log to enhanced agent logger for real-time display
+    enhancedLogger.logInteraction({
+      agentName,
+      agentType: agentType === 'management' ? 'coordinator' : 'specialist',
+      actionType: 'task_received',
+      action: 'Task Assigned',
+      details: `${agentName} assigned task: ${taskAssigned.substring(0, 100)}...`,
+      inputData: { taskAssigned, inputReceived, taskPriority, taskComplexity },
+      outputData: { interactionId, sequenceNumber: newSequence },
+      status: 'in_progress'
+    }, sessionId);
+    
     console.log(`📋 Agent assigned: ${agentName} (${agentId}) - Task: ${taskAssigned.substring(0, 100)}...`);
     
     return interactionId;
@@ -191,6 +216,20 @@ export class InteractionLoggingService {
 
     // Write updated log
     await this.writeSessionLog(session);
+
+    // Also log completion to enhanced agent logger for real-time display
+    enhancedLogger.logInteraction({
+      agentName: interaction.agentName,
+      agentType: interaction.agentType === 'management' ? 'coordinator' : 'specialist',
+      actionType: success ? 'task_completed' : 'task_failed',
+      action: success ? 'Task Completed' : 'Task Failed',
+      details: `${interaction.agentName} ${success ? 'completed' : 'failed'}: ${interaction.outputSummary}`,
+      inputData: { taskAssigned: interaction.taskAssigned },
+      outputData: { outputProduced, executionTimeMs },
+      executionTime: executionTimeMs,
+      status: success ? 'success' : 'error',
+      errorDetails: success ? undefined : outputProduced
+    }, sessionId);
 
     const statusIcon = success ? '✅' : '❌';
     console.log(`${statusIcon} ${interaction.agentName} completed: ${interaction.outputSummary} (${executionTimeMs}ms)`);

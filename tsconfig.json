@@ -36,7 +36,10 @@
   ],
   "exclude": [
     "node_modules",
+    "agents-cns/**/*",
     "../backups/**/*",
-    "../**/*.backup/**/*"
+    "../**/*.backup/**/*",
+    ".next/**/*",
+    "dist/**/*"
   ]
 }

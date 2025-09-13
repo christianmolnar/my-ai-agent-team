@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import LearningFeedback from "../components/learning/LearningFeedback";
-import SimpleInteractionLogs from "../components/SimpleInteractionLogs";
+import RealTimeLoggingPanel from "../components/RealTimeLoggingPanel";
 
 // Function to convert markdown-like formatting to HTML
 const formatMessageContent = (content: string) => {
@@ -823,60 +823,6 @@ export default function Home() {
               />
             )}
           </div>
-
-          {/* Interaction Logs Section */}
-          <div style={{
-            background: "#232526",
-            borderRadius: "10px",
-            border: "1px solid #444",
-            padding: "20px",
-            marginTop: "20px"
-          }}>
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}>
-              <h3 style={{
-                color: "#ffb347",
-                fontSize: "18px",
-                fontWeight: "600",
-                margin: 0
-              }}>
-                📋 Agent Interaction Logs
-              </h3>
-              <button 
-                onClick={() => setShowInteractionLogs(true)}
-                style={{
-                  padding: "10px 20px",
-                  background: "#4CAF50",
-                  border: "none",
-                  borderRadius: "6px",
-                  color: "#fff",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = "#45a049";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = "#4CAF50";
-                }}
-              >
-                🔍 View Interaction Logs
-              </button>
-            </div>
-            <p style={{
-              color: "#ccc",
-              fontSize: "14px",
-              margin: "10px 0 0 0",
-              lineHeight: "1.4"
-            }}>
-              View detailed logs of every agent interaction, task assignment, and execution results from all your conversations.
-            </p>
-          </div>
         </div>
 
         {/* Agent Team Sections */}
@@ -954,13 +900,11 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Interaction Logs Viewer */}
-        {showInteractionLogs && (
-          <SimpleInteractionLogs 
-            isOpen={showInteractionLogs}
-            onClose={() => setShowInteractionLogs(false)}
-          />
-        )}
+        {/* Real-Time Agent Coordination Logs */}
+        <RealTimeLoggingPanel 
+          isVisible={showInteractionLogs}
+          onToggle={() => setShowInteractionLogs(!showInteractionLogs)}
+        />
       </main>
     </div>
   );

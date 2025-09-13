@@ -56,12 +56,12 @@ class EnhancedAgentLogger {
   /**
    * Log an agent interaction
    */
-  logInteraction(interaction: Omit<AgentInteraction, 'id' | 'timestamp' | 'sessionId'>): void {
+  logInteraction(interaction: Omit<AgentInteraction, 'id' | 'timestamp' | 'sessionId'>, sessionId?: string): void {
     const logEntry: AgentInteraction = {
       ...interaction,
       id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date().toISOString(),
-      sessionId: this.sessionId
+      sessionId: sessionId || this.sessionId
     };
 
     // Add to memory store
@@ -99,6 +99,14 @@ class EnhancedAgentLogger {
    */
   getSessionLogs(limit?: number): AgentInteraction[] {
     const logs = this.memoryLogs.filter(log => log.sessionId === this.sessionId);
+    return limit ? logs.slice(0, limit) : logs;
+  }
+
+  /**
+   * Get logs for a specific session
+   */
+  getLogsBySessionId(sessionId: string, limit?: number): AgentInteraction[] {
+    const logs = this.memoryLogs.filter(log => log.sessionId === sessionId);
     return limit ? logs.slice(0, limit) : logs;
   }
 
@@ -164,6 +172,13 @@ class EnhancedAgentLogger {
    */
   clearLogs(): void {
     this.memoryLogs = [];
+  }
+
+  /**
+   * Clear logs for a specific session
+   */
+  clearSessionLogs(sessionId: string): void {
+    this.memoryLogs = this.memoryLogs.filter(log => log.sessionId !== sessionId);
   }
 
   /**

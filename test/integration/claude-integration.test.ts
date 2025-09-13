@@ -148,7 +148,7 @@ describe('Agent Claude Integration', () => {
   });
 
   test('MasterOrchestratorAgent Initialization', async () => {
-    const { MasterOrchestratorAgent } = await import('../../agents/MasterOrchestratorAgent');
+    const { MasterOrchestratorAgent } = await import('../../agents/master-orchestrator-agent');
     
     expect(() => {
       const agent = new MasterOrchestratorAgent();

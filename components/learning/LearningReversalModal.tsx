@@ -25,6 +25,9 @@ interface FileContent {
   path: string;
   content: string;
   size: string;
+  agent?: string;
+  found: boolean;
+  searchPaths?: string[];
 }
 
 const LearningReversalModal: React.FC<LearningReversalModalProps> = ({
@@ -47,34 +50,71 @@ const LearningReversalModal: React.FC<LearningReversalModalProps> = ({
     }
   }, [isOpen, learningData.filesModified]);
 
-  const loadFileContents = async () => {
+    const loadFileContents = async () => {
     setLoadingFiles(true);
     try {
-      // Load file metadata and sizes
+      // Load file metadata and contents
       const contents: FileContent[] = [];
       for (const filePath of learningData.filesModified) {
         try {
-          // Get file size and basic info
+          // Get file size and content
           const response = await fetch(`/api/learning-management?action=getFileContent&learningId=${learningId}&filePath=${encodeURIComponent(filePath)}`);
-          if (response.ok) {
-            const data = await response.json();
+          const data = await response.json();
+          
+          // Determine agent from file path
+          let agent = 'Unknown Agent';
+          if (filePath.includes('personal-assistant') || filePath.includes('PersonalAssistant')) {
+            agent = 'Personal Assistant';
+          } else if (filePath.includes('communications')) {
+            agent = 'Communications';
+          } else if (filePath.includes('research')) {
+            agent = 'Researcher';
+          } else if (filePath.includes('master-orchestrator')) {
+            agent = 'Master Orchestrator';
+          }
+          
+          if (response.ok && data.success) {
             contents.push({
               path: filePath,
               content: data.content || '',
-              size: data.size || 'Unknown'
+              size: data.size || 'Unknown',
+              agent: agent,
+              found: true,
+              searchPaths: data.searchPaths || []
             });
           } else {
             contents.push({
               path: filePath,
-              content: 'Error loading content',
-              size: 'Error'
+              content: data.content || `File not found: ${filePath}
+
+Error: ${data.error || 'Unknown error'}
+
+This file was expected to be created by the learning system but cannot be located.
+This suggests the learning was not properly internalized.
+
+Expected locations searched:
+- Private repo: /Users/christian/Repos/my-personal-assistant-private/ai-team/${filePath}
+- Public repo: /Users/christian/Repos/My-AI-Agent-Team/${filePath}
+- Various subdirectories in both repositories`,
+              size: 'Missing',
+              agent: agent,
+              found: false
             });
           }
         } catch (error) {
           contents.push({
             path: filePath,
-            content: 'Error loading content',
-            size: 'Error'
+            content: `Error loading file: ${filePath}
+
+Network/API Error: ${error.message}
+
+This could indicate:
+1. API connectivity issues
+2. File system permission problems  
+3. Learning system misconfiguration`,
+            size: 'Error',
+            agent: 'Unknown Agent',
+            found: false
           });
         }
       }
@@ -87,10 +127,16 @@ const LearningReversalModal: React.FC<LearningReversalModalProps> = ({
   };
 
   const handleFileClick = async (filePath: string) => {
-    setSelectedFile(filePath);
-    const fileContent = fileContents.find(f => f.path === filePath);
-    if (fileContent) {
-      setSelectedFileContent(fileContent.content);
+    // Toggle the selected file - if clicking the same file, collapse it
+    if (selectedFile === filePath) {
+      setSelectedFile(null);
+      setSelectedFileContent('');
+    } else {
+      setSelectedFile(filePath);
+      const fileContent = fileContents.find(f => f.path === filePath);
+      if (fileContent) {
+        setSelectedFileContent(fileContent.content);
+      }
     }
   };
 
@@ -209,121 +255,157 @@ const LearningReversalModal: React.FC<LearningReversalModalProps> = ({
 
           {/* Files that will be deleted */}
           <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
               <span style={{ fontSize: '16px' }}>📄</span>
               <h3 style={{ margin: 0, color: '#ffb347', fontSize: '16px' }}>Files that will be deleted ({learningData.filesModified.length}):</h3>
             </div>
             
-            <div style={{ display: 'flex', gap: '15px', height: '300px' }}>
-              {/* File List */}
-              <div style={{
-                flex: '0 0 300px',
-                backgroundColor: '#2a2a2a',
-                border: '1px solid #444',
-                borderRadius: '8px',
-                overflow: 'auto'
-              }}>
-                {loadingFiles ? (
-                  <div style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
-                    Loading file details...
-                  </div>
-                ) : (
-                  fileContents.map((file, index) => (
+            <div style={{ 
+              backgroundColor: '#1a1a1a', 
+              border: '1px solid #333', 
+              borderRadius: '8px',
+              overflow: 'hidden',
+              maxHeight: '400px',
+              overflowY: 'auto'
+            }}>
+              {loadingFiles ? (
+                <div style={{ 
+                  padding: '30px', 
+                  textAlign: 'center', 
+                  color: '#888',
+                  backgroundColor: '#000',
+                  border: '1px solid #333'
+                }}>
+                  Loading file details...
+                </div>
+              ) : (
+                fileContents.map((file, index) => (
+                  <div key={index} style={{ borderBottom: index < fileContents.length - 1 ? '1px solid #333' : 'none' }}>
+                    {/* File Header Row */}
                     <div
-                      key={index}
                       onClick={() => handleFileClick(file.path)}
                       style={{
-                        padding: '12px 15px',
-                        borderBottom: index < fileContents.length - 1 ? '1px solid #333' : 'none',
+                        padding: '15px 20px',
                         cursor: 'pointer',
-                        backgroundColor: selectedFile === file.path ? '#3a3a3a' : 'transparent',
-                        transition: 'background-color 0.2s',
+                        backgroundColor: '#000',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '10px'
+                        justifyContent: 'space-between',
+                        transition: 'background-color 0.2s',
+                        borderLeft: file.found ? '4px solid #4CAF50' : '4px solid #ff6b6b'
                       }}
                       onMouseOver={(e) => {
-                        if (selectedFile !== file.path) {
-                          e.currentTarget.style.backgroundColor = '#333';
-                        }
+                        e.currentTarget.style.backgroundColor = '#1a1a1a';
                       }}
                       onMouseOut={(e) => {
-                        if (selectedFile !== file.path) {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                        }
+                        e.currentTarget.style.backgroundColor = '#000';
                       }}
                     >
-                      <span style={{ fontSize: '14px' }}>📁</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          color: '#f3f3f3',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap'
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1 }}>
+                        <span style={{ fontSize: '16px' }}>
+                          {file.found ? '�' : '❌'}
+                        </span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            color: '#fff',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '4px'
+                          }}>
+                            {file.path.split('/').pop()}
+                          </div>
+                          <div style={{ 
+                            color: '#888', 
+                            fontSize: '12px',
+                            display: 'flex',
+                            gap: '15px'
+                          }}>
+                            <span>Size: {file.size}</span>
+                            <span>Agent: {file.agent}</span>
+                            <span>Status: {file.found ? 'Found' : 'Missing'}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ 
+                          color: selectedFile === file.path ? '#4CAF50' : '#888', 
+                          fontSize: '12px',
+                          fontWeight: '500'
                         }}>
-                          {file.path.split('/').pop()}
-                        </div>
-                        <div style={{ color: '#888', fontSize: '11px' }}>
-                          {file.size}
-                        </div>
-                      </div>
-                      <div style={{ color: '#888', fontSize: '11px' }}>
-                        Click to view content
+                          {selectedFile === file.path ? 'Expanded ▼' : 'Click to expand ▶'}
+                        </span>
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
-
-              {/* File Content */}
-              <div style={{
-                flex: 1,
-                backgroundColor: '#2a2a2a',
-                border: '1px solid #444',
-                borderRadius: '8px',
-                overflow: 'auto',
-                padding: selectedFile ? '15px' : '0'
-              }}>
-                {selectedFile ? (
-                  <div>
-                    <div style={{ 
-                      color: '#ffb347', 
-                      fontSize: '14px', 
-                      fontWeight: '600', 
-                      marginBottom: '10px',
-                      borderBottom: '1px solid #444',
-                      paddingBottom: '10px'
-                    }}>
-                      {selectedFile}
-                    </div>
-                    <pre style={{
-                      color: '#ccc',
-                      fontSize: '12px',
-                      lineHeight: '1.4',
-                      fontFamily: 'monospace',
-                      margin: 0,
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word'
-                    }}>
-                      {selectedFileContent}
-                    </pre>
+                    
+                    {/* Expandable Content */}
+                    {selectedFile === file.path && (
+                      <div style={{
+                        backgroundColor: '#000',
+                        padding: '20px',
+                        borderTop: '1px solid #333'
+                      }}>
+                        <div style={{ 
+                          color: '#ffb347', 
+                          fontSize: '13px', 
+                          fontWeight: '600', 
+                          marginBottom: '15px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px'
+                        }}>
+                          <span>📋</span>
+                          Full Path: {file.path}
+                        </div>
+                        
+                        <div style={{
+                          backgroundColor: '#000',
+                          border: '1px solid #333',
+                          borderRadius: '6px',
+                          padding: '15px',
+                          maxHeight: '300px',
+                          overflow: 'auto'
+                        }}>
+                          <pre style={{
+                            color: '#fff',
+                            fontSize: '12px',
+                            lineHeight: '1.5',
+                            fontFamily: '"Courier New", monospace',
+                            margin: 0,
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word'
+                          }}>
+                            {file.content}
+                          </pre>
+                        </div>
+                        
+                        {file.searchPaths && file.searchPaths.length > 0 && (
+                          <div style={{ marginTop: '15px' }}>
+                            <div style={{ 
+                              color: '#888', 
+                              fontSize: '12px', 
+                              marginBottom: '8px',
+                              fontWeight: '500'
+                            }}>
+                              📍 Search paths attempted:
+                            </div>
+                            <div style={{ 
+                              color: '#666', 
+                              fontSize: '11px',
+                              fontFamily: 'monospace',
+                              lineHeight: '1.4'
+                            }}>
+                              {file.searchPaths.map((path, i) => (
+                                <div key={i}>• {path}</div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100%',
-                    color: '#888',
-                    fontSize: '14px',
-                    textAlign: 'center'
-                  }}>
-                    Click on a file to view its content
-                  </div>
-                )}
-              </div>
+                ))
+              )}
             </div>
           </div>
 

@@ -177,10 +177,37 @@ export async function POST(request: NextRequest) {
           }
         });
 
+      case 'revert':
+        if (!learningId || !data.reason) {
+          return NextResponse.json({
+            success: false,
+            error: 'learningId and reason are required'
+          }, { status: 400 });
+        }
+
+        const revertSuccess = await learningTracker.rollbackLearning(learningId, data.reason);
+        
+        if (revertSuccess) {
+          return NextResponse.json({
+            success: true,
+            message: 'Learning reverted successfully',
+            data: {
+              learningId,
+              reason: data.reason,
+              timestamp: new Date()
+            }
+          });
+        } else {
+          return NextResponse.json({
+            success: false,
+            error: 'Failed to revert learning'
+          }, { status: 500 });
+        }
+
       default:
         return NextResponse.json({
           success: false,
-          error: 'Invalid action. Supported actions: feedback, rollback, log'
+          error: 'Invalid action. Supported actions: feedback, rollback, log, revert'
         }, { status: 400 });
     }
   } catch (error) {

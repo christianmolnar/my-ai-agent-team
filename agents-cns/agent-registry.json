@@ -1,0 +1,175 @@
+{
+  "agents": [
+    {
+      "id": "researcher-agent",
+      "name": "Research Specialist Agent",
+      "type": "ResearcherAgent",
+      "status": "active",
+      "capabilities": ["Research", "Analysis", "Fact-checking", "Information Gathering"],
+      "folder": "researcher-agent"
+    },
+    {
+      "id": "communications-agent", 
+      "name": "Communications Agent",
+      "type": "CommunicationsAgent",
+      "status": "active",
+      "capabilities": ["Content Creation", "Strategic Messaging", "Document Writing"],
+      "folder": "communications-agent"
+    },
+    {
+      "id": "data-scientist",
+      "name": "Data Scientist Agent", 
+      "type": "DataScientistAgent",
+      "status": "active",
+      "capabilities": ["Data Analysis", "Statistical Modeling", "Visualization"],
+      "folder": "data-scientist"
+    },
+    {
+      "id": "front-end-developer",
+      "name": "Front-End Developer Agent",
+      "type": "FrontEndDeveloperAgent", 
+      "status": "active",
+      "capabilities": ["React Development", "UI/UX Implementation", "Frontend Optimization"],
+      "folder": "front-end-developer"
+    },
+    {
+      "id": "back-end-developer",
+      "name": "Back-End Developer Agent",
+      "type": "BackEndDeveloperAgent",
+      "status": "active", 
+      "capabilities": ["API Development", "Database Design", "Server Architecture"],
+      "folder": "back-end-developer"
+    },
+    {
+      "id": "full-stack-developer",
+      "name": "Full-Stack Developer Agent",
+      "type": "FullStackDeveloperAgent",
+      "status": "active",
+      "capabilities": ["End-to-end Development", "System Integration", "DevOps"],
+      "folder": "full-stack-developer"
+    },
+    {
+      "id": "project-coordinator",
+      "name": "Project Coordinator Agent",
+      "type": "ProjectCoordinatorAgent", 
+      "status": "active",
+      "capabilities": ["Project Management", "Resource Coordination", "Timeline Management"],
+      "folder": "project-coordinator"
+    },
+    {
+      "id": "image-video-generator",
+      "name": "Image & Video Generator Agent",
+      "type": "ImageGeneratorAgent",
+      "status": "active",
+      "capabilities": ["Image Generation", "Visual Content Creation", "Creative Design"],
+      "folder": "image-video-generator"
+    },
+    {
+      "id": "music-coach",
+      "name": "Music Coach Agent",
+      "type": "MusicCoachAgent",
+      "status": "active", 
+      "capabilities": ["Music Instruction", "Performance Coaching", "Music Theory"],
+      "folder": "music-coach"
+    },
+    {
+      "id": "availability-reliability-expert",
+      "name": "Availability & Reliability Expert Agent",
+      "type": "AvailabilityReliabilityExpertAgent",
+      "status": "active",
+      "capabilities": ["High Availability", "Disaster Recovery", "System Resilience"],
+      "folder": "availability-reliability-expert"
+    },
+    {
+      "id": "security-expert", 
+      "name": "Security Expert Agent",
+      "type": "SecurityExpertAgent",
+      "status": "active",
+      "capabilities": ["Security Analysis", "Threat Assessment", "Compliance"],
+      "folder": "security-expert"
+    },
+    {
+      "id": "privacy-guardian",
+      "name": "Privacy Guardian Agent",
+      "type": "PrivacyGuardianAgent", 
+      "status": "active",
+      "capabilities": ["Privacy Compliance", "GDPR", "Data Protection"],
+      "folder": "privacy-guardian"
+    },
+    {
+      "id": "performance-expert",
+      "name": "Performance Expert Agent",
+      "type": "PerformanceExpertAgent",
+      "status": "active",
+      "capabilities": ["Performance Optimization", "Scalability", "System Tuning"],
+      "folder": "performance-expert"
+    },
+    {
+      "id": "monitoring-expert",
+      "name": "Monitoring Expert Agent", 
+      "type": "MonitoringExpertAgent",
+      "status": "active",
+      "capabilities": ["System Monitoring", "Observability", "Alerting"],
+      "folder": "monitoring-expert"
+    },
+    {
+      "id": "experience-designer",
+      "name": "Experience Designer Agent",
+      "type": "ExperienceDesignerAgent",
+      "status": "active",
+      "capabilities": ["UX Design", "User Research", "Interaction Design"],
+      "folder": "experience-designer"
+    },
+    {
+      "id": "dev-design-doc-creator", 
+      "name": "Development Design Document Creator Agent",
+      "type": "DevDesignDocCreatorAgent",
+      "status": "active",
+      "capabilities": ["Technical Documentation", "Architecture Design", "API Specs"],
+      "folder": "dev-design-doc-creator"
+    },
+    {
+      "id": "product-manager",
+      "name": "Product Manager Agent",
+      "type": "ProductManagerAgent",
+      "status": "active",
+      "capabilities": ["Product Strategy", "Roadmap Planning", "Market Analysis"],
+      "folder": "product-manager"
+    },
+    {
+      "id": "test-expert",
+      "name": "Test Expert Agent", 
+      "type": "TestExpertAgent",
+      "status": "active",
+      "capabilities": ["Test Strategy", "Quality Assurance", "Automation"],
+      "folder": "test-expert"
+    },
+    {
+      "id": "vinyl-researcher-agent",
+      "name": "Vinyl Research Agent",
+      "type": "VinylResearcherAgent",
+      "status": "active",
+      "capabilities": ["Music Research", "Vinyl Collection", "Music History"],
+      "folder": "vinylresearcheragent"
+    },
+    {
+      "id": "master-orchestrator",
+      "name": "Master Orchestrator Agent",
+      "type": "MasterOrchestratorAgent", 
+      "status": "active",
+      "capabilities": ["Multi-agent Coordination", "Task Distribution", "Workflow Management"],
+      "folder": "master-orchestrator"
+    },
+    {
+      "id": "personal-assistant-agent",
+      "name": "Personal Assistant Agent",
+      "type": "PersonalAssistantAgent",
+      "status": "active", 
+      "capabilities": ["Conversation Management", "Task Orchestration", "User Interface"],
+      "folder": "personal-assistant-agent"
+    }
+  ],
+  "totalAgents": 21,
+  "lastUpdated": "2025-09-11T14:45:00Z",
+  "version": "1.0.0"
+}

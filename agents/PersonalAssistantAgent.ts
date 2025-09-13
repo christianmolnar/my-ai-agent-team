@@ -1,7 +1,7 @@
 import { Agent, AgentTask, AgentTaskResult } from './Agent';
-import { MasterOrchestratorAgent } from './MasterOrchestratorAgent';
-import { PersonalAssistantBridge } from './PersonalAssistantBridge';
-import { EnhancedGlobalLearningSystem } from './GlobalAgentLearningSystem';
+import { MasterOrchestratorAgent } from './master-orchestrator-agent';
+// import { PersonalAssistantBridge } from './PersonalAssistantBridge'; // TODO: Remove bridge dependency in new architecture
+// import { EnhancedGlobalLearningSystem } from './GlobalAgentLearningSystem'; // TODO: Replace with CNS integration
 import { ClaudeService } from '../lib/claude/ClaudeService';
 import { AgentClaudeClientFactory } from '../lib/claude/AgentClaudeClients';
 import Anthropic from '@anthropic-ai/sdk';
@@ -28,9 +28,9 @@ export class PersonalAssistantAgent implements Agent {
   
   // External API clients
   private claudeService: ClaudeService;
-  private personaBridge: PersonalAssistantBridge;
+  // private personaBridge: PersonalAssistantBridge; // TODO: Remove bridge dependency in new architecture
   private masterOrchestrator: MasterOrchestratorAgent;
-  public learningSystem: EnhancedGlobalLearningSystem;
+  // public learningSystem: EnhancedGlobalLearningSystem; // TODO: Replace with CNS integration
   
   // Configuration
   private readonly maxContextTokens = 200000; // Claude Sonnet context window
@@ -45,10 +45,10 @@ export class PersonalAssistantAgent implements Agent {
     this.claudeService = AgentClaudeClientFactory.createPersonalAssistantClient();
 
     // Initialize persona bridge for private repo data
-    this.personaBridge = new PersonalAssistantBridge();
+    // this.personaBridge = new PersonalAssistantBridge(); // TODO: Remove bridge dependency in new architecture
     
     // Initialize learning system
-    this.learningSystem = new EnhancedGlobalLearningSystem('personal-assistant', this.personaBridge);
+    // this.learningSystem = new EnhancedGlobalLearningSystem('personal-assistant', this.personaBridge); // TODO: Replace with CNS integration
 
     // Initialize Master Orchestrator connection
     this.masterOrchestrator = new MasterOrchestratorAgent();
@@ -140,9 +140,12 @@ export class PersonalAssistantAgent implements Agent {
 
   /**
    * Get persona context from private repository through bridge
+   * TODO: Replace with CNS integration in new architecture
    */
   private async getPersonaContext(userMessage: string): Promise<PersonaContext> {
     try {
+      // TODO: Replace bridge calls with local CNS integration
+      /*
       // Get identity data
       const identityResult = await this.personaBridge.handleTask({
         type: 'get-identity-data',
@@ -180,6 +183,19 @@ export class PersonalAssistantAgent implements Agent {
         ],
         appliedElements: ['identity-integration', 'communication-style', 'project-context']
       };
+      */
+      
+      // Temporary fallback - return default context
+      return {
+        name: 'User',
+        role: 'Professional',
+        interests: [],
+        communicationStyle: 'Professional',
+        currentProjects: [],
+        preferences: {},
+        relevantElements: [],
+        appliedElements: []
+      };
     } catch (error) {
       console.error('Error getting persona context:', error);
       // Return default persona context
@@ -216,15 +232,19 @@ export class PersonalAssistantAgent implements Agent {
       - HIGH COMPLEXITY: Multi-step projects, research + analysis + report creation, coordinated workflows
 
       ORCHESTRATION DECISION:
-      Only require orchestration (multiple agents) for tasks that genuinely need:
-      - Multiple different skill sets (research + writing + analysis)
-      - Complex workflows spanning multiple domains
+      ALWAYS require orchestration (multiple agents) for:
+      - Agent capability queries (what agents, which agents, agent capabilities, team capabilities, etc.)
+      - Multi-step projects or workflows
+      - Research + analysis + report creation
+      - Complex tasks requiring multiple skill sets
       - Project-level work with multiple deliverables
 
       DO NOT require orchestration for:
       - Simple greetings ("Are you awake?", "Hello", "How are you?")
-      - Basic questions ("What can you do?", "Tell me about...")
+      - Basic personal questions about the assistant ("What can you do?", "Who are you?")
       - Single-domain requests that one agent could handle
+
+      IMPORTANT: Agent capability questions should ALWAYS use orchestration to get real agent information.
 
       RESPONSE FORMAT (be precise with your analysis):
       COMPLEXITY: [low|medium|high]
@@ -236,7 +256,11 @@ export class PersonalAssistantAgent implements Agent {
 
       const analysis = await this.claudeService.generateResponse(messages, systemPrompt);
 
-      return this.parseIntentAnalysis(analysis, userMessage);
+      console.log('[PersonalAssistant] Intent Analysis Raw Response:', analysis);
+      const parsedAnalysis = this.parseIntentAnalysis(analysis, userMessage);
+      console.log('[PersonalAssistant] Parsed Intent Analysis:', JSON.stringify(parsedAnalysis, null, 2));
+
+      return parsedAnalysis;
     } catch (error) {
       console.error('Error analyzing user intent:', error);
       // Fallback to simple analysis
@@ -308,28 +332,48 @@ REASONING: [brief explanation]`;
       });
 
       // Step 2: Send to Master Orchestrator for plan creation and execution
-      // For now, we'll simulate orchestrator response since MasterOrchestratorAgent is empty
-      const orchestratorResponse = await this.simulateOrchestratorResponse({
-        prompt: orchestratorPrompt,
-        requiredAgents: intentAnalysis.requiredAgents,
-        deliverables: intentAnalysis.deliverables,
-        priority: intentAnalysis.priority
+      const taskType = this.determineTaskType(userMessage, intentAnalysis);
+      console.log(`[PersonalAssistant] Using task type: ${taskType}`);
+      
+      const masterOrchestrator = new MasterOrchestratorAgent();
+      const orchestratorResponse = await masterOrchestrator.handleTask({
+        type: taskType,
+        payload: {
+          userMessage,
+          context: {
+            intentAnalysis,
+            personaContext,
+            requestedDeliverables: intentAnalysis.deliverables,
+            timestamp: new Date().toISOString(),
+            requestId: Math.random().toString(36).substr(2, 9)
+          }
+        }
       });
 
       // Step 3: Process orchestrator results and craft user-facing response
-      const finalResponse = await this.craftFinalUserResponse({
-        originalRequest: userMessage,
-        orchestratorResults: orchestratorResponse,
-        personaContext: personaContext
-      });
+      if (orchestratorResponse?.success) {
+        const finalResponse = await this.craftFinalUserResponse({
+          originalRequest: userMessage,
+          orchestratorResults: orchestratorResponse.result,
+          personaContext: personaContext
+        });
 
-      return {
-        response: finalResponse,
-        conversationType: 'orchestrated',
-        involvedAgents: orchestratorResponse.executedAgents || intentAnalysis.requiredAgents,
-        deliverables: orchestratorResponse.completedDeliverables || intentAnalysis.deliverables,
-        executionTime: orchestratorResponse.totalExecutionTime || 5000
-      };
+        return {
+          response: finalResponse,
+          conversationType: 'orchestrated',
+          involvedAgents: orchestratorResponse.result?.agentsUsed || [],
+          deliverables: orchestratorResponse.result?.completedDeliverables || intentAnalysis.deliverables,
+          executionTime: orchestratorResponse.result?.totalExecutionTime || 5000
+        };
+      } else {
+        return {
+          response: "I encountered an issue coordinating with the team. Please try your request again.",
+          conversationType: 'error',
+          involvedAgents: [],
+          deliverables: [],
+          executionTime: 0
+        };
+      }
     } catch (error) {
       console.error('Error in orchestrated request:', error);
       return this.generateErrorResponse(error);
@@ -337,26 +381,50 @@ REASONING: [brief explanation]`;
   }
 
   /**
-   * Simulate orchestrator response until MasterOrchestratorAgent is implemented
+   * Determines appropriate task type for Master Orchestrator based on request analysis
    */
-  private async simulateOrchestratorResponse(params: any): Promise<any> {
-    // This is a temporary simulation - replace when MasterOrchestratorAgent is ready
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing time
+  private determineTaskType(userMessage: string, intentAnalysis: any): 'orchestrate' | 'plan' | 'get-agent-capabilities' | 'count-agents' {
+    const message = userMessage.toLowerCase();
     
-    return {
-      executedAgents: params.requiredAgents,
-      completedDeliverables: params.deliverables,
-      totalExecutionTime: 3500,
-      results: {
-        status: 'completed',
-        summary: 'Orchestration completed successfully with simulated agent coordination',
-        agentOutputs: params.requiredAgents.map((agent: string) => ({
-          agent,
-          status: 'completed',
-          output: `Simulated output from ${agent}`
-        }))
-      }
-    };
+    // Check for simple counting/info queries that don't need orchestration
+    if (message.includes('how many agents') || 
+        message.includes('count the agents') ||
+        message.includes('number of agents') ||
+        message.includes('agent count') ||
+        (message.includes('agents') && (message.includes('how many') || message.includes('count')))) {
+      return 'count-agents';
+    }
+    
+    // Check for agent capability queries
+    if (message.includes('what agents') || 
+        message.includes('which agents') || 
+        message.includes('agent capabilities') || 
+        message.includes('what can the team') ||
+        message.includes('team capabilities') ||
+        message.includes('who can help') ||
+        message.includes('available agents') ||
+        message.includes('each one of your agents') ||
+        message.includes('reach out to each') ||
+        message.includes('elevator pitch') ||
+        message.includes('compile their responses') ||
+        (message.includes('agents') && message.includes('capabilities')) ||
+        (message.includes('agents') && message.includes('what') && message.includes('can'))) {
+      return 'get-agent-capabilities';
+    }
+    
+    // Check for planning requests (without execution)
+    if (message.includes('plan for') || 
+        message.includes('create a plan') ||
+        message.includes('planning') ||
+        message.includes('strategy for') ||
+        message.includes('approach to') ||
+        (message.includes('how to') && !message.includes('create') && !message.includes('build') && !message.includes('generate'))) {
+      return 'plan';
+    }
+    
+    // Default to orchestrate for execution requests
+    // This includes complex multi-deliverable requests, content creation, analysis, etc.
+    return 'orchestrate';
   }
 
   /**
@@ -496,6 +564,8 @@ ${personaContext.relevantElements.map(element => `- ${element.category}: ${eleme
     // Load active learnings from private repo CNS via bridge
     let cnsLearnings = '';
     try {
+      // TODO: Replace bridge call with local CNS integration
+      /*
       const cnsResult = await this.personaBridge.handleTask({
         type: 'get-cns-data',
         payload: {
@@ -526,6 +596,10 @@ ${personaContext.relevantElements.map(element => `- ${element.category}: ${eleme
       } else {
         console.log('❌ CNS: Bridge call failed:', cnsResult.error || 'No result');
       }
+      */
+      
+      // Temporary fallback - no CNS learning data
+      cnsLearnings = 'CNS learning files not available - bridge functionality removed for new architecture';
     } catch (error) {
       console.warn('CNS: Bridge access failed:', error.message);
       cnsLearnings = 'CNS learning files not available - bridge error';
@@ -597,6 +671,29 @@ Your goal is to provide personalized assistance with PERFECT formatting that the
    */
   private parseIntentAnalysis(analysisText: string, originalMessage?: string): IntentAnalysis {
     try {
+      // First check if this is an agent capability query regardless of Claude's analysis
+      const userLower = (originalMessage || '').toLowerCase();
+      const capabilityPatterns = [
+        'what agents', 'which agents', 'agent capabilities', 'what can the team',
+        'team capabilities', 'who can help', 'available agents', 'what agents can',
+        'each one of your agents', 'reach out to each', 'elevator pitch',
+        'compile their responses', 'agents and compile', 'one sentence',
+        'capabilities of', 'capabilities?', 'what can each'
+      ];
+      
+      const isCapabilityQuery = capabilityPatterns.some(pattern => userLower.includes(pattern));
+      
+      if (isCapabilityQuery) {
+        console.log('[PersonalAssistant] Detected capability query - forcing orchestration');
+        return {
+          complexityLevel: 'medium',
+          requiresOrchestration: true,
+          requiredAgents: ['master-orchestrator'],
+          deliverables: ['agent-capabilities-list'],
+          priority: 'medium'
+        };
+      }
+
       // Parse structured response from Claude analysis
       const complexityMatch = analysisText.match(/COMPLEXITY:\s*(\w+)/i);
       const orchestrationMatch = analysisText.match(/ORCHESTRATION:\s*(\w+)/i);
@@ -629,12 +726,33 @@ Your goal is to provide personalized assistance with PERFECT formatting that the
       // Fallback: Use simple keyword analysis for basic categorization
       const userLower = (originalMessage || analysisText).toLowerCase();
       
+      // Agent capability queries should be routed to Master Orchestrator
+      const capabilityPatterns = [
+        'what agents', 'which agents', 'agent capabilities', 'what can the team',
+        'team capabilities', 'who can help', 'available agents', 'what agents can',
+        'each one of your agents', 'reach out to each', 'elevator pitch',
+        'compile their responses', 'agents and compile', 'one sentence',
+        'capabilities of', 'capabilities?', 'what can each'
+      ];
+      
+      const isCapabilityQuery = capabilityPatterns.some(pattern => userLower.includes(pattern));
+      
+      if (isCapabilityQuery) {
+        return {
+          complexityLevel: 'medium',
+          requiresOrchestration: true,
+          requiredAgents: ['master-orchestrator'],
+          deliverables: ['agent-capabilities-list'],
+          priority: 'medium'
+        };
+      }
+      
       // Simple greetings and check-ins should be direct responses
       const simplePatterns = [
         'are you awake', 'hello', 'hi', 'good morning', 'good afternoon', 
         'good evening', 'how are you', 'what can you do', 'who are you',
         'help', 'thanks', 'thank you', 'yes', 'no', 'okay', 'you there',
-        'how many agents', 'tell me about', 'explain', 'what is'
+        'tell me about', 'explain', 'what is'
       ];
       
       const isSimple = simplePatterns.some(pattern => userLower.includes(pattern));
@@ -678,26 +796,55 @@ Your goal is to provide personalized assistance with PERFECT formatting that the
   private async craftFinalUserResponse(params: FinalResponseParams): Promise<string> {
     const { originalRequest, orchestratorResults, personaContext } = params;
 
+    // Handle get-agent-capabilities response format (string result)
+    if (typeof orchestratorResults === 'string') {
+      return orchestratorResults;
+    }
+
+    // Validate we have actual orchestrator results
+    if (!orchestratorResults || !orchestratorResults.agentResults) {
+      return `I apologize, but I encountered an issue coordinating with the team for your request: "${originalRequest}". Please try again.`;
+    }
+
+    // Extract only the actual agent outputs (no fabrication allowed)
+    const actualAgentOutputs: Array<{ agent: string; output: string }> = [];
+    
+    if (orchestratorResults.agentResults && typeof orchestratorResults.agentResults === 'object') {
+      for (const [agentId, result] of Object.entries(orchestratorResults.agentResults)) {
+        if (result && typeof result === 'object' && 'success' in result && (result as any).success) {
+          const agentResult = result as any;
+          actualAgentOutputs.push({
+            agent: agentId,
+            output: agentResult.result || agentResult.response || 'Agent completed task successfully'
+          });
+        }
+      }
+    }
+
+    if (actualAgentOutputs.length === 0) {
+      return `I coordinated with the team regarding your request: "${originalRequest}", but no agents were able to complete deliverables at this time. Please try a different approach or let me know if you'd like me to try again.`;
+    }
+
     const responsePrompt = `# Final Response Compilation
 
 ## Original User Request
 "${originalRequest}"
 
-## Orchestrator Execution Results
-${JSON.stringify(orchestratorResults, null, 2)}
+## ACTUAL Agent Outputs (DO NOT FABRICATE OR ADD TO THESE)
+${actualAgentOutputs.map(item => `### ${item.agent}:\n${item.output}`).join('\n\n')}
 
 ## Persona Context for Response Style
 ${this.formatPersonaContext(personaContext)}
 
 ## Response Compilation Task
-Create a comprehensive, personalized response that:
+Create a response that:
 1. Directly addresses the original user request
-2. Integrates all completed deliverables seamlessly
+2. ONLY reports the actual outputs provided above - DO NOT add content not explicitly provided by agents
 3. Maintains the user's preferred communication style
 4. Provides clear next steps or follow-up options
-5. Acknowledges the collaborative effort of multiple agents without being technical
+5. Acknowledges which specific agents contributed
 
-The response should feel like a natural conversation while delivering all requested outcomes.`;
+CRITICAL: Only reference agent work that is explicitly listed above. Do not fabricate or simulate agent outputs.`;
 
     const messages: Anthropic.MessageParam[] = [
       { role: 'user', content: responsePrompt }
@@ -782,9 +929,12 @@ The response should feel like a natural conversation while delivering all reques
 
   /**
    * Load CNS data from private repository
+   * TODO: Replace with local CNS integration in new architecture
    */
   private async loadCNSData(): Promise<any> {
     try {
+      // TODO: Replace bridge call with local CNS integration
+      /*
       const cnsResult = await this.personaBridge.handleTask({
         type: 'get-cns-data',
         payload: {
@@ -802,6 +952,11 @@ The response should feel like a natural conversation while delivering all reques
         console.log('❌ CNS: Failed to load data:', cnsResult.error);
         return {};
       }
+      */
+      
+      // Temporary fallback - return empty object
+      console.log('🔄 CNS: Bridge functionality disabled for new architecture');
+      return {};
     } catch (error) {
       console.error('Error loading CNS data:', error);
       return {};
@@ -813,7 +968,8 @@ The response should feel like a natural conversation while delivering all reques
    */
   private async shouldAskClarifyingQuestions(userMessage: string, intentAnalysis: any, cnsData: any): Promise<{shouldAsk: boolean, questions: string[]}> {
     try {
-      // Use the learning system to check for clarifying questions
+      // TODO: Replace learning system with CNS integration
+      /*
       const questionCheck = await this.learningSystem.shouldAskClarifyingQuestions(
         intentAnalysis.complexityLevel === 'high' ? 'complex-research' : 'general',
         userMessage
@@ -822,6 +978,13 @@ The response should feel like a natural conversation while delivering all reques
       return {
         shouldAsk: questionCheck.shouldAsk,
         questions: questionCheck.questions
+      };
+      */
+      
+      // Temporary fallback - no clarifying questions
+      return {
+        shouldAsk: false,
+        questions: []
       };
     } catch (error) {
       console.error('Error checking clarifying questions:', error);

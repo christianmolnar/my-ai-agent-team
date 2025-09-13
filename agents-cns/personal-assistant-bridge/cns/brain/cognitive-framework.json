@@ -1,0 +1,22 @@
+{
+  "agentId": "personal-assistant-bridge",
+  "cognitiveCapabilities": {
+    "primaryDomain": "personal assistant bridge",
+    "specializations": [],
+    "problemSolving": "domain-specific-expertise",
+    "decisionMaking": "evidence-based-analysis",
+    "learningCapacity": "continuous-improvement"
+  },
+  "executiveAlignment": {
+    "valueDelivery": "strategic-business-impact",
+    "communicationStyle": "executive-appropriate",
+    "qualityStandards": "professional-excellence",
+    "relationshipFocus": "trust-and-reliability"
+  },
+  "operationalExcellence": {
+    "deliveryQuality": "exceptional-standards",
+    "timeManagement": "deadline-commitment",
+    "resourceOptimization": "efficient-utilization",
+    "continuousImprovement": "performance-enhancement"
+  }
+}
