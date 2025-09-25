@@ -195,6 +195,10 @@ export default function Home() {
   const [pendingLearningId, setPendingLearningId] = useState<string | null>(null);
   const [showLearningHistory, setShowLearningHistory] = useState<boolean>(false);
   const [showInteractionLogs, setShowInteractionLogs] = useState<boolean>(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  
+  // Ref for auto-resizing textarea
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Log when showInteractionLogs changes (can be removed in production)
   useEffect(() => {
@@ -230,6 +234,7 @@ export default function Home() {
     setChatHistory([
       { role: 'assistant', content: 'Hello! I\'m your Personal Assistant. I can help coordinate projects across your entire AI agent team. What would you like to work on today?' }
     ]);
+    setSessionId(null); // Reset session ID for new chat
   };
 
   // Handle teaching new behavior
@@ -306,6 +311,17 @@ export default function Home() {
     }
   };
 
+  // Auto-resize textarea function
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    
+    // Auto-resize textarea
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px';
+    }
+  };
+
   // Handle learning feedback submission
   const handleLearningFeedback = (learningId: string, action: 'internalize' | 'forget') => {
     console.log(`Learning ${learningId} ${action}d`);
@@ -322,6 +338,11 @@ export default function Home() {
       setChatHistory([...chatHistory, { role: 'user', content: userMessage }]);
       setMessage('');
       
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '44px';
+      }
+      
       // Add loading message
       setChatHistory(prev => [...prev, { 
         role: 'assistant', 
@@ -337,13 +358,20 @@ export default function Home() {
           },
           body: JSON.stringify({ 
             message: userMessage,
-            conversationHistory: chatHistory.filter(msg => msg.role !== 'assistant' || !msg.content.includes('🤔 Thinking...'))
+            conversationHistory: chatHistory.filter(msg => msg.role !== 'assistant' || !msg.content.includes('🤔 Thinking...')),
+            sessionId: sessionId
           })
         });
         
         const data = await response.json();
         
         if (data.success) {
+          // Store session ID for future requests
+          if (data.sessionId && !sessionId) {
+            setSessionId(data.sessionId);
+            console.log(`📋 Session started: ${data.sessionId}`);
+          }
+          
           // Replace loading message with actual response
           setChatHistory(prev => {
             const newHistory = [...prev];
@@ -390,6 +418,73 @@ export default function Home() {
       background: "linear-gradient(135deg, #181a1b 0%, #232526 100%)",
       padding: "20px"
     }}>
+      {/* Navigation Bar */}
+      <nav style={{
+        maxWidth: "1400px",
+        margin: "0 auto 20px auto",
+        background: "rgba(35, 37, 38, 0.8)",
+        borderRadius: "15px",
+        padding: "15px 25px",
+        paddingRight: "200px", // More space to move deliverables button further left
+        border: "1px solid #444",
+        backdropFilter: "blur(10px)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}>
+        <div style={{
+          fontSize: "20px",
+          fontWeight: "600",
+          color: "#ffb347"
+        }}>
+          {/* Removed duplicate AI Agent Team title */}
+        </div>
+        <div style={{
+          display: "flex",
+          gap: "20px",
+          alignItems: "center"
+        }}>
+          <Link 
+            href="/api-status" 
+            target="_blank"
+            style={{
+              background: "linear-gradient(135deg, #4ade80 0%, #22c55e 100%)",
+              color: "#181a1b",
+              textDecoration: "none",
+              borderRadius: "8px",
+              padding: "8px 16px",
+              fontSize: "14px",
+              fontWeight: "500",
+              transition: "all 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            🔧 API Status
+          </Link>
+          <Link 
+            href="/deliverables" 
+            target="_blank"
+            style={{
+              background: "linear-gradient(135deg, #ffb347 0%, #ff8c42 100%)",
+              color: "#181a1b",
+              textDecoration: "none",
+              borderRadius: "8px",
+              padding: "8px 16px",
+              fontSize: "14px",
+              fontWeight: "500",
+              transition: "all 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            📋 View Deliverables
+          </Link>
+        </div>
+      </nav>
+
       <main style={{
         maxWidth: "1400px",
         margin: "0 auto",
@@ -407,14 +502,8 @@ export default function Home() {
             color: "#ffb347",
             marginBottom: "10px"
           }}>
-            🤖 AI Agent Team
+            AI Agent Team
           </h1>
-          <p style={{
-            color: "#ccc",
-            fontSize: "18px"
-          }}>
-            Intelligent, coordinated agents working together for your success
-          </p>
         </div>
 
         {/* Personal Assistant Chat Interface */}
@@ -437,12 +526,6 @@ export default function Home() {
             }}>
               🤖 Personal Assistant
             </h2>
-            <p style={{
-              color: "#ccc",
-              fontSize: "14px"
-            }}>
-              Tell me what you need, and I'll coordinate the entire team to make it happen
-            </p>
           </div>
 
           {/* Chat History */}
@@ -526,13 +609,18 @@ export default function Home() {
           </div>
 
           {/* Chat Input */}
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <input
-              type="text"
+          <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
+            <textarea
+              ref={textareaRef}
               placeholder="What project or task do you need help with?"
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              onChange={handleTextareaChange}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
               style={{
                 flex: 1,
                 padding: "12px 16px",
@@ -540,8 +628,15 @@ export default function Home() {
                 border: "1px solid #555",
                 borderRadius: "8px",
                 color: "#f3f3f3",
-                fontSize: "14px"
+                fontSize: "14px",
+                minHeight: "44px",
+                maxHeight: "120px",
+                resize: "none",
+                overflow: "auto",
+                fontFamily: "inherit",
+                lineHeight: "1.4"
               }}
+              rows={1}
             />
             <button
               onClick={handleSendMessage}

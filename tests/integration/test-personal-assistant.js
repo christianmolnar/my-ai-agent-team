@@ -2,7 +2,7 @@
  * Quick test for Personal Assistant natural conversation capability
  */
 
-import { PersonalAssistantAgent } from './agents/PersonalAssistantAgent.js';
+import { PersonalAssistantAgent } from '../../agents/personal-assistant';
 
 async function testPersonalAssistantConversation() {
   console.log('🤖 Testing Personal Assistant Natural Conversation');

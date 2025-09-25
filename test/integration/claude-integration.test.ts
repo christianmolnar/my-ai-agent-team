@@ -138,7 +138,7 @@ describe('Agent Claude Integration', () => {
   });
 
   test('PersonalAssistantAgent Initialization', async () => {
-    const { PersonalAssistantAgent } = await import('../../agents/PersonalAssistantAgent');
+    const { PersonalAssistantAgent } = await import('../../agents/personal-assistant');
     
     expect(() => {
       const agent = new PersonalAssistantAgent();
@@ -148,7 +148,7 @@ describe('Agent Claude Integration', () => {
   });
 
   test('MasterOrchestratorAgent Initialization', async () => {
-    const { MasterOrchestratorAgent } = await import('../../agents/master-orchestrator-agent');
+    const { MasterOrchestratorAgent } = await import('../../agents/master-orchestrator');
     
     expect(() => {
       const agent = new MasterOrchestratorAgent();

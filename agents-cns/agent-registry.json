@@ -1,7 +1,15 @@
 {
   "agents": [
     {
-      "id": "researcher-agent",
+      "id": "reviewer",
+      "name": "Reviewer Agent",
+      "type": "ReviewerAgent",
+      "status": "active",
+      "capabilities": ["Quality Validation", "Independent Review", "Multi-LLM Verification", "Feedback Generation"],
+      "folder": "reviewer"
+    },
+    {
+      "id": "researcher",
       "name": "Research Specialist Agent",
       "type": "ResearcherAgent",
       "status": "active",
@@ -9,7 +17,7 @@
       "folder": "researcher-agent"
     },
     {
-      "id": "communications-agent", 
+      "id": "communications", 
       "name": "Communications Agent",
       "type": "CommunicationsAgent",
       "status": "active",
@@ -145,7 +153,7 @@
       "folder": "test-expert"
     },
     {
-      "id": "vinyl-researcher-agent",
+      "id": "vinyl-researcher",
       "name": "Vinyl Research Agent",
       "type": "VinylResearcherAgent",
       "status": "active",
@@ -161,7 +169,7 @@
       "folder": "master-orchestrator"
     },
     {
-      "id": "personal-assistant-agent",
+      "id": "personal-assistant",
       "name": "Personal Assistant Agent",
       "type": "PersonalAssistantAgent",
       "status": "active", 
@@ -169,7 +177,7 @@
       "folder": "personal-assistant-agent"
     }
   ],
-  "totalAgents": 21,
-  "lastUpdated": "2025-09-11T14:45:00Z",
+  "totalAgents": 22,
+  "lastUpdated": "2025-09-13T14:45:00Z",
   "version": "1.0.0"
 }

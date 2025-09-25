@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PersonalAssistantAgent } from '../../../agents/PersonalAssistantAgent';
+import { PersonalAssistantAgent } from '../../../agents/personal-assistant';
 
 export async function POST(request: NextRequest) {
   try {

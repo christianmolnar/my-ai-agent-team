@@ -1,4 +1,4 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
 import * as fs from 'fs';
 import * as path from 'path';
 

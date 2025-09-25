@@ -1,4 +1,4 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
 
 export class DevDesignDocCreatorAgent implements Agent {
   id = 'dev-design-doc-creator';
@@ -115,7 +115,12 @@ export class DevDesignDocCreatorAgent implements Agent {
 • Development Workflow Design - Optimizing team processes and methodologies`;
   }
 
-  private async handleGenericRequest(request: string): string {
+  private async handleGenericRequest(request: string): Promise<string> {
+    // Check if this is a simple application request
+    if (this.isSimpleApplicationRequest(request)) {
+      return this.provideSimpleDesignGuidance(request);
+    }
+    
     // For generic requests, try to apply design thinking to the problem
     return `As a Design Document Creator, I can help with "${request}" by:
 
@@ -137,7 +142,7 @@ export class DevDesignDocCreatorAgent implements Agent {
 Would you like me to create a detailed design document for this request?`;
   }
 
-  private async reviewArchitecture(request: string): string {
+  private async reviewArchitecture(request: string): Promise<string> {
     return `Architecture Review for: "${request}"
 
 REVIEW METHODOLOGY:
@@ -160,6 +165,11 @@ DELIVERABLES: Comprehensive architecture review report with actionable recommend
   }
 
   private async performDesignDocumentation(request: string): Promise<string> {
+    // Check if this is a simple application that doesn't need complex design docs
+    if (this.isSimpleApplicationRequest(request)) {
+      return this.provideSimpleDesignGuidance(request);
+    }
+    
     return `Technical Design Documentation for: "${request}"
 
 DESIGN DOCUMENT FRAMEWORK:
@@ -212,6 +222,49 @@ DOCUMENTATION STATUS: PRODUCTION-READY
 - Maintainable documentation structure
 
 This design documentation provides a complete technical foundation for successful development execution.`;
+  }
+
+  private isSimpleApplicationRequest(request: string): boolean {
+    const simplePatterns = [
+      'game', 'checkers', 'tic-tac-toe', 'calculator', 'todo', 'simple app',
+      'basic', 'quick', 'small', 'mini', 'demo', 'prototype', 'landing page',
+      'form', 'counter', 'timer', 'clock', 'weather app', 'notes app'
+    ];
+    
+    return simplePatterns.some(pattern => 
+      request.toLowerCase().includes(pattern)
+    );
+  }
+
+  private provideSimpleDesignGuidance(request: string): string {
+    return `✅ SIMPLE DESIGN APPROACH FOR: ${request}
+
+**Quick Design Decisions:**
+- Single-page application with React components
+- Component state for game logic (no complex state management needed)
+- CSS Grid or Flexbox for layout
+- Local storage for simple persistence
+
+**File Structure:**
+\`\`\`
+src/
+  components/
+    GameBoard.jsx
+    GamePiece.jsx
+    GameInfo.jsx
+  App.jsx
+  App.css
+\`\`\`
+
+**Core Components:**
+- Game board component with click handlers
+- Piece component for individual game pieces
+- Info component for score/status display
+
+**No Complex Architecture Needed:**
+This is straightforward enough to build directly without extensive documentation.
+
+Let's focus on building the working application!`;
   }
 
   private async createDesignDocument(payload: any): Promise<AgentTaskResult> {

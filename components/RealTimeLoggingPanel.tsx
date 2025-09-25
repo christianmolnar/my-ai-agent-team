@@ -78,7 +78,7 @@ const RealTimeLoggingPanel: React.FC<RealTimeLoggingPanelProps> = ({ isVisible, 
     
     // Add execution timing
     if (interaction.executionTimeMs) {
-      details.push(`⏱️ Execution: ${interaction.executionTimeMs}ms`);
+      details.push(`⏱️ Execution: ${(interaction.executionTimeMs / 1000).toFixed(2)}s`);
     }
     
     // Add dependencies if any
@@ -93,7 +93,7 @@ const RealTimeLoggingPanel: React.FC<RealTimeLoggingPanelProps> = ({ isVisible, 
     
     // Add status-specific information
     if (interaction.success === false && interaction.errorDetails) {
-      details.push(`❌ Error: ${interaction.errorDetails.substring(0, 100)}...`);
+      details.push(`❌ Error: ${interaction.errorDetails}`);
     }
     
     return details.length > 0 ? details.join('\n') : 'Direct execution';
@@ -196,7 +196,7 @@ const RealTimeLoggingPanel: React.FC<RealTimeLoggingPanelProps> = ({ isVisible, 
                           taskSummary: formatCoordinationDetails(interaction),
                           status: interaction.status,
                           executionTimeMs: interaction.executionTimeMs,
-                          outputSummary: interaction.outputSummary ? interaction.outputSummary.substring(0, 200) + '...' : 'No output summary',
+                          outputSummary: interaction.outputSummary || 'No output summary',
                           success: interaction.success
                         });
                       });
@@ -298,7 +298,7 @@ const RealTimeLoggingPanel: React.FC<RealTimeLoggingPanelProps> = ({ isVisible, 
         minute: '2-digit'
       });
     }
-    return sessionId.substring(0, 12) + '...';
+    return sessionId;
   };
 
   const formatTimestamp = (timestamp: string) => {
@@ -336,25 +336,36 @@ const RealTimeLoggingPanel: React.FC<RealTimeLoggingPanelProps> = ({ isVisible, 
         onClick={onToggle}
         style={{
           position: 'fixed',
-          top: '20px',
-          right: isVisible ? '420px' : '20px',
+          top: '35px', // Lower position to align with navigation bar height
+          right: isVisible ? '410px' : '25px',
           zIndex: 1001,
-          background: '#ffb347',
-          color: '#000',
-          border: 'none',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          fontSize: '14px',
-          fontWeight: '600',
+          background: isVisible 
+            ? 'linear-gradient(135deg, #ff8c42 0%, #ffb347 100%)' 
+            : 'linear-gradient(135deg, #ffb347 0%, #ff8c42 100%)',
+          color: '#181a1b',
+          border: '1px solid rgba(255, 179, 71, 0.3)',
+          borderRadius: '8px', // Match deliverables button
+          padding: '7px 11px', // Match deliverables button
+          fontSize: '14px', // Match deliverables button
+          fontWeight: '500', // Match deliverables button
           cursor: 'pointer',
           transition: 'all 0.3s ease',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+          boxShadow: '0 3px 10px rgba(255, 179, 71, 0.3)',
+          backdropFilter: 'blur(10px)'
         }}
         onMouseOver={(e) => {
-          e.currentTarget.style.background = '#ffa500';
+          e.currentTarget.style.background = isVisible 
+            ? 'linear-gradient(135deg, #ff7f33 0%, #ffa500 100%)' 
+            : 'linear-gradient(135deg, #ffa500 0%, #ff7f33 100%)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 179, 71, 0.4)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.background = '#ffb347';
+          e.currentTarget.style.background = isVisible 
+            ? 'linear-gradient(135deg, #ff8c42 0%, #ffb347 100%)' 
+            : 'linear-gradient(135deg, #ffb347 0%, #ff8c42 100%)';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 3px 10px rgba(255, 179, 71, 0.3)';
         }}
       >
         {isVisible ? '📝 Hide Logs' : '📝 Show Real-Time Logs'}
@@ -676,7 +687,7 @@ const RealTimeLoggingPanel: React.FC<RealTimeLoggingPanelProps> = ({ isVisible, 
                   color: '#777',
                   fontSize: '11px'
                 }}>
-                  ⏱️ {log.executionTimeMs}ms
+                  ⏱️ {(log.executionTimeMs / 1000).toFixed(2)}s
                 </div>
               </div>
             ))

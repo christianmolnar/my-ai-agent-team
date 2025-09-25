@@ -1,4 +1,4 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
 
 export class PerformanceExpertAgent implements Agent {
   id = 'performance-expert';

@@ -10,8 +10,8 @@
  * 4. No simulation/fallback code is being used
  */
 
-import { AgentRegistry } from '../agents/AgentRegistry.ts';
-import { MasterOrchestratorAgent } from '../agents/master-orchestrator-agent.ts';
+import { AgentRegistry } from '../agents/agent-registry';
+import { MasterOrchestratorAgent } from '../agents/master-orchestrator';
 
 async function testRealAgentExecution() {
   console.log('🚀 Testing Real Agent Execution System\n');

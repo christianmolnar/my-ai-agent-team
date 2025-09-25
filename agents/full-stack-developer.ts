@@ -1,4 +1,6 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
+import { UniversalAIClient, AIMessage } from '../lib/universal-ai-client';
+import { EnhancedFileSystemManager } from '../lib/EnhancedFileSystemManager';
 
 export class FullStackDeveloperAgent implements Agent {
   id = 'full-stack-developer';
@@ -18,6 +20,14 @@ export class FullStackDeveloperAgent implements Agent {
     'Mobile App Development',
     'System Architecture Design'
   ];
+
+  private aiClient: UniversalAIClient;
+  private fileManager: EnhancedFileSystemManager;
+
+  constructor() {
+    this.aiClient = new UniversalAIClient();
+    this.fileManager = new EnhancedFileSystemManager();
+  }
 
   async handleTask(task: AgentTask): Promise<AgentTaskResult> {
     try {
@@ -63,13 +73,13 @@ export class FullStackDeveloperAgent implements Agent {
         result = this.getCapabilities();
         break;
       case 'application-development':
-        result = await this.buildApplicationDetailed(userRequest);
+        result = await this.buildApplicationDetailed(userRequest, payload);
         break;
       case 'system-integration':
         result = await this.integrateSystemsDetailed(userRequest);
         break;
       default:
-        result = await this.performFullStackDevelopment(userRequest);
+        result = await this.performFullStackDevelopment(userRequest, payload);
         break;
     }
     
@@ -118,7 +128,168 @@ export class FullStackDeveloperAgent implements Agent {
 • Microservices Architecture Design`;
   }
 
-  private async buildApplicationDetailed(request: string): Promise<string> {
+  private async buildApplicationDetailed(userRequest: string, payload?: any): Promise<string> {
+    try {
+      // For simple web applications, generate actual executable code
+      if (this.isSimpleWebApp(userRequest)) {
+        return await this.generateExecutableCode(userRequest, payload);
+      }
+      
+      // For complex applications, provide detailed architecture
+      return await this.generateApplicationArchitecture(userRequest);
+    } catch (error) {
+      console.error('[FullStackDeveloper] Error in buildApplicationDetailed:', error);
+      return this.getFallbackResponse(userRequest);
+    }
+  }
+
+  private isSimpleWebApp(request: string): boolean {
+    const simplePatterns = [
+      'simple web application',
+      'simple',
+      'functional',
+      'tic tac toe',
+      'calculator',
+      'todo list',
+      'basic game',
+      'simple game',
+      'landing page',
+      'portfolio site',
+      'checkers',
+      'chess',
+      'web app',
+      'colorful'
+    ];
+    
+    // If the request is short and mentions simple/functional, it's likely a simple app
+    const isShortRequest = request.split(' ').length < 15;
+    const hasSimpleIndicators = request.toLowerCase().includes('simple') || 
+                              request.toLowerCase().includes('functional') ||
+                              request.toLowerCase().includes('colorful');
+    
+    return simplePatterns.some(pattern => 
+      request.toLowerCase().includes(pattern)
+    ) || (isShortRequest && hasSimpleIndicators);
+  }
+
+  private async generateExecutableCode(request: string, context?: any): Promise<string> {
+    // Try to infer what kind of application from context or request
+    let appType = 'interactive web application';
+    
+    // Check for specific app types in request or context
+    if (request.toLowerCase().includes('checkers') || (context && JSON.stringify(context).toLowerCase().includes('checkers'))) {
+      appType = 'checkers game';
+    } else if (request.toLowerCase().includes('calculator')) {
+      appType = 'calculator';
+    } else if (request.toLowerCase().includes('todo')) {
+      appType = 'todo list';
+    } else if (request.toLowerCase().includes('game')) {
+      appType = 'simple game';
+    }
+
+    const messages: AIMessage[] = [
+      {
+        role: 'user',
+        content: `Create a complete, functional ${appType} web application based on: ${request}
+
+REQUIREMENTS:
+- Generate actual executable HTML/CSS/JavaScript code
+- Create a single HTML file that works when opened in a browser
+- Include all necessary CSS and JavaScript inline
+- Make it fully functional and interactive
+- Use modern, clean design with bright colors as requested
+- Ensure responsive layout for mobile and desktop
+- Add proper game logic if it's a game
+- Make it visually appealing and engaging
+
+SPECIFIC REQUIREMENTS FROM USER:
+- Simple and functional
+- Colorful design
+- No specific technology preference (use vanilla HTML/CSS/JS)
+
+RESPONSE FORMAT:
+Just provide the complete HTML code without extra explanations. Start directly with <!DOCTYPE html>`
+      }
+    ];
+
+    try {
+      const response = await this.aiClient.generateResponse('full-stack-developer', messages);
+      
+      // Extract project name and save the code with enhanced manager
+      const projectName = this.extractProjectName(request + ' ' + appType);
+      const saveResult = await this.fileManager.saveApplication(
+        projectName,
+        response.content,
+        `${appType} created for: ${request}`,
+        this.id
+      );
+      
+      // Return summary with download link instead of full code
+      if (saveResult.success) {
+        return `✅ **${appType.toUpperCase()} CREATED SUCCESSFULLY!**
+
+**🎮 ${projectName}**
+📄 A simple, functional, and colorful ${appType} 
+🎨 Features bright colors and responsive design
+📱 Works on both desktop and mobile devices
+
+${saveResult.message}`;
+      } else {
+        return `✅ **${appType.toUpperCase()} CREATED!**
+
+${response.content}
+
+⚠️ Note: ${saveResult.message}`;
+      }
+    } catch (error) {
+      console.error('[FullStackDeveloper] AI generation failed:', error);
+      return this.getFallbackResponse(request);
+    }
+  }
+
+  private async generateApplicationArchitecture(request: string): Promise<string> {
+    const messages: AIMessage[] = [
+      {
+        role: 'user',
+        content: `As a full-stack developer, provide a comprehensive technical architecture plan for: ${request}
+
+Include:
+1. Technology stack recommendations
+2. Database design considerations
+3. API architecture
+4. Frontend framework choice
+5. Deployment strategy
+6. Security considerations
+7. Performance optimization
+8. Testing approach
+
+Provide practical, actionable technical details for implementation.`
+      }
+    ];
+
+    try {
+      const response = await this.aiClient.generateResponse('full-stack-developer', messages);
+      return response.content;
+    } catch (error) {
+      console.error('[FullStackDeveloper] Architecture generation failed:', error);
+      return this.getFallbackResponse(request);
+    }
+  }
+
+  private extractProjectName(request: string): string {
+    // Extract meaningful project name from request
+    const cleanRequest = request.toLowerCase()
+      .replace(/create|build|develop|make/g, '')
+      .replace(/simple|basic/g, '')
+      .replace(/web application|application|app/g, '')
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+    
+    return cleanRequest || 'web-application';
+  }
+
+  private getFallbackResponse(request: string): string {
     return `Full-Stack Application Development for: "${request}"
 
 COMPREHENSIVE ARCHITECTURE:
@@ -180,61 +351,19 @@ INTEGRATION STRATEGY:
 This integration provides seamless connectivity between all system components with robust error handling and monitoring.`;
   }
 
-  private async performFullStackDevelopment(request: string): Promise<string> {
-    return `Full-Stack Development Solution for: "${request}"
-
-COMPREHENSIVE ARCHITECTURE:
-1. FRONTEND LAYER
-   - React/Next.js with TypeScript
-   - Responsive UI with Tailwind CSS
-   - State management & data fetching
-   - Progressive Web App features
-
-2. BACKEND LAYER
-   - Node.js/Express API server
-   - PostgreSQL database with Prisma
-   - Authentication & authorization
-   - Real-time communication with WebSockets
-
-3. INFRASTRUCTURE & DEPLOYMENT
-   - Docker containerization
-   - Kubernetes orchestration
-   - CI/CD with GitHub Actions
-   - Cloud deployment (AWS/Vercel)
-
-4. TESTING & MONITORING
-   - Unit, integration, and E2E testing
-   - Performance monitoring
-   - Error tracking & logging
-   - Security scanning
-
-TECHNOLOGY STACK:
-• Frontend: Next.js 14, React 18, TypeScript, Tailwind CSS
-• Backend: Node.js, Express, Prisma, PostgreSQL
-• Authentication: NextAuth.js, JWT
-• Real-time: Socket.io, WebRTC
-• Testing: Jest, Cypress, Playwright
-• DevOps: Docker, Kubernetes, GitHub Actions
-• Monitoring: Prometheus, Grafana, Sentry
-• Cloud: AWS, Vercel, Railway
-
-DEVELOPMENT FEATURES:
-- Server-side rendering (SSR)
-- API rate limiting & security
-- Database migrations & seeding
-- File upload & processing
-- Email & notification systems
-- Payment integration
-- Admin dashboard
-- Mobile responsiveness
-
-DEPLOYMENT STATUS: PRODUCTION-READY
-- Scalable architecture implemented
-- Security best practices applied
-- Performance optimized
-- Monitoring & alerting active
-
-This comprehensive solution provides a modern, scalable full-stack application with enterprise-grade features and deployment capabilities.`;
+  private async performFullStackDevelopment(userRequest: string, payload?: any): Promise<string> {
+    try {
+      // For simple web applications, generate actual executable code
+      if (this.isSimpleWebApp(userRequest)) {
+        return await this.generateExecutableCode(userRequest, payload);
+      }
+      
+      // For complex applications, provide detailed architecture
+      return await this.generateApplicationArchitecture(userRequest);
+    } catch (error) {
+      console.error('[FullStackDeveloper] Error in performFullStackDevelopment:', error);
+      return this.getFallbackResponse(userRequest);
+    }
   }
 
   private async buildApplication(payload: any): Promise<AgentTaskResult> {

@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { Agent, AgentTask, AgentTaskResult } from '../../agents/Agent';
+import { Agent, AgentTask, AgentTaskResult } from '../../agents/agent';
 
 export interface ClaudeConfig {
   apiKey: string;

@@ -9,11 +9,11 @@ export class CNSManager {
   private basePath: string;
   
   constructor(agentName: string) {
-    this.basePath = join(process.cwd(), 'agents', agentName, 'CNS');
+    this.basePath = join(process.cwd(), 'agents-cns', agentName, 'cns');
   }
 
   /**
-   * Read all CNS brain files to get current learned behaviors
+   * Read all CNS files to get current learned behaviors, integration patterns, and reflexes
    */
   async getActiveLearnings(): Promise<string> {
     const learnings: string[] = [];
@@ -26,7 +26,7 @@ export class CNSManager {
       for (const file of brainFiles) {
         if (file.endsWith('.md')) {
           const content = await fs.readFile(join(brainPath, file), 'utf8');
-          learnings.push(`## ${file.replace('.md', '').toUpperCase()}\n${content}\n`);
+          learnings.push(`## BRAIN: ${file.replace('.md', '').toUpperCase()}\n${content}\n`);
         }
       }
       
@@ -39,6 +39,38 @@ export class CNSManager {
           const content = await fs.readFile(join(proceduralPath, file), 'utf8');
           learnings.push(`## PROCEDURAL: ${file.replace('.md', '').toUpperCase()}\n${content}\n`);
         }
+      }
+
+      // Read integration frameworks
+      const integrationPath = join(this.basePath, 'integration');
+      try {
+        const integrationFiles = await fs.readdir(integrationPath);
+        
+        for (const file of integrationFiles) {
+          if (file.endsWith('.json')) {
+            const content = await fs.readFile(join(integrationPath, file), 'utf8');
+            const jsonData = JSON.parse(content);
+            learnings.push(`## INTEGRATION: ${file.replace('.json', '').toUpperCase()}\n${JSON.stringify(jsonData, null, 2)}\n`);
+          }
+        }
+      } catch (error) {
+        // Integration folder may not exist for some agents
+      }
+
+      // Read reflex patterns
+      const reflexesPath = join(this.basePath, 'reflexes');
+      try {
+        const reflexFiles = await fs.readdir(reflexesPath);
+        
+        for (const file of reflexFiles) {
+          if (file.endsWith('.json')) {
+            const content = await fs.readFile(join(reflexesPath, file), 'utf8');
+            const jsonData = JSON.parse(content);
+            learnings.push(`## REFLEXES: ${file.replace('.json', '').toUpperCase()}\n${JSON.stringify(jsonData, null, 2)}\n`);
+          }
+        }
+      } catch (error) {
+        // Reflexes folder may not exist for some agents
       }
       
     } catch (error) {

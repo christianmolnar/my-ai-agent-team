@@ -2,11 +2,11 @@ import { ClaudeService, ClaudeConfig } from './ClaudeService';
 import Anthropic from '@anthropic-ai/sdk';
 
 export class AgentClaudeClientFactory {
-  // Development Tier Clients (Sonnet 4)
+  // Development Tier Clients (Claude-3.5-Sonnet for superior code quality)
   static createFullStackDeveloperClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022', // Using current available model
+      model: 'claude-sonnet-4-20250514', // Best for software development
       maxTokens: 4000,
       temperature: 0.3,
       timeout: 60000,
@@ -19,7 +19,7 @@ export class AgentClaudeClientFactory {
   static createDevOpsEngineerClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.DEVOPS_ENGINEER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514', // Best for technical infrastructure work
       maxTokens: 3000,
       temperature: 0.2,
       timeout: 60000,
@@ -32,7 +32,7 @@ export class AgentClaudeClientFactory {
   static createQAEngineerClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.QA_ENGINEER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514', // Best for test planning and analysis
       maxTokens: 3000,
       temperature: 0.1,
       timeout: 60000,
@@ -45,7 +45,7 @@ export class AgentClaudeClientFactory {
   static createDataScientistClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.DATA_SCIENTIST_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514', // Best for data analysis and modeling
       maxTokens: 4000,
       temperature: 0.2,
       timeout: 60000,
@@ -55,7 +55,7 @@ export class AgentClaudeClientFactory {
     return new ClaudeService(config);
   }
 
-  // Management Tier Clients (Opus 3)
+  // Management Tier Clients (Claude-3-Opus for strategic coordination)
   static createMasterOrchestratorClient(): ClaudeService {
     const apiKey = process.env.MASTER_ORCHESTRATOR_ANTHROPIC_API_KEY;
     
@@ -66,7 +66,7 @@ export class AgentClaudeClientFactory {
     
     const config: ClaudeConfig = {
       apiKey: apiKey,
-      model: 'claude-3-5-sonnet-20241022', // Fixed to use correct model
+      model: 'claude-opus-4-1-20250805', // Best for strategic coordination and planning
       maxTokens: 4000,
       temperature: 0.4,
       timeout: 120000,
@@ -80,7 +80,7 @@ export class AgentClaudeClientFactory {
   private static createMockOrchestratorService(): ClaudeService {
     const mockConfig: ClaudeConfig = {
       apiKey: 'sk-ant-mock-development-key-placeholder',
-      model: 'claude-3-opus-20240229',
+      model: 'claude-opus-4-1-20250805',
       maxTokens: 4000,
       temperature: 0.4,
       timeout: 120000,
@@ -130,7 +130,7 @@ Mock orchestration completed successfully with simulated agent coordination.`;
   static createProjectCoordinatorClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.PROJECT_COORDINATOR_ANTHROPIC_API_KEY!,
-      model: 'claude-3-opus-20240229',
+      model: 'claude-opus-4-1-20250805', // Best for detailed coordination and planning
       maxTokens: 4000,
       temperature: 0.3,
       timeout: 120000,
@@ -151,7 +151,7 @@ Mock orchestration completed successfully with simulated agent coordination.`;
     
     const config: ClaudeConfig = {
       apiKey: apiKey,
-      model: 'claude-3-7-sonnet-20250219', // Updated to current active model
+      model: 'claude-3-haiku-20240307', // Updated to current active model
       maxTokens: 4000,
       temperature: 0.7,
       timeout: 60000,
@@ -165,7 +165,7 @@ Mock orchestration completed successfully with simulated agent coordination.`;
   private static createMockPersonalAssistantService(): ClaudeService {
     const mockConfig: ClaudeConfig = {
       apiKey: 'sk-ant-mock-development-key-placeholder',
-      model: 'claude-3-7-sonnet-20250219', // Updated to current active model
+      model: 'claude-3-haiku-20240307', // Updated to current active model
       maxTokens: 4000,
       temperature: 0.7,
       timeout: 60000,
@@ -252,7 +252,7 @@ How else can I assist you?`;
   static createMusicCoachClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.MUSIC_COACH_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-haiku-20240307',
       maxTokens: 4000,
       temperature: 0.8,
       timeout: 60000,
@@ -266,7 +266,7 @@ How else can I assist you?`;
   static createCommunicationsClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.COMMUNICATIONS_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022', // Using Sonnet for better quality
+      model: 'claude-3-haiku-20240307', // Using Sonnet for better quality
       maxTokens: 3000,
       temperature: 0.6,
       timeout: 30000,
@@ -279,7 +279,7 @@ How else can I assist you?`;
   static createResearcherClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.RESEARCHER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-haiku-20240307',
       maxTokens: 4000,
       temperature: 0.3,
       timeout: 90000,
@@ -292,7 +292,7 @@ How else can I assist you?`;
   static createContentCreatorClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.CONTENT_CREATOR_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-haiku-20240307',
       maxTokens: 4000,
       temperature: 0.8,
       timeout: 60000,
@@ -305,9 +305,22 @@ How else can I assist you?`;
   static createVinylResearcherClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.VINYL_RESEARCHER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-haiku-20240307',
       maxTokens: 3000,
       temperature: 0.4,
+      timeout: 60000,
+      maxRetries: 3
+    };
+    ClaudeService.validateConfig(config);
+    return new ClaudeService(config);
+  }
+
+  static createReviewerClient(): ClaudeService {
+    const config: ClaudeConfig = {
+      apiKey: process.env.REVIEWER_ANTHROPIC_API_KEY!,
+      model: 'claude-sonnet-4-20250514', // Best for consistent, high-quality reviews
+      maxTokens: 4000,
+      temperature: 0.2, // Lower temperature for consistent, objective reviews
       timeout: 60000,
       maxRetries: 3
     };
@@ -378,6 +391,8 @@ How else can I assist you?`;
         return this.createContentCreatorClient();
       case 'vinyl-researcher':
         return this.createVinylResearcherClient();
+      case 'reviewer':
+        return this.createReviewerClient();
       default:
         throw new Error(`Unknown agent type: ${type}`);
     }

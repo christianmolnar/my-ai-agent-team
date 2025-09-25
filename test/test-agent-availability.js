@@ -63,7 +63,7 @@ if (extraInSource.length > 0) {
 console.log('\n📋 Test 2: AgentRegistry Static Mapping');
 console.log('======================================');
 
-const registryContent = fs.readFileSync(path.join(__dirname, 'lib', 'AgentRegistry.ts'), 'utf8');
+const registryContent = fs.readFileSync(path.join(__dirname, 'agents', 'agent-registry.ts'), 'utf8');
 
 // Count agents in the AGENT_CLASSES export
 const agentClassesMatch = registryContent.match(/export const AGENT_CLASSES[^}]+}/s);

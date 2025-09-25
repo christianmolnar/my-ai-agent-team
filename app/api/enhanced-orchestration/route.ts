@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { AgentRegistry } from '../../../lib/AgentRegistry';
+import { AgentRegistry } from '../../../agents/agent-registry';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
     console.log(`🚀 Enhanced orchestration request: ${userRequest}`);
     console.log(`📊 Task type: ${taskType}, Complexity: ${complexity}`);
 
-    // Get the enhanced orchestrator
-    const enhancedOrchestrator = await AgentRegistry.getAgentInstance('enhanced-master-orchestrator-agent');
+    // Get the master orchestrator (the enhanced one was removed)
+    const orchestrator = await AgentRegistry.getAgentInstance('master-orchestrator');
     
-    if (!enhancedOrchestrator) {
+    if (!orchestrator) {
       return NextResponse.json({
         success: false,
-        error: 'Enhanced Master Orchestrator not available'
+        error: 'Master Orchestrator not available'
       }, { status: 500 });
     }
 

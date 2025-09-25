@@ -7,7 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verify-claude": "npx tsc scripts/verify-claude-integration.ts --outDir dist --target es2020 --module node16 --moduleResolution node16 && node dist/scripts/verify-claude-integration.js"
+    "verify-claude": "npx tsc scripts/verify-claude-integration.ts --outDir dist --target es2020 --module node16 --moduleResolution node16 && node dist/scripts/verify-claude-integration.js",
+    "setup": "./setup-environment.sh",
+    "test:config": "npx tsx config/test-api-config.ts",
+    "test:cns": "npx tsx test-cns-integration.js",
+    "test:registry": "npx tsx test-agent-registry.js",
+    "test:orchestrator": "npx tsx test-orchestrator-basic.js",
+    "test:agents": "npx tsx test-working-agents.js",
+    "test:all": "npm run test:config && npm run test:cns && npm run test:registry && npm run test:orchestrator"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.61.0",
@@ -15,9 +22,11 @@
     "axios": "^1.10.0",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",
+    "docx": "^9.5.1",
     "dotenv": "^16.3.1",
     "natural": "^6.2.3",
     "next": "15.3.3",
+    "officegen": "^0.6.5",
     "openai": "^5.20.1",
     "puppeteer": "^22.0.0",
     "react": "^19.0.0",
@@ -26,6 +35,7 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.19.13",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",

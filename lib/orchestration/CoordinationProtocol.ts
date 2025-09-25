@@ -5,7 +5,7 @@
  * with proper state management, communication channels, and execution control.
  */
 
-import { Agent, AgentTask, AgentTaskResult } from '../../agents/Agent';
+import { Agent, AgentTask, AgentTaskResult } from '../../agents/agent';
 import { interactionLogger } from '../interaction-logger';
 
 export interface CoordinationContext {

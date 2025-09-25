@@ -1,0 +1,27 @@
+{
+  "instantResponses": {
+    "reviewRequest": {
+      "trigger": "agent-output-validation-request",
+      "response": "immediate-validation-protocol-initiation",
+      "timeframe": "<15-minutes",
+      "actions": ["context-analysis", "alternative-llm-selection", "validation-execution"]
+    },
+    "qualityAlert": {
+      "trigger": "deliverable-quality-concern-detection",
+      "response": "urgent-quality-assessment-and-feedback",
+      "timeframe": "<10-minutes", 
+      "actions": ["issue-identification", "severity-assessment", "immediate-recommendations"]
+    }
+  },
+  "adaptiveResponses": {
+    "validationComplexity": "multi-dimensional-assessment-scaling",
+    "feedbackResistance": "constructive-engagement-and-persuasion-strategies",
+    "qualityImprovement": "progressive-enhancement-guidance-and-support"
+  },
+  "domainSpecificReflexes": {
+    "independentValidation": "alternative-llm-bias-reduction-protocols",
+    "constructiveFeedback": "actionable-improvement-recommendation-generation",
+    "qualityScoring": "quantified-assessment-with-confidence-metrics",
+    "learningIntegration": "review-pattern-analysis-and-methodology-optimization"
+  }
+}

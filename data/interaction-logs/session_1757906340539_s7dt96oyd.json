@@ -1,0 +1,48 @@
+{
+  "sessionId": "session_1757906340539_s7dt96oyd",
+  "chatId": "chat_1757906340595_emergency",
+  "userId": "unknown",
+  "startTime": "2025-09-15T03:19:00.595Z",
+  "userRequest": "Session created for emergency logging",
+  "requestSummary": "Emergency session",
+  "totalInteractions": 1,
+  "orchestrationType": "direct",
+  "masterOrchestratorInvolved": false,
+  "projectCoordinatorInvolved": true,
+  "agentsInvolved": [
+    "personal-assistant"
+  ],
+  "totalAgentsUsed": 1,
+  "totalExecutionTimeMs": 56,
+  "sessionStatus": "active",
+  "finalResponse": "",
+  "deliverables": [],
+  "interactions": [
+    {
+      "id": "session_1757906340539_s7dt96oyd_interaction_1",
+      "timestamp": "2025-09-15T03:19:00.595Z",
+      "sessionId": "session_1757906340539_s7dt96oyd",
+      "chatId": "chat_1757906340595_emergency",
+      "sequenceNumber": 1,
+      "agentId": "personal-assistant",
+      "agentName": "Personal Assistant",
+      "agentType": "specialist",
+      "taskAssigned": "Create a comprehensive learning plan for my first week at Atlassian, including Rovo, so I can use it to dig into Atlassian's HR policies, team structure and much more.",
+      "taskSummary": "Create a comprehensive learning plan for my first... and much more.",
+      "taskPriority": "medium",
+      "taskComplexity": "moderate",
+      "inputReceived": "Create a comprehensive learning plan for my first week at Atlassian, including Rovo, so I can use it to dig into Atlassian's HR policies, team structure and much more.",
+      "outputProduced": "I apologize, but I encountered an issue while processing your request. Let me try a different approach or please feel free to rephrase your question.",
+      "outputSummary": "I apologize, but I encountered an issue while processing your request. Let me try a different approach or please feel free to rephrase your question.",
+      "executionTimeMs": 56,
+      "status": "completed",
+      "success": true,
+      "dependencies": [],
+      "followUpRequired": false,
+      "assignedBy": "user",
+      "coordinatedBy": "project-coordinator",
+      "relatedInteractions": []
+    }
+  ],
+  "logFilePath": "/Users/christian/Repos/My-AI-Agent-Team/data/interaction-logs/session_1757906340539_s7dt96oyd.json"
+}

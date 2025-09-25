@@ -7,7 +7,7 @@
  * addressing the architectural concerns about complex orchestration.
  */
 
-import { AgentRegistry } from '../lib/AgentRegistry.js';
+import { AgentRegistry } from '../agents/agent-registry';
 
 console.log('🚀 Testing Enhanced Agent Orchestration System\n');
 

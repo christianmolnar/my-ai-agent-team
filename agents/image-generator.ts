@@ -1,4 +1,4 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
 
 export class ImageGeneratorAgent implements Agent {
   id = 'image-generator';
@@ -80,7 +80,12 @@ For API-based generation, this agent would integrate with services like OpenAI D
     try {
       console.log(`🖼️ Generating images for: "${userRequest}"`);
       
-      // Analyze image generation requirements
+      // Check if this is a simple application that needs basic assets
+      if (this.isSimpleApplicationRequest(userRequest)) {
+        return this.provideSimpleImageGuidance(userRequest);
+      }
+      
+      // Analyze image generation requirements for complex projects
       const generationPlan = this.createImageGenerationPlan(userRequest, payload);
       
       return `Image generation completed for: "${userRequest}"
@@ -107,6 +112,37 @@ Image generation provides creative visual solutions tailored to specific require
     } catch (error) {
       throw new Error(`Image generation failed: ${error.message}`);
     }
+  }
+
+  private isSimpleApplicationRequest(request: string): boolean {
+    const simplePatterns = [
+      'game', 'checkers', 'tic-tac-toe', 'calculator', 'todo', 'simple app',
+      'basic', 'quick', 'small', 'mini', 'demo', 'prototype', 'landing page',
+      'form', 'counter', 'timer', 'clock', 'weather app', 'notes app'
+    ];
+    
+    return simplePatterns.some(pattern => 
+      request.toLowerCase().includes(pattern)
+    );
+  }
+
+  private provideSimpleImageGuidance(request: string): string {
+    return `✅ IMAGE ASSETS FOR: ${request}
+
+**Simple Visual Needs:**
+- Basic game piece icons (use Unicode symbols: ♛ ♜ ♝ ♞ ♟)
+- Simple background colors or gradients
+- Clean, minimal UI elements
+
+**Quick Solution:**
+- Use CSS for styling instead of custom images
+- Leverage existing icon libraries (Font Awesome, Material Icons)
+- Create simple SVG graphics if needed
+
+**Recommended Approach:**
+Start with CSS-based visuals and add custom graphics later if needed.
+
+Focus on functionality first, then enhance the visual design!`;
   }
 
   /**

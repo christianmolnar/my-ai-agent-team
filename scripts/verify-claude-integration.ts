@@ -7,8 +7,8 @@
  * without requiring actual API keys or making API calls.
  */
 
-import { ClaudeService } from '../lib/claude/ClaudeService.js';
-import { AgentClaudeClientFactory } from '../lib/claude/AgentClaudeClients.js';
+import { ClaudeService } from '../lib/claude/ClaudeService';
+import { AgentClaudeClientFactory } from '../lib/claude/AgentClaudeClients';
 
 async function verifyIntegration() {
   console.log('🔍 Verifying Claude SDK Integration...\n');
@@ -110,8 +110,8 @@ async function verifyIntegration() {
     console.log('7. Testing agent class imports...');
     
     try {
-      const { PersonalAssistantAgent } = await import('../agents/PersonalAssistantAgent.js');
-      const { MasterOrchestratorAgent } = await import('../agents/master-orchestrator-agent.js');
+      const { PersonalAssistantAgent } = await import('../agents/personal-assistant');
+      const { MasterOrchestratorAgent } = await import('../agents/master-orchestrator');
       
       const personalAgent = new PersonalAssistantAgent();
       const orchestratorAgent = new MasterOrchestratorAgent();

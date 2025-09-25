@@ -1,0 +1,48 @@
+{
+  "sessionId": "session_1757886780873_xg0kbszsu",
+  "chatId": "chat_1757886780873_2t1o5k",
+  "userId": "user",
+  "startTime": "2025-09-14T21:53:00.873Z",
+  "userRequest": "Hello, can you help me test this system?",
+  "requestSummary": "Personal Assistant: Hello, can you help me test this system?",
+  "totalInteractions": 1,
+  "orchestrationType": "direct",
+  "masterOrchestratorInvolved": false,
+  "projectCoordinatorInvolved": true,
+  "agentsInvolved": [
+    "personal-assistant"
+  ],
+  "totalAgentsUsed": 1,
+  "totalExecutionTimeMs": 21118,
+  "sessionStatus": "active",
+  "finalResponse": "",
+  "deliverables": [],
+  "interactions": [
+    {
+      "id": "session_1757886780873_xg0kbszsu_interaction_1",
+      "timestamp": "2025-09-14T21:53:21.991Z",
+      "sessionId": "session_1757886780873_xg0kbszsu",
+      "chatId": "chat_1757886780873_2t1o5k",
+      "sequenceNumber": 1,
+      "agentId": "personal-assistant",
+      "agentName": "Personal Assistant",
+      "agentType": "specialist",
+      "taskAssigned": "Hello, can you help me test this system?",
+      "taskSummary": "Hello, can you help me test this system?",
+      "taskPriority": "medium",
+      "taskComplexity": "moderate",
+      "inputReceived": "Hello, can you help me test this system?",
+      "outputProduced": "Hello! Absolutely, I'd be happy to help you test this system.\n\n**My Role Here:**\n• I'm an AI assistant that can help with various text-based tasks\n• I can generate different types of files and documents\n• I work as a single assistant (not part of a multi-agent team)\n\n**Testing Approach:**\n• What specific aspects would you like to test?\n• I work best with text-based requests and file generation tasks\n• Would you prefer something simple to start, or a more complex document?\n\n**Available Capabilities:**\n• Text analysis and writing assistance\n• Document creation (Word documents, HTML files, text files, markdown, JSON)\n• Research synthesis (though I can't browse the web for new information)\n• Content creation and editing\n• File generation that you can download locally\n\n**Some Test Ideas:**\n• Ask me to write and format a document on any topic\n• Request help analyzing or organizing text you provide\n• Try having me create structured content in different formats\n• Test document generation in Word, HTML, or markdown formats\n\n**Limitations to Note:**\n• I can't browse the internet for real-time information\n• I can't send emails or communicate through external platforms, but I can create files for you to share\n• I don't have access to cloud storage or external databases\n• I work as a single assistant rather than coordinating multiple agents\n\nWhat type of test would be most valuable for you? I'm ready to show you what I can do within these capabilities!",
+      "outputSummary": "Hello. ... I'm ready to show you what I can do within these capabilities.",
+      "executionTimeMs": 21118,
+      "status": "completed",
+      "success": true,
+      "dependencies": [],
+      "followUpRequired": false,
+      "assignedBy": "user",
+      "coordinatedBy": "project-coordinator",
+      "relatedInteractions": []
+    }
+  ],
+  "logFilePath": "/Users/christian/Repos/My-AI-Agent-Team/data/interaction-logs/session_1757886780873_xg0kbszsu.json"
+}

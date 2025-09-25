@@ -1,0 +1,12 @@
+{
+  "title": "document-creation-prompts",
+  "type": "document",
+  "format": "docx",
+  "description": "Document creation prompts for: Create a Comprehensive learning summary of Atlassian's Rovo product, with links to videos and other tutorials.",
+  "agentId": "communications",
+  "createdAt": "2025-09-14T22:05:50.539Z",
+  "tags": [
+    "document",
+    "professional"
+  ]
+}

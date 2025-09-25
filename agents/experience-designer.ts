@@ -1,4 +1,4 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
 
 export class ExperienceDesignerAgent implements Agent {
   id = 'experience-designer';
@@ -218,6 +218,49 @@ This prototype provides a comprehensive blueprint for development while validati
   }
 
   private async performExperienceDesign(request: string): Promise<string> {
+    // For simple, functional applications, provide concise design guidance
+    if (this.isSimpleApplication(request)) {
+      return this.provideSimpleDesignGuidance(request);
+    }
+    
+    // For complex applications, provide detailed UX strategy
+    return this.provideDetailedUXStrategy(request);
+  }
+
+  private isSimpleApplication(request: string): boolean {
+    const simpleIndicators = ['simple', 'functional', 'colorful', 'basic', 'quick'];
+    const lowerRequest = request.toLowerCase();
+    
+    return simpleIndicators.some(indicator => lowerRequest.includes(indicator)) ||
+           request.split(' ').length < 15;
+  }
+
+  private provideSimpleDesignGuidance(request: string): string {
+    return `🎨 **UX Design Guidance for Simple, Functional Application**
+
+**Key Design Principles:**
+• **Simplicity First:** Clean, uncluttered interface with clear navigation
+• **Colorful & Engaging:** Bright, welcoming color palette with good contrast
+• **Intuitive Interactions:** Self-explanatory buttons and actions
+• **Mobile-Friendly:** Responsive design that works on all devices
+
+**Recommended Design Approach:**
+• Use vibrant, cheerful colors as requested
+• Large, easy-to-tap buttons for functionality
+• Clear visual feedback for user actions
+• Minimal text, maximum visual clarity
+• Consistent spacing and typography
+
+**User Experience Focus:**
+• Zero learning curve - users should understand immediately
+• Fast, responsive interactions
+• Visual delight through color and smooth animations
+• Accessible design for all users
+
+This simple approach ensures the application is both functional and delightful to use.`;
+  }
+
+  private provideDetailedUXStrategy(request: string): string {
     return `User Experience Design Strategy for: "${request}"
 
 UX DESIGN METHODOLOGY:

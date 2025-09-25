@@ -6,7 +6,7 @@
  * instead of hardcoded patterns
  */
 
-import { PersonalAssistantAgent } from './agents/PersonalAssistantAgent.ts';
+import { PersonalAssistantAgent } from '../../agents/personal-assistant';
 
 console.log('🧪 Testing Enhanced Global Learning System Integration...\n');
 

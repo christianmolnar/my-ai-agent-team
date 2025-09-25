@@ -3,7 +3,7 @@
  */
 
 // Since we're testing from the project root, we need to import properly
-import { AgentRegistry } from '../lib/AgentRegistry.js';
+import { AgentRegistry } from '../agents/agent-registry';
 
 console.log('🤖 Testing Dynamic Agent Registry...\n');
 

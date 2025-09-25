@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { learningTracker } from '../../../lib/learning-tracker';
 import { UserFeedback } from '../../../types/learning-tracking';
-import LearningReversalManager from '../../../lib/learning-reversal-manager';
+// import LearningReversalManager from '../../../lib/learning-reversal-manager'; // Commented out - empty file
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -48,22 +48,14 @@ export async function GET(request: NextRequest) {
           }, { status: 400 });
         }
 
-        const reversalManager = new LearningReversalManager();
-        const fileResult = await reversalManager.getFileContent(learningId, filePath);
+        // TODO: Implement LearningReversalManager functionality
+        // const reversalManager = new LearningReversalManager();
+        // const fileResult = await reversalManager.getFileContent(learningId, filePath);
         
-        if (fileResult.success) {
-          return NextResponse.json({
-            success: true,
-            content: fileResult.content,
-            size: fileResult.size,
-            path: fileResult.path
-          });
-        } else {
-          return NextResponse.json({
-            success: false,
-            error: fileResult.error
-          }, { status: 404 });
-        }
+        return NextResponse.json({
+          success: false,
+          error: 'File content retrieval not implemented yet'
+        }, { status: 501 });
 
       default:
         return NextResponse.json({

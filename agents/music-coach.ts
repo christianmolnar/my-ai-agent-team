@@ -1,4 +1,4 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
 
 /**
  * Music Coach Agent - Specialized Music Education Agent
@@ -508,39 +508,110 @@ Once comfortable with these basic triads, we'll explore 7th chords and more comp
   }
 
   /**
-   * Perform music coaching based on user request
+   * Perform music coaching based on user request using AI reasoning
    */
   private async performMusicCoaching(userRequest: string, payload: any): Promise<string> {
     try {
       console.log(`🎼 Providing music coaching for: "${userRequest}"`);
       
-      // Analyze music coaching requirements
-      const coachingPlan = this.createMusicCoachingPlan(userRequest, payload);
-      
-      return `Music coaching completed for: "${userRequest}"
+      // Use AI to understand the request and determine the best approach
+      const analysisPrompt = `As an expert music coach, analyze this request and determine the best way to help:
 
-MUSIC COACHING METHODOLOGY:
-${coachingPlan}
+REQUEST: "${userRequest}"
 
-COACHING ACTIVITIES:
-• Skill assessment and personalized learning paths
-• Chord progressions and music theory instruction
-• Practice session design and technique development
-• Performance preparation and confidence building
-• Creative expression and songwriting guidance
-• Progress tracking and goal achievement
+ANALYSIS REQUIRED:
+1. What type of musical assistance is being requested?
+2. What would be the most helpful response for this user?
+3. Should I:
+   - Provide music theory education?
+   - Create original music content (songs, compositions)?
+   - Give instrument-specific instruction?
+   - Analyze existing music?
+   - Provide practice guidance?
+   - Something else entirely?
 
-COACHING STATUS: COMPLETED
-- Learning objectives identified
-- Practice methodology established
-- Skill development framework created
-- Ready for musical growth
+4. What additional information might I need from the user?
+5. What would be the ideal outcome for this request?
 
-Music coaching provides personalized instruction and guidance for comprehensive musical development.`;
+Provide a clear analysis and then the most helpful response possible.`;
+
+      try {
+        const analysisResponse = await this.claudeSonnetClient.messages.create({
+          model: this.claudeModel,
+          max_tokens: 2000,
+          messages: [{
+            role: 'user',
+            content: analysisPrompt
+          }]
+        });
+
+        const analysis = analysisResponse.content[0].text;
+        
+        // Now use the analysis to provide the actual helpful response
+        const responsePrompt = `Based on your analysis, now provide the most helpful response to this user request:
+
+REQUEST: "${userRequest}"
+
+CONTEXT: ${JSON.stringify(payload, null, 2)}
+
+INSTRUCTIONS:
+- Be practical and actionable
+- If they want music created, create it
+- If they want instruction, provide clear lessons
+- If they want analysis, give detailed analysis
+- If you need more information, ask specific questions
+- Always aim to be maximally helpful
+
+Provide your response now:`;
+
+        const finalResponse = await this.claudeSonnetClient.messages.create({
+          model: this.claudeModel,
+          max_tokens: 3000,
+          messages: [{
+            role: 'user',
+            content: responsePrompt
+          }]
+        });
+
+        return `🎵 **Music Coach Response**
+
+${finalResponse.content[0].text}
+
+---
+*Analysis: ${analysis.substring(0, 200)}...*`;
+
+      } catch (error) {
+        console.error('[MusicCoach] AI reasoning failed, providing fallback response:', error);
+        return await this.provideFallbackResponse(userRequest, payload);
+      }
 
     } catch (error) {
       throw new Error(`Music coaching failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Fallback response when AI reasoning fails
+   */
+  private async provideFallbackResponse(userRequest: string, payload: any): Promise<string> {
+    return `🎵 **Music Coach Available**
+
+I'm here to help with your music request: "${userRequest}"
+
+I can assist with:
+- Creating original songs and compositions
+- Music theory instruction and analysis
+- Instrument-specific guidance (piano, guitar, etc.)
+- Practice session planning
+- Chord progression analysis
+- Performance coaching
+
+To give you the best help, could you tell me more about:
+- What specific aspect of music you'd like to work on?
+- Your current skill level and experience?
+- Any particular style or genre you're interested in?
+
+Let me know how I can best support your musical journey!`;
   }
 
   /**

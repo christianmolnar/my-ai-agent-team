@@ -3,10 +3,8 @@ const nextConfig = {
   env: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
-  // Optimized for Vercel deployment
-  experimental: {
-    esmExternals: 'loose',
-  },
+  // Optimized for Vercel deployment - removed experimental.esmExternals 
+  // as it was causing webpack module resolution issues
 }
 
 module.exports = nextConfig

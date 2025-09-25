@@ -1,33 +1,166 @@
-# 🔑 API Keys Setup Guide - Development Only
+# API Keys Setup Guide
 
-## 🎯 **Decision: Development Project Only**
+This guide helps you configure API keys for the AI Agent Team system.
 
-✅ **Correct Choice**: Keeping this as a development-only project for now is the right approach for:
-- **Security**: No risk of accidentally exposing API keys in production
-- **Simplicity**: Focus on development without deployment complexity  
-- **Cost Control**: Predictable development usage
-- **Flexibility**: Easy experimentation and iteration
+## Required API Keys
 
-## 🛠 **Current Setup Status**
+### 🔑 OpenAI API Key (REQUIRED)
+- **Purpose**: GPT models for most agents
+- **Get it**: https://platform.openai.com/api-keys
+- **Pricing**: Pay-per-use (typically $0.002-0.06 per 1K tokens)
+- **Models**: GPT-4, GPT-4-turbo, GPT-3.5-turbo
 
-### ✅ **Already Configured** 
-Your `.env.local` already has these working API keys:
-- `COMMUNICATIONS_ANTHROPIC_API_KEY` ✅ (Ready for Claude integration)
-- `FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY` ✅ (Ready for Claude integration)
-- `MUSIC_COACH_HUGGINGFACE_API_KEY` ✅ (Ready for AI piano transcription)
-- Several OpenAI keys for other agents
-- Google AI, SerpAPI, Discogs tokens
+### 🔑 Anthropic API Key (REQUIRED)  
+- **Purpose**: Claude models for alternative validation and high-quality responses
+- **Get it**: https://console.anthropic.com/
+- **Pricing**: Pay-per-use (typically $0.015-0.075 per 1K tokens)
+- **Models**: Claude-3-Opus, Claude-3-Sonnet, Claude-3-Haiku
 
-### 🎵 **Music Coach Enhanced Features**
-Your Music Coach agent now has advanced capabilities:
-- **Piano Transcription**: YouTube videos → Sheet music (FREE basic, AI-enhanced with HF token)
-- **Guitar Tab Search**: 500,000+ tabs from Songsterr (FREE, no API key needed)
-- **Multiple Formats**: Guitar Pro, MIDI, ASCII, ABC notation
+## Optional API Keys
 
-**Access URLs:**
-- Piano Transcription: http://localhost:30000/piano-transcription
-- Guitar Tabs: http://localhost:30000/guitar-tabs ✅ (Updated - now works with Ultimate Guitar)
-- **Ultimate Guitar API**: http://localhost:30000/api/ultimate-guitar
+### 🔑 Google AI API Key (Optional)
+- **Purpose**: Gemini models for additional provider diversity
+- **Get it**: https://makersuite.google.com/app/apikey
+- **Pricing**: Free tier available, then pay-per-use
+- **Models**: Gemini-Pro, Gemini-Pro-Vision
+
+### 🔑 Groq API Key (Optional)
+- **Purpose**: Ultra-fast inference for time-sensitive tasks
+- **Get it**: https://console.groq.com/keys
+- **Pricing**: Free tier with generous limits
+- **Models**: Llama-2, Mixtral, Gemma
+
+### 🔑 Additional Services (Optional)
+- **Replicate**: AI model hosting - https://replicate.com/account/api-tokens
+- **ElevenLabs**: Voice synthesis - https://elevenlabs.io/app/settings/api-keys
+- **Stability AI**: Image generation - https://platform.stability.ai/account/keys
+- **DeepL**: Translation - https://www.deepl.com/pro-api
+- **Serper**: Search API - https://serper.dev/api-key
+- **Browserless**: Web automation - https://www.browserless.io/
+
+## Setup Instructions
+
+### Option 1: Automatic Setup (Recommended)
+```bash
+npm run setup
+```
+This will:
+- Create `.env.example` with all available keys
+- Copy to `.env` if it doesn't exist
+- Test your configuration
+- Show next steps
+
+### Option 2: Manual Setup
+
+1. **Create .env file**:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit .env file**:
+   ```bash
+   # Required API Keys
+   OPENAI_API_KEY=sk-your-openai-key-here
+   ANTHROPIC_API_KEY=sk-ant-your-anthropic-key-here
+   
+   # Optional API Keys
+   GOOGLE_AI_API_KEY=your-google-key-here
+   GROQ_API_KEY=your-groq-key-here
+   # ... etc
+   ```
+
+3. **Test configuration**:
+   ```bash
+   npm run test:config
+   ```
+
+## Verification
+
+Run these tests to verify your setup:
+
+```bash
+# Test API configuration
+npm run test:config
+
+# Test all systems  
+npm run test:all
+
+# Individual tests
+npm run test:cns
+npm run test:registry
+npm run test:orchestrator
+```
+
+## Expected Output
+
+✅ **With proper API keys**:
+```
+🔑 API Key Configuration Test
+✅ openai: CONFIGURED (required)
+✅ anthropic: CONFIGURED (required)
+⚠️ google: MISSING (optional)
+🚀 All required API keys configured!
+```
+
+❌ **Without API keys**:
+```
+❌ openai: MISSING (required)
+❌ anthropic: MISSING (required)
+🔧 Please configure missing API keys
+```
+
+## Troubleshooting
+
+### "No API keys configured for agent"
+- Check `.env` file exists in project root
+- Verify API keys are properly formatted
+- Ensure no extra spaces or quotes around keys
+
+### "Invalid API key" errors
+- Verify keys are active and have sufficient credits
+- Check key hasn't expired
+- Test key directly with provider's API
+
+### "Permission denied" errors
+- Check API key has necessary permissions
+- Verify billing is set up for pay-per-use services
+- Some keys may need organization access
+
+## Security Notes
+
+- ⚠️ **Never commit .env to git** (already in .gitignore)
+- 🔐 Store API keys securely
+- 💰 Monitor usage to avoid unexpected charges
+- 🔄 Rotate keys periodically for security
+
+## Cost Management
+
+### Recommended Starting Configuration:
+1. **OpenAI**: GPT-3.5-turbo for most tasks ($0.002/1K tokens)
+2. **Anthropic**: Claude-3-Haiku for reviews ($0.0008/1K tokens)
+3. **Groq**: Free tier for fast tasks
+
+### Cost Optimization Tips:
+- Start with required keys only
+- Use Groq for fast, simple tasks (free tier)
+- Use Claude-3-Haiku for reviews (cheaper than GPT-4)
+- Monitor usage through provider dashboards
+
+## Next Steps
+
+Once configured:
+1. Run `npm run test:all` to verify everything works
+2. Start development: `npm run dev`
+3. Test agent execution through the web interface
+4. Monitor costs and adjust provider preferences
+
+## Support
+
+If you encounter issues:
+1. Check this guide first
+2. Run `npm run test:config` for diagnostics
+3. Check provider documentation for key format
+4. Verify billing and account status with providers
 
 ### 🔧 **Need API Keys For Claude Integration**
 

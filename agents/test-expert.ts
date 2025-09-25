@@ -1,4 +1,4 @@
-import { Agent, AgentTask, AgentTaskResult } from './Agent';
+import { Agent, AgentTask, AgentTaskResult } from './agent';
 
 export class TestExpertAgent implements Agent {
   id = 'test-expert';
@@ -218,6 +218,48 @@ This testing ensures optimal performance under real-world conditions.`;
   }
 
   private async performTestingAnalysis(request: string): Promise<string> {
+    // For simple applications, provide basic testing guidance
+    if (this.isSimpleApplication(request)) {
+      return this.provideSimpleTestingGuidance(request);
+    }
+    
+    // For complex applications, provide comprehensive testing strategy
+    return this.provideComprehensiveTestingStrategy(request);
+  }
+
+  private isSimpleApplication(request: string): boolean {
+    const simpleIndicators = ['simple', 'functional', 'colorful', 'basic', 'quick'];
+    const lowerRequest = request.toLowerCase();
+    
+    return simpleIndicators.some(indicator => lowerRequest.includes(indicator)) ||
+           request.split(' ').length < 15;
+  }
+
+  private provideSimpleTestingGuidance(request: string): string {
+    return `🧪 **Testing Guidance for Simple Application**
+
+**Essential Testing Approach:**
+• **Manual Testing:** Test all user interactions and features
+• **Browser Testing:** Verify functionality across Chrome, Firefox, Safari
+• **Mobile Testing:** Ensure responsive design works on phones/tablets
+• **User Acceptance:** Confirm it meets the "simple and functional" requirement
+
+**Quick Testing Checklist:**
+✅ All buttons and interactions work correctly
+✅ Application loads quickly and displays properly
+✅ Colorful design displays correctly across devices
+✅ No JavaScript errors in browser console
+✅ Responsive layout adapts to different screen sizes
+
+**Testing Tools:**
+• Browser developer tools for debugging
+• Manual testing across multiple devices
+• Simple user feedback for usability validation
+
+This streamlined testing approach ensures quality without over-engineering the testing process for a simple application.`;
+  }
+
+  private provideComprehensiveTestingStrategy(request: string): string {
     return `Testing Strategy for: "${request}"
 
 COMPREHENSIVE TESTING FRAMEWORK:

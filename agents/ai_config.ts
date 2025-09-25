@@ -2,6 +2,8 @@
 // I update this file to change providers, API keys, or model names in one place
 // If I want to add a new provider, I add a new section below and update my agent logic to use it.
 
+import { universalAIClient } from '../lib/universal-ai-client';
+
 export const AI_CONFIG = {
   // Fact-checking API provider (Google Fact Check Tools by default)
   factCheck: {
@@ -18,13 +20,15 @@ export const AI_CONFIG = {
     endpoint: 'https://api.openai.com/v1/embeddings',
     // I'll add more config fields here as I need them
   },
-  // LLM provider for synthesis (OpenAI Chat Completions)
+  // Universal LLM client - automatically selects best provider with failover
   llm: {
-    provider: 'openai',
-    apiKey: process.env.OPENAI_API_KEY || '',
-    model: 'gpt-3.5-turbo',
-    endpoint: 'https://api.openai.com/v1/chat/completions',
-    // I'll add more config fields here as I need them
+    // Use the universal client instead of hardcoded providers
+    generateResponse: universalAIClient.generateResponse.bind(universalAIClient),
+    // Legacy fields for backward compatibility (will use UniversalAIClient)
+    provider: 'universal', // Indicates multi-provider support
+    apiKey: 'managed-by-universal-client',
+    model: 'auto-selected',
+    endpoint: 'universal-failover-system'
   },
   serpApi: {
     endpoint: 'https://serpapi.com/search',
@@ -32,7 +36,17 @@ export const AI_CONFIG = {
   },
 };
 
+// Backward compatibility helper for agents still using direct API calls
+export async function generateLLMResponse(
+  agentId: string, 
+  messages: any[], 
+  systemPrompt?: string
+): Promise<string> {
+  const response = await universalAIClient.generateResponse(agentId, messages, systemPrompt);
+  return response.content;
+}
+
 // Usage example:
-// import { AI_CONFIG } from './ai_config';
-// fetch(AI_CONFIG.factCheck.endpoint, { headers: { 'Authorization': ... } })
-// If I want to swap providers, I just change the provider/model/apiKey/endpoint above.
+// import { AI_CONFIG, generateLLMResponse } from './ai_config';
+// const response = await generateLLMResponse('researcher', messages, systemPrompt);
+// If you want to swap providers, the universal client handles that automatically with failover.

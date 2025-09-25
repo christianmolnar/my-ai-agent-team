@@ -5,7 +5,7 @@ import path from 'path';
 export async function GET(request: NextRequest) {
   try {
     // Import the PersonalAssistantBridge to get live audit logs
-    const { PersonalAssistantBridge } = await import('../../../agents/PersonalAssistantBridge');
+    const { PersonalAssistantBridge } = await import('../../../agents/personal-assistant-bridge');
     
     // Create a bridge instance (now with shared static audit log)
     const bridge = new PersonalAssistantBridge();

@@ -5,27 +5,26 @@
 
 import fs from 'fs';
 import path from 'path';
-import { Agent } from '../agents/Agent';
-import { ResearcherAgent } from '../agents/researcher-agent';
-import { CommunicationsAgent } from '../agents/communications-agent';
-import { ImageGeneratorAgent } from '../agents/ImageGeneratorAgent';
-import { MusicCoachAgent } from '../agents/MusicCoachAgent';
-import { ProjectCoordinatorAgent } from '../agents/project-coordinator-agent';
-import { VinylResearcherAgent } from '../agents/VinylResearcherAgent';
-import { AvailabilityReliabilityExpertAgent } from '../agents/AvailabilityReliabilityExpertAgent';
-import { BackEndDeveloperAgent } from '../agents/back-end-developer-agent';
-import { DataScientistAgent } from '../agents/data-scientist-agent';
-import { DevDesignDocCreatorAgent } from '../agents/DevDesignDocCreatorAgent';
-import { ExperienceDesignerAgent } from '../agents/ExperienceDesignerAgent';
-import { FrontEndDeveloperAgent } from '../agents/front-end-developer-agent';
-import { FullStackDeveloperAgent } from '../agents/FullStackDeveloperAgent';
-import { MonitoringExpertAgent } from '../agents/MonitoringExpertAgent';
-import { PerformanceExpertAgent } from '../agents/PerformanceExpertAgent';
-import { PrivacyGuardianAgent } from '../agents/PrivacyGuardianAgent';
-import { ProductManagerAgent } from '../agents/ProductManagerAgent';
-import { SecurityExpertAgent } from '../agents/SecurityExpertAgent';
-import { TestExpertAgent } from '../agents/TestExpertAgent';
-import { EnhancedMasterOrchestratorAgent } from '../agents/EnhancedMasterOrchestratorAgent';
+import { Agent } from '../agents/agent';
+import { ResearcherAgent } from '../agents/researcher';
+import { CommunicationsAgent } from '../agents/communications';
+import { ImageGeneratorAgent } from '../agents/image-generator';
+import { MusicCoachAgent } from '../agents/music-coach';
+import { ProjectCoordinatorAgent } from '../agents/project-coordinator';
+import { VinylResearcherAgent } from '../agents/vinyl-researcher';
+import { AvailabilityReliabilityExpertAgent } from '../agents/availability-reliability-expert';
+import { BackEndDeveloperAgent } from '../agents/back-end-developer';
+import { DataScientistAgent } from '../agents/data-scientist';
+import { DevDesignDocCreatorAgent } from '../agents/dev-design-doc-creator';
+import { ExperienceDesignerAgent } from '../agents/experience-designer';
+import { FrontEndDeveloperAgent } from '../agents/front-end-developer';
+import { FullStackDeveloperAgent } from '../agents/full-stack-developer';
+import { MonitoringExpertAgent } from '../agents/monitoring-expert';
+import { PerformanceExpertAgent } from '../agents/performance-expert';
+import { PrivacyGuardianAgent } from '../agents/privacy-guardian';
+import { ProductManagerAgent } from '../agents/product-manager';
+import { SecurityExpertAgent } from '../agents/security-expert';
+import { TestExpertAgent } from '../agents/test-expert';
 
 // Static agent registry that directly imports all agent classes (excluding agents that import AgentRegistry to avoid circular imports)
 export const AGENT_CLASSES: Record<string, new () => Agent> = {
@@ -48,7 +47,6 @@ export const AGENT_CLASSES: Record<string, new () => Agent> = {
   'ProductManagerAgent': ProductManagerAgent,
   'SecurityExpertAgent': SecurityExpertAgent,
   'TestExpertAgent': TestExpertAgent,
-  'EnhancedMasterOrchestratorAgent': EnhancedMasterOrchestratorAgent,
 };
 
 export class AgentRegistry {

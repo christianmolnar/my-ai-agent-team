@@ -104,9 +104,34 @@ export class InteractionLoggingService {
     
     const session = this.activeSessions.get(sessionId);
     if (!session) {
-      throw new Error(`Session ${sessionId} not found`);
+      console.warn(`⚠️ Session ${sessionId} not found - creating minimal session for logging`);
+      // Create a minimal session to prevent errors
+      const minimalSession: ChatSession = {
+        sessionId,
+        chatId: `chat_${Date.now()}_emergency`,
+        userId: 'unknown',
+        startTime: new Date(),
+        userRequest: 'Session created for emergency logging',
+        requestSummary: 'Emergency session',
+        totalInteractions: 0,
+        orchestrationType: 'direct',
+        masterOrchestratorInvolved: false,
+        projectCoordinatorInvolved: true,
+        agentsInvolved: [],
+        totalAgentsUsed: 0,
+        totalExecutionTimeMs: 0,
+        sessionStatus: 'active',
+        finalResponse: '',
+        deliverables: [],
+        interactions: [],
+        logFilePath: this.getSessionLogPath(sessionId)
+      };
+      this.activeSessions.set(sessionId, minimalSession);
+      this.currentSequence.set(sessionId, 0);
     }
 
+    // Get the session again (now guaranteed to exist)
+    const currentSession = this.activeSessions.get(sessionId)!;
     const currentSeq = this.currentSequence.get(sessionId) || 0;
     const newSequence = currentSeq + 1;
     this.currentSequence.set(sessionId, newSequence);
@@ -118,7 +143,7 @@ export class InteractionLoggingService {
       id: interactionId,
       timestamp: new Date(),
       sessionId,
-      chatId: session.chatId,
+      chatId: currentSession.chatId,
       sequenceNumber: newSequence,
       agentId,
       agentName,
@@ -141,24 +166,24 @@ export class InteractionLoggingService {
     };
 
     // Update session
-    session.interactions.push(interaction);
-    session.totalInteractions++;
-    if (!session.agentsInvolved.includes(agentId)) {
-      session.agentsInvolved.push(agentId);
-      session.totalAgentsUsed++;
+    currentSession.interactions.push(interaction);
+    currentSession.totalInteractions++;
+    if (!currentSession.agentsInvolved.includes(agentId)) {
+      currentSession.agentsInvolved.push(agentId);
+      currentSession.totalAgentsUsed++;
     }
 
     // Update orchestration type based on agents involved
-    if (session.totalAgentsUsed > 1) {
-      session.orchestrationType = session.totalAgentsUsed > 3 ? 'complex' : 'simple';
+    if (currentSession.totalAgentsUsed > 1) {
+      currentSession.orchestrationType = currentSession.totalAgentsUsed > 3 ? 'complex' : 'simple';
     }
 
     if (agentId === 'master-orchestrator') {
-      session.masterOrchestratorInvolved = true;
+      currentSession.masterOrchestratorInvolved = true;
     }
 
     // Log the assignment
-    await this.writeSessionLog(session);
+    await this.writeSessionLog(currentSession);
     
     // Also log to enhanced agent logger for real-time display
     enhancedLogger.logInteraction({
@@ -166,13 +191,13 @@ export class InteractionLoggingService {
       agentType: agentType === 'management' ? 'coordinator' : 'specialist',
       actionType: 'task_received',
       action: 'Task Assigned',
-      details: `${agentName} assigned task: ${taskAssigned.substring(0, 100)}...`,
+      details: `${agentName} assigned task: ${this.generateTaskSummary(taskAssigned)}`,
       inputData: { taskAssigned, inputReceived, taskPriority, taskComplexity },
       outputData: { interactionId, sequenceNumber: newSequence },
       status: 'in_progress'
     }, sessionId);
     
-    console.log(`📋 Agent assigned: ${agentName} (${agentId}) - Task: ${taskAssigned.substring(0, 100)}...`);
+    console.log(`📋 Agent assigned: ${agentName} (${agentId}) - Task: ${this.generateTaskSummary(taskAssigned)}`);
     
     return interactionId;
   }
@@ -454,27 +479,66 @@ export class InteractionLoggingService {
   }
 
   private generateRequestSummary(userRequest: string): string {
-    // Simple summarization - could be enhanced with AI
-    if (userRequest.length <= 100) {
+    // Create meaningful summary instead of truncation
+    if (userRequest.length <= 120) {
       return userRequest;
     }
-    return userRequest.substring(0, 97) + '...';
+    
+    // Find key terms and preserve meaning
+    const words = userRequest.split(' ');
+    if (words.length <= 15) {
+      return userRequest;
+    }
+    
+    // Take first significant portion and add context
+    const firstPart = words.slice(0, 12).join(' ');
+    return firstPart + ' [Request summary]';
   }
 
   private generateTaskSummary(task: string): string {
-    // Simple task summarization
-    if (task.length <= 80) {
+    // Create meaningful summary instead of truncation
+    if (task.length <= 100) {
       return task;
     }
-    return task.substring(0, 77) + '...';
+    
+    // Extract key action and context
+    const words = task.split(' ');
+    if (words.length <= 12) {
+      return task;
+    }
+    
+    // Preserve beginning and end for context
+    const firstPart = words.slice(0, 8).join(' ');
+    const lastPart = words.slice(-3).join(' ');
+    return `${firstPart}... ${lastPart}`;
   }
 
   private generateOutputSummary(output: string): string {
-    // Simple output summarization  
-    if (output.length <= 120) {
+    // Create meaningful summary instead of truncation
+    if (output.length <= 200) {
       return output;
     }
-    return output.substring(0, 117) + '...';
+
+    // Extract first and last meaningful parts
+    const sentences = output.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    
+    if (sentences.length <= 2) {
+      return output.substring(0, 200) + '...';
+    }
+
+    // Get first sentence and last sentence for context
+    const firstSentence = sentences[0].trim() + '.';
+    const lastSentence = sentences[sentences.length - 1].trim() + '.';
+    
+    // If combined length is reasonable, use both
+    if (firstSentence.length + lastSentence.length <= 180) {
+      return `${firstSentence} ... ${lastSentence}`;
+    }
+    
+    // Otherwise provide meaningful first part
+    return firstSentence.length <= 150 ? 
+      firstSentence + ' [Output completed]' : 
+      firstSentence.substring(0, 150) + '...';
   }
 
   private calculateAgentBreakdown(session: ChatSession): Record<string, number> {
