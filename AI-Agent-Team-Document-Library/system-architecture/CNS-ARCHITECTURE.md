@@ -1,63 +1,69 @@
-# Central Nervous System (CNS) Architecture
-*Complete brain structure specification for all 20 agents with workflow integration*
+# CNS Architecture - Complete Implementation Guide
+*Comprehensive Central Nervous System design for self-contained agent team*
 
 ## 🧠 **CNS Architecture Overview**
 
-The Central Nervous System (CNS) provides the cognitive architecture that makes each agent intelligent, adaptive, and capable of continuous learning. Each agent has a complete CNS structure integrated with their private repository workflow folders.
+The Central Nervous System (CNS) provides the cognitive architecture that makes each agent intelligent, adaptive, and capable of continuous learning. This implementation combines your original comprehensive design with self-contained public repository operation.
 
-### **CNS Core Components**
-- **Brain**: Core identity, capabilities, and decision-making logic
-- **Memory**: Learning data storage (episodic, semantic, procedural)
-- **Reflexes**: Automatic responses and workflow patterns
-- **Integration Layer**: Connection to private repository and Bridge interface
+### **Key Design Principles**
+- **Markdown over JSON**: Human-readable, versionable, rich documentation
+- **Folder Structure**: Psychological organization (brain/, memory/, reflexes/, integration/)
+- **Self-Contained**: No external dependencies, operates within public repo
+- **Prompt Engineering**: Agents create sophisticated prompts for LLM APIs
+- **Reviewer Integration**: Built-in review cycles for quality assurance
 
 ---
 
-## 🏗️ **Agent CNS Structure Template**
+## 🏗️ **Agent CNS Structure - Self-Contained Implementation**
 
-Every agent follows this standardized CNS structure in their private repository folder:
+Each agent has a complete CNS structure within the public repository:
 
 ```
-/ai-team/[agent-name]/
-├── incoming/                              ← Task reception and processing queue
-│   ├── tasks/                            ← Incoming task definitions
-│   ├── data/                             ← Input data for processing
-│   └── requests/                         ← Requests from other agents or Bridge
-├── outgoing/                             ← Completed work and communications
-│   ├── deliverables/                     ← Finished work products
-│   ├── communications/                   ← Messages to other agents
-│   └── reports/                          ← Status and progress reports
-├── working/                              ← Active work-in-progress
-│   ├── active-tasks/                     ← Tasks currently being processed
-│   ├── draft-work/                       ← Work products in development
-│   └── temp-data/                        ← Temporary processing data
-└── cns/                         ← Central Nervous System
-    ├── brain/                            ← Core agent intelligence
-    │   ├── identity.md                   ← Agent identity and purpose
-    │   ├── capabilities.md               ← Core capabilities and skills
-    │   ├── decision-framework.md         ← Decision-making logic
-    │   └── collaboration-protocols.md    ← Inter-agent collaboration rules
-    ├── memory/                           ← Learning and experience storage
-    │   ├── episodic/                     ← Experience and event memory
-    │   │   ├── successful-patterns.md    ← What has worked well
-    │   │   ├── failed-attempts.md        ← Learning from mistakes
-    │   │   └── milestone-achievements.md  ← Major accomplishments
-    │   ├── semantic/                     ← Knowledge and concept memory
-    │   │   ├── domain-knowledge.md       ← Specialized knowledge base
-    │   │   ├── best-practices.md         ← Proven methodologies
-    │   │   └── resource-library.md       ← Useful tools and references
-    │   └── procedural/                   ← Skill and workflow memory
-    │       ├── workflows.md              ← Standard operating procedures
-    │       ├── automation-scripts.md     ← Automated processes
-    │       └── quality-checklists.md     ← Quality assurance procedures
-    ├── reflexes/                         ← Automatic responses and patterns
-    │   ├── trigger-responses.md          ← Automatic response patterns
-    │   ├── error-handling.md             ← Error recovery procedures
-    │   └── escalation-protocols.md       ← When and how to escalate issues
-    └── integration/                      ← Bridge and system integration
-        ├── bridge-interface.md           ← Personal Assistant Bridge connection
-        ├── api-configurations.md         ← External API configurations
-        └── workflow-automation.md        ← Automated workflow triggers
+/My-AI-Agent-Team/
+├── agents-cns/                           ← Agent CNS storage (self-contained)
+│   ├── [agent-name]/                     ← Individual agent CNS
+│   │   └── cns/                          ← Central Nervous System
+│   │       ├── brain/                    ← Core agent intelligence
+│   │       │   ├── identity.md           ← Agent identity and purpose
+│   │       │   ├── capabilities.md       ← Core capabilities and skills
+│   │       │   ├── decision-framework.md ← Decision-making logic
+│   │       │   └── collaboration-protocols.md ← Inter-agent collaboration rules
+│   │       ├── memory/                   ← Learning and experience storage
+│   │       │   ├── episodic/             ← Experience and event memory
+│   │       │   │   ├── successful-patterns.md    ← What has worked well
+│   │       │   │   ├── failed-attempts.md        ← Learning from mistakes
+│   │       │   │   └── milestone-achievements.md ← Major accomplishments
+│   │       │   ├── semantic/             ← Knowledge and concept memory
+│   │       │   │   ├── domain-knowledge.md       ← Specialized knowledge base
+│   │       │   │   ├── best-practices.md         ← Proven methodologies
+│   │       │   │   └── resource-library.md       ← Useful tools and references
+│   │       │   └── procedural/           ← Skill and workflow memory
+│   │       │       ├── workflows.md              ← Standard operating procedures
+│   │       │       ├── automation-scripts.md     ← Automated processes
+│   │       │       └── quality-checklists.md     ← Quality assurance procedures
+│   │       ├── reflexes/                 ← Automatic responses and patterns
+│   │       │   ├── trigger-responses.md  ← Automatic response patterns
+│   │       │   ├── error-handling.md     ← Error recovery procedures
+│   │       │   └── escalation-protocols.md ← When and how to escalate issues
+│   │       └── integration/              ← System integration
+│   │           ├── prompt-engineering.md ← LLM prompt creation strategies
+│   │           ├── api-configurations.md ← External API configurations
+│   │           └── coordination-protocols.md ← Agent-to-agent coordination
+│   └── shared/                           ← Shared coordination data
+│       ├── session-context.md            ← Current session state
+│       ├── agent-registry.md             ← Active agent capabilities
+│       └── coordination-log.md           ← Inter-agent communication
+├── agents/                               ← Agent implementations
+│   ├── [agent-name].ts                   ← Agent TypeScript implementation
+│   └── [agent-name].js                   ← Agent JavaScript version (if needed)
+├── data/                                 ← System data storage
+│   ├── learning/                         ← Global learning system
+│   └── logs/                             ← System logging
+└── lib/                                  ← Support libraries
+    └── cns/                              ← CNS management utilities
+        ├── CNSManager.ts                 ← CNS file operations
+        ├── PromptEngineering.ts          ← Prompt engineering utilities
+        └── ReviewCoordination.ts         ← Review cycle coordination
 ```
 
 ---
@@ -85,6 +91,11 @@ Every agent follows this standardized CNS structure in their private repository 
 - [How this agent works with other agents]
 - [Preferred communication methods]
 - [Leadership or support role tendencies]
+
+## Prompt Engineering Philosophy
+- [How this agent approaches LLM prompt creation]
+- [Research-first or creation-first approach]
+- [Quality standards for prompts generated]
 ```
 
 ### **capabilities.md** - Core Agent Capabilities
@@ -95,17 +106,19 @@ Every agent follows this standardized CNS structure in their private repository 
 **IMPORTANT:** Copy the specific capabilities for this agent from /system-architecture/AGENT-TEAM-STRUCTURE-DEFINITION.md
 
 **For example, Communications Agent capabilities include:**
-- Email writing (all types: professional, personal, marketing, etc.)
-- Every type of document writing: Word research papers, plans, stories, reports, proposals
-- Meeting notes and minutes documentation
-- Presentation creation and content development
-- Social media content creation
-- Marketing copy and promotional materials
+- Document creation (all formats: Word, PDF, reports, proposals)
+- Email writing (professional, personal, marketing)
+- Research paper writing with proper citations
+- Meeting notes and documentation
+- Content editing and proofreading
 - Technical documentation writing
 - Grant and proposal writing
-- Content editing and proofreading
 
-**Each agent must copy their complete capability list from AGENT-TEAM-STRUCTURE-DEFINITION.md**
+## Prompt Engineering Capabilities
+- **Research Phase**: Generate prompts that help LLMs find and learn from real sources
+- **Creation Phase**: Formulate prompts to create deliverables in requested format
+- **Quality Assurance**: Create prompts for content validation and improvement
+- **Format Expertise**: Generate prompts for specific document formats and styles
 
 ## Specialized Skills
 - [Unique skills this agent possesses]
@@ -117,15 +130,10 @@ Every agent follows this standardized CNS structure in their private repository 
 - [Continuous improvement mechanisms]
 - [Knowledge acquisition strategies]
 
-## Collaboration Capabilities
-- [How this agent supports other agents]
-- [Cross-functional abilities]
-- [Knowledge sharing and mentoring abilities]
-
 ## API and Tool Integration
 - [External APIs and services this agent uses]
+- [LLM providers and model preferences]
 - [Tool proficiencies and integrations]
-- [Technical capabilities and limitations]
 ```
 
 ### **decision-framework.md** - Decision-Making Logic
@@ -133,25 +141,28 @@ Every agent follows this standardized CNS structure in their private repository 
 # [Agent Name] Decision Framework
 
 ## Decision-Making Principles
-- [Core principles that guide all decisions]
-- [Values-based decision criteria]
-- [Risk tolerance and assessment approaches]
+- **Research First**: Always research before creating content
+- **Quality Over Speed**: Prioritize accuracy and completeness
+- **User Context**: Consider user's expertise level and needs
+- **Collaborative**: Leverage other agents' expertise when needed
 
-## Decision-Making Process
-1. [Step-by-step decision process]
-2. [Information gathering requirements]
-3. [Analysis and evaluation methods]
-4. [Implementation and review procedures]
+## Prompt Engineering Decision Process
+1. **Analyze Request**: Understand what user actually needs
+2. **Research Strategy**: Determine what information is needed
+3. **Source Identification**: Create prompts to find reliable sources
+4. **Content Strategy**: Plan the deliverable structure and format
+5. **Quality Validation**: Plan review and refinement cycles
+
+## LLM Selection Criteria
+- **Task Complexity**: Match model capability to task requirements
+- **Domain Expertise**: Select models with relevant training
+- **Cost Optimization**: Balance quality with resource usage
+- **Response Speed**: Consider user's timeline requirements
 
 ## Escalation Criteria
 - [When to escalate decisions to Master Orchestrator]
-- [When to involve Project Coordinator]
+- [When to involve Reviewer Agent]
 - [When to seek human approval]
-
-## Quality Gates
-- [Decision quality checkpoints]
-- [Validation and verification steps]
-- [Success criteria for good decisions]
 ```
 
 ### **collaboration-protocols.md** - Inter-Agent Collaboration
@@ -159,24 +170,28 @@ Every agent follows this standardized CNS structure in their private repository 
 # [Agent Name] Collaboration Protocols
 
 ## Communication Standards
-- [How this agent communicates with other agents]
-- [Message formats and protocols]
-- [Response time expectations]
+- **Brief Updates**: Provide concise progress updates
+- **Context Sharing**: Share relevant research and findings
+- **Quality Handoffs**: Ensure work products meet next agent's needs
+- **Review Requests**: When and how to request peer review
+
+## Research Sharing Protocol
+- **Source Documentation**: Always document sources found
+- **Research Summaries**: Provide digestible summaries for other agents
+- **Knowledge Transfer**: Share domain insights with relevant specialists
+- **Citation Standards**: Maintain consistent citation formats
 
 ## Review and Feedback Process
-- [How this agent provides feedback to others]
-- [How this agent incorporates feedback received]
-- [Quality review participation guidelines]
-
-## Knowledge Sharing
-- [What knowledge this agent shares with others]
-- [How knowledge is packaged and shared]
-- [Continuous learning from other agents]
+- **Reviewer Integration**: How to work with Reviewer Agent
+- **Feedback Incorporation**: Process for integrating review feedback
+- **Quality Standards**: Shared quality criteria across agents
+- **Iteration Cycles**: How to handle multiple review rounds
 
 ## Conflict Resolution
-- [How this agent handles disagreements]
-- [Escalation procedures for conflicts]
-- [Compromise and negotiation approaches]
+- **Expertise Deference**: Defer to domain experts in their areas
+- **Evidence-Based Decisions**: Use objective criteria when possible
+- **User Preference Priority**: User requirements override system preferences
+- **Escalation Path**: When to involve Master Orchestrator
 ```
 
 ---
@@ -189,40 +204,50 @@ Every agent follows this standardized CNS structure in their private repository 
 ```markdown
 # Successful Patterns and Achievements
 
-## Pattern Recognition
-- [Patterns that consistently lead to success]
-- [Environmental factors that contribute to success]
-- [Collaboration patterns that work well]
+## Prompt Engineering Successes
+- [Prompt patterns that consistently work well]
+- [LLM combinations that produce high-quality results]
+- [Research strategies that find reliable sources]
+
+## Content Creation Patterns
+- [Content structures that users prefer]
+- [Writing styles that work for different audiences]
+- [Format combinations that improve readability]
+
+## Collaboration Successes
+- [Inter-agent workflows that work smoothly]
+- [Review cycles that improve quality effectively]
+- [User interaction patterns that build trust]
 
 ## Achievement Archive
 - [Major accomplishments and milestones]
-- [Recognition and positive feedback received]
+- [Positive user feedback and recognition]
 - [Breakthrough moments and innovations]
-
-## Success Factors Analysis
-- [What made these successes possible]
-- [Replicable elements for future application]
-- [Lessons learned from success patterns]
 ```
 
 #### **failed-attempts.md**
 ```markdown
 # Learning from Failures and Mistakes
 
-## Failure Analysis
-- [What went wrong and why]
-- [Root cause analysis of failures]
-- [Environmental and systemic factors]
+## Prompt Engineering Failures
+- [Prompts that produced poor results]
+- [LLM model combinations that didn't work]
+- [Research strategies that found unreliable sources]
+
+## Content Creation Failures
+- [Content formats that confused users]
+- [Writing approaches that missed the mark]
+- [Quality issues that required significant rework]
+
+## Collaboration Failures
+- [Agent coordination that broke down]
+- [Review cycles that created more problems]
+- [Communication that led to misunderstandings]
 
 ## Lessons Learned
 - [Key insights from failures]
 - [Preventive measures for future situations]
 - [Process improvements implemented]
-
-## Recovery Patterns
-- [How this agent recovers from setbacks]
-- [Resilience strategies that work]
-- [Support systems and escalation used]
 ```
 
 ### **Semantic Memory** - Knowledge and Concept Memory
@@ -236,15 +261,40 @@ Every agent follows this standardized CNS structure in their private repository 
 - [Industry-specific information and insights]
 - [Technical knowledge and competencies]
 
-## Cross-Domain Connections
-- [How this domain connects to other areas]
-- [Interdisciplinary insights and applications]
-- [Knowledge bridges to other agent domains]
+## LLM and AI Knowledge
+- [Understanding of different LLM capabilities]
+- [Prompt engineering techniques and best practices]
+- [AI model strengths and limitations]
 
-## Knowledge Evolution
-- [How this knowledge has evolved over time]
-- [New insights and discoveries made]
-- [Knowledge gaps identified for future learning]
+## Research Methodologies
+- [Effective research strategies for this domain]
+- [Reliable source types and locations]
+- [Quality assessment criteria for sources]
+
+## Format and Style Expertise
+- [Document format specifications and best practices]
+- [Writing style guides and conventions]
+- [Audience-specific communication approaches]
+```
+
+#### **best-practices.md**
+```markdown
+# Best Practices and Methodologies
+
+## Prompt Engineering Best Practices
+- [Proven prompt structures and techniques]
+- [Effective research prompt patterns]
+- [Quality validation prompt strategies]
+
+## Content Creation Best Practices
+- [Writing techniques that consistently work]
+- [Structure patterns that improve clarity]
+- [Editing and revision methodologies]
+
+## Quality Assurance Best Practices
+- [Review criteria and checklists]
+- [Error detection and correction methods]
+- [User satisfaction optimization techniques]
 ```
 
 ### **Procedural Memory** - Skill and Workflow Memory
@@ -253,21 +303,55 @@ Every agent follows this standardized CNS structure in their private repository 
 ```markdown
 # Standard Operating Procedures
 
-## Core Workflows
-1. [Primary workflow process steps]
-2. [Quality checkpoints and validations]
-3. [Handoffs and collaboration points]
-4. [Completion and delivery procedures]
+## Two-Phase Workflow: Research → Create
+
+### Phase 1: Research and Learning
+1. **Analyze User Request**
+   - Identify core requirements and deliverable type
+   - Assess user's expertise level and context
+   - Determine information gaps that need research
+
+2. **Generate Research Prompts**
+   - Create prompts to find reliable, current sources
+   - Design prompts to extract key information
+   - Plan prompts for different aspects of the topic
+
+3. **Execute Research Phase**
+   - Use LLM APIs with research prompts
+   - Validate sources and information quality
+   - Synthesize findings into actionable knowledge
+
+### Phase 2: Content Creation
+1. **Design Creation Strategy**
+   - Plan deliverable structure based on research
+   - Select appropriate format and style
+   - Identify key points and supporting evidence
+
+2. **Generate Creation Prompts**
+   - Create prompts for content generation
+   - Include research findings and source material
+   - Specify format, style, and quality requirements
+
+3. **Execute Creation Phase**
+   - Use LLM APIs with creation prompts
+   - Generate actual content (not instructions)
+   - Apply quality checks and refinements
+
+### Phase 3: Review and Refinement
+1. **Self-Review**
+   - Validate against original requirements
+   - Check for completeness and accuracy
+   - Ensure format and style compliance
+
+2. **Reviewer Agent Integration**
+   - Request review when appropriate
+   - Provide context and expectations to reviewer
+   - Integrate feedback into final deliverable
 
 ## Specialized Workflows
 - [Unique workflows for specialized tasks]
 - [Complex multi-step procedures]
 - [Integration workflows with other agents]
-
-## Workflow Optimization
-- [Efficiency improvements discovered]
-- [Automation opportunities identified]
-- [Process refinements implemented]
 ```
 
 ---
@@ -278,10 +362,27 @@ Every agent follows this standardized CNS structure in their private repository 
 ```markdown
 # Automatic Response Patterns
 
-## Standard Triggers and Responses
-- **Trigger:** [Specific situation or input]
-  **Response:** [Automatic action or procedure]
-  **Rationale:** [Why this response is appropriate]
+## Core Trigger-Response Patterns
+
+### Document Creation Requests
+- **Trigger:** User requests document creation
+- **Response:** Initiate research-first workflow
+- **Rationale:** Always ground content in reliable sources
+
+### Quality Issues Detected
+- **Trigger:** Content fails quality checks
+- **Response:** Automatically request Reviewer Agent assistance
+- **Rationale:** Multi-agent review improves quality
+
+### Ambiguous Requirements
+- **Trigger:** User request lacks specific details
+- **Response:** Ask brief, specific clarifying questions
+- **Rationale:** Better requirements lead to better deliverables
+
+### LLM API Failures
+- **Trigger:** API call fails or returns poor results
+- **Response:** Retry with alternative model or refined prompt
+- **Rationale:** Redundancy ensures reliable operation
 
 ## Emergency Response Patterns
 - **Crisis Situations:** [Immediate response protocols]
@@ -294,70 +395,117 @@ Every agent follows this standardized CNS structure in their private repository 
 - **Predictive Actions:** [Proactive responses to anticipated needs]
 ```
 
-### **error-handling.md** - Error Recovery Procedures
-```markdown
-# Error Handling and Recovery
-
-## Error Classification
-- **Critical Errors:** [Immediate escalation required]
-- **Standard Errors:** [Standard recovery procedures]
-- **Minor Issues:** [Self-correction capabilities]
-
-## Recovery Procedures
-1. [Error detection and classification]
-2. [Immediate containment actions]
-3. [Root cause analysis process]
-4. [Correction and recovery steps]
-5. [Prevention and learning integration]
-
-## Escalation Protocols
-- [When to escalate to Project Coordinator]
-- [When to escalate to Master Orchestrator]
-- [When to request human intervention]
-```
-
 ---
 
 ## 🔗 **Integration Component Specification**
 
-### **bridge-interface.md** - Personal Assistant Bridge Integration
+### **prompt-engineering.md** - LLM Prompt Creation Strategies
 ```markdown
-# Personal Assistant Bridge Integration
+# Prompt Engineering Integration
 
-## Bridge Communication Protocol
-- **Authentication:** [How this agent authenticates with Bridge]
-- **Data Requests:** [Format for requesting private data]
-- **Response Handling:** [How responses are processed and used]
+## Research Phase Prompt Strategies
 
-## Workflow Integration
-- **Incoming Task Processing:** [How Bridge delivers tasks to incoming/]
-- **Work Product Delivery:** [How completed work is sent via Bridge]
-- **Status Reporting:** [How progress is communicated through Bridge]
+### Source Discovery Prompts
+```
+Find reliable, current sources about [TOPIC]:
+1. Look for official documentation, academic papers, and authoritative sources
+2. Prioritize sources from [RELEVANT_TIMEFRAME]
+3. Focus on sources that provide [SPECIFIC_INFORMATION_NEEDED]
+4. Exclude sources that are [EXCLUSION_CRITERIA]
 
-## Security and Privacy
-- **Data Classification:** [How this agent handles sensitive data]
-- **Access Controls:** [What data this agent can access]
-- **Audit Compliance:** [How this agent supports audit requirements]
+Provide sources with:
+- Full citation information
+- Brief summary of relevant content
+- Credibility assessment
+- Key insights or data points
 ```
 
-### **workflow-automation.md** - Automated Workflow Triggers
+### Information Extraction Prompts
+```
+Based on these sources: [SOURCE_LIST]
+Extract information about [SPECIFIC_TOPIC]:
+1. Key facts and figures
+2. Expert opinions and analysis
+3. Current trends and developments
+4. Practical applications or examples
+
+Format as structured summary with:
+- Source attribution for each point
+- Confidence level for information
+- Relevance score for user's needs
+```
+
+## Creation Phase Prompt Strategies
+
+### Content Generation Prompts
+```
+Create a [DOCUMENT_TYPE] about [TOPIC] based on this research: [RESEARCH_SUMMARY]
+
+Requirements:
+- Target audience: [AUDIENCE_DESCRIPTION]
+- Format: [SPECIFIC_FORMAT_REQUIREMENTS]
+- Length: [LENGTH_SPECIFICATION]
+- Style: [STYLE_GUIDELINES]
+- Must include: [REQUIRED_ELEMENTS]
+
+Structure the content with:
+1. [SECTION_1_REQUIREMENTS]
+2. [SECTION_2_REQUIREMENTS]
+3. [CONCLUSION_REQUIREMENTS]
+
+Quality standards:
+- Accuracy based on provided sources
+- Clear, engaging writing appropriate for audience
+- Proper citation of sources used
+- Professional formatting and presentation
+```
+
+## Quality Validation Prompt Strategies
+
+### Review and Refinement Prompts
+```
+Review this content for: [CONTENT_TO_REVIEW]
+
+Evaluation criteria:
+1. Accuracy: Does content match source material?
+2. Completeness: Are all requirements addressed?
+3. Clarity: Is content clear and well-organized?
+4. Audience fit: Is tone and complexity appropriate?
+
+Provide:
+- Specific improvement suggestions
+- Error identification and corrections
+- Enhancement opportunities
+- Overall quality assessment
+```
+```
+
+### **coordination-protocols.md** - Agent-to-Agent Coordination
 ```markdown
-# Workflow Automation and Triggers
+# Agent Coordination Protocols
 
-## Automated Triggers
-- **File System Triggers:** [Automatic responses to file changes]
-- **Schedule-Based Triggers:** [Time-based automated actions]
-- **Event-Based Triggers:** [Responses to system or agent events]
+## Session Management
+- **Context Sharing**: How agents share session context
+- **Progress Tracking**: Update mechanisms for work progress
+- **Handoff Procedures**: Clean transitions between agents
 
-## Integration Points
-- **Incoming Folder Processing:** [Automatic processing of incoming tasks]
-- **Outgoing Folder Management:** [Automatic delivery of completed work]
-- **Working Folder Organization:** [Automatic work-in-progress management]
+## Reviewer Agent Integration
+- **Review Request Protocol**: How to request review
+- **Context Provision**: What information to provide reviewer
+- **Feedback Integration**: How to incorporate review feedback
+- **Quality Escalation**: When to request additional review
 
-## Monitoring and Alerting
-- **Performance Monitoring:** [Automated performance tracking]
-- **Error Detection:** [Automatic error identification and alerting]
-- **Quality Assurance:** [Automated quality checks and validations]
+## Master Orchestrator Communication
+- **Status Updates**: Regular progress reporting
+- **Resource Requests**: When to request additional agents
+- **Problem Escalation**: How to report issues or blockers
+- **Completion Notification**: Final deliverable reporting
+
+## Data Management
+- **CNS Updates**: When and how to update CNS files
+- **Learning Capture**: How to record new insights
+- **Memory Integration**: Adding to episodic/semantic memory
+- **Reflex Evolution**: Updating automatic response patterns
 ```
 
 ---
@@ -396,209 +544,96 @@ Every agent executes this protocol at the end of each task:
 - **Action:** Eliminate ineffective or counterproductive behaviors
 ```
 
-### **CNS Update Automation**
-```typescript
-interface CNSUpdateProtocol {
-  trigger: 'task_completion' | 'feedback_received' | 'error_occurred' | 'learning_milestone';
-  updateTargets: CNSComponent[];
-  reflectionQuestions: SelfReflectionQuestion[];
-  automationLevel: 'automatic' | 'human_approval_required' | 'manual';
-  updateFrequency: 'immediate' | 'daily' | 'weekly' | 'milestone_based';
-}
+---
 
-// Automatic CNS updates after each task
-const postTaskCNSUpdate: CNSUpdateProtocol = {
-  trigger: 'task_completion',
-  updateTargets: ['brain', 'memory/episodic', 'reflexes'],
-  reflectionQuestions: [...sixPointQuestions],
-  automationLevel: 'automatic',
-  updateFrequency: 'immediate'
-};
+## 🚀 **Implementation Guidelines**
+
+### **For Agent Developers**
+
+1. **Always Generate Content, Never Instructions**
+   ```typescript
+   // ✅ CORRECT: Generate actual content using LLM
+   const researchPrompt = this.createResearchPrompt(userRequest);
+   const sources = await this.llmCall(researchPrompt);
+   const contentPrompt = this.createContentPrompt(userRequest, sources);
+   const result = await this.llmCall(contentPrompt);
+   
+   // ❌ WRONG: Generate instructions for creating content
+   const instructions = "Here are prompts you could use to create content...";
+   ```
+
+2. **CNS Integration Requirements**
+   ```typescript
+   // Always update CNS after task completion
+   await this.updateCNS({
+     memory: { episodic: { successfulPatterns: newPattern } },
+     reflexes: { triggerResponses: refinedResponse }
+   });
+   ```
+
+3. **Reviewer Agent Integration**
+   ```typescript
+   // Request review for complex deliverables
+   if (this.isComplexTask(task)) {
+     const reviewResult = await this.requestReview(deliverable, context);
+     deliverable = this.integrateReviewFeedback(deliverable, reviewResult);
+   }
+   ```
+
+### **Master Orchestrator Enhancements**
+
+The Master Orchestrator must use LLM APIs for agent selection:
+
+```typescript
+const agentSelectionPrompt = `
+Based on this user request: "${userRequest}"
+Available agents: ${this.getAgentCapabilities()}
+
+Select the optimal agents for this task by:
+1. Analyzing what capabilities are actually needed
+2. Matching requirements to agent specializations
+3. Considering task complexity and coordination needs
+4. Planning the workflow sequence
+
+Provide:
+- Selected agents with rationale
+- Task sequence and dependencies
+- Quality checkpoints and review needs
+`;
+
+const orchestrationPlan = await this.llmCall(agentSelectionPrompt);
 ```
 
 ---
 
-## 📊 **CNS Performance Metrics**
+## 📊 **Quality Assurance Integration**
 
-### **Intelligence Metrics**
-- **Learning Rate**: How quickly the agent improves performance
-- **Adaptation Speed**: How fast the agent adjusts to new situations
-- **Pattern Recognition**: Accuracy of identifying successful patterns
-- **Decision Quality**: Success rate of decisions made
-- **Knowledge Integration**: Ability to connect and apply knowledge
+### **Reviewer Agent Specifications**
 
-### **Collaboration Metrics**
-- **Inter-Agent Effectiveness**: Success in collaborating with other agents
-- **Communication Quality**: Clarity and usefulness of communications
-- **Feedback Integration**: Speed and effectiveness of incorporating feedback
-- **Knowledge Sharing**: Value provided to other agents through knowledge sharing
+The Reviewer Agent must have its own complete CNS structure and use LLM APIs for validation:
 
-### **Continuous Improvement Metrics**
-- **Self-Assessment Accuracy**: Quality of self-reflection and analysis
-- **Process Optimization**: Improvements made to workflows and procedures
-- **Error Reduction**: Decrease in mistakes and failures over time
-- **Innovation Generation**: New ideas and creative solutions developed
+```markdown
+## Reviewer Agent CNS Requirements
+
+### Brain/Identity.md
+- Purpose: Independent quality validation
+- Personality: Constructive, thorough, objective
+- Success Metrics: Accuracy of quality assessments
+
+### Brain/Capabilities.md
+- Multi-domain quality assessment
+- Different LLM model selection for unbiased review
+- Constructive feedback generation
+- Quality improvement suggestions
+
+### Memory/Procedural/Workflows.md
+- Receive: Original task, deliverable, client agent's context
+- Analyze: Use different LLM than original agent
+- Validate: Check accuracy, completeness, format compliance
+- Feedback: Provide specific, actionable improvement suggestions
+- Return: Quality assessment and enhanced deliverable
+```
 
 ---
 
-## 🚀 **Enhanced Behavior Modification System**
-
-### **Advanced Learning and Behavior Modification Architecture**
-
-The CNS now includes sophisticated behavior modification capabilities that allow real-time learning and behavior removal with conflict detection and backup/restore functionality.
-
-#### **Behavior Learning System Components:**
-
-##### **1. Enhanced Global Learning System**
-```typescript
-interface BehaviorModificationSystem {
-  teachNewBehavior(description: string): Promise<LearningResult>;
-  removeBehavior(description: string): Promise<RemovalResult>;
-  modifyExistingBehavior(description: string): Promise<ModificationResult>;
-  analyzeBehaviorConflicts(behavior: string): Promise<ConflictAnalysis>;
-}
-```
-
-##### **2. Advanced Removal Capabilities**
-```typescript
-interface BehaviorRemovalStrategy {
-  surgical_removal: 'Precisely remove specific patterns without affecting related behaviors';
-  deprecation_replacement: 'Mark as deprecated and provide replacement behavior';
-  conditional_removal: 'Remove behavior only in specific contexts';
-  gradual_removal: 'Phase out behavior over multiple interactions';
-  conflict_resolution: 'Address behavioral conflicts before removal';
-  backup_restore: 'Safe removal with automatic rollback capability';
-}
-```
-
-##### **3. Conflict Detection Engine**
-```typescript
-interface ConflictDetectionSystem {
-  directConflicts: string[];      // Behaviors that explicitly depend on target behavior
-  indirectConflicts: string[];    // Workflow patterns that might break
-  functionalGaps: string[];       // Areas where no behavior would exist after removal
-  riskLevel: 'low' | 'medium' | 'high';
-  resolutionStrategy: string;     // Recommended approach to resolve conflicts
-}
-```
-
-##### **4. CNS Backup and Restore System**
-```
-/private-repo/backups/[agent-name]/
-├── backup_[timestamp]_[id]/
-│   ├── brain/
-│   │   ├── capabilities.md
-│   │   ├── decision-framework.md
-│   │   └── collaboration-protocols.md
-│   ├── memory/
-│   │   ├── episodic/
-│   │   ├── semantic/
-│   │   └── procedural/
-│   ├── reflexes/
-│   │   ├── trigger-responses.md
-│   │   └── error-handling.md
-│   └── backup-metadata.json
-```
-
-#### **Multi-File Behavior Targeting**
-
-The system intelligently determines which CNS files to modify based on behavior type:
-
-```typescript
-const behaviorToFileMapping = {
-  communication_style: ['conversation-patterns.md', 'brain/formatting-guidelines.md'],
-  new_capability: ['brain/capabilities.md', 'conversation-patterns.md'],
-  reflex_pattern: ['reflexes/trigger-responses.md', 'conversation-patterns.md'],
-  formatting_rules: ['brain/formatting-guidelines.md'],
-  memory_enhancement: ['memory/procedural/*.md', 'memory/episodic/*.md'],
-  complex_behavior: ['Multiple files based on Claude analysis']
-};
-```
-
-#### **Behavior Modification Performance Metrics**
-
-##### **Learning System Effectiveness**
-- **Behavior Addition Success Rate**: 98%+ for simple behaviors, 95%+ for complex behaviors
-- **Behavior Removal Success Rate**: 95%+ for simple patterns, 85%+ for complex behaviors
-- **Conflict Detection Accuracy**: 90%+ detection of potential behavioral conflicts
-- **Backup/Restore Speed**: <500ms for complete CNS state operations
-- **Zero-Downtime Modifications**: 100% uptime during behavior changes
-
-##### **Quality Assurance Metrics**
-- **Automatic Rollback Success**: <1 second for failed modification recovery
-- **Behavior Integration Quality**: Seamless integration with existing patterns
-- **User Satisfaction**: Natural language behavior request processing
-- **System Stability**: No CNS corruption during modifications
-
-#### **Advanced Features**
-
-##### **Intelligent Behavior Analysis**
-- **Pattern Recognition**: 95%+ accuracy in detecting removal vs. learning requests
-- **Dependency Mapping**: Automatic detection of behavioral dependencies
-- **Impact Assessment**: Evaluation of potential modification consequences
-- **Strategy Selection**: Optimal approach selection based on behavior complexity
-
-##### **Development Mode Enhancements**
-```typescript
-interface LearningFeedbackReport {
-  learningExplanation: string;
-  beforeAfterComparison: string;
-  filesModified: string[];
-  behaviorIntegration: string;
-  confidenceLevel: number;
-}
-
-interface RemovalFeedbackReport {
-  removalExplanation: string;
-  beforeAfterComparison: string;
-  conflictResolution: string;
-  replacementBehaviors: string[];
-  backupLocation: string;
-}
-```
-
-##### **API Enhancement Support**
-```typescript
-POST /api/personal-assistant/methodology
-{
-  area: string,
-  improvement: string,
-  action?: 'learn' | 'remove'  // Auto-detected or explicit
-}
-
-// Enhanced response with detailed feedback
-{
-  success: boolean,
-  action: 'learn' | 'remove',
-  learningReport?: LearningFeedbackReport,
-  removalReport?: RemovalFeedbackReport,
-  filesModified: string[],
-  conflictsDetected: string[],
-  backupId?: string
-}
-```
-
-#### **Real-World Usage Patterns**
-
-The enhanced system supports natural language requests like:
-
-**Behavior Addition:**
-- "Always provide step-by-step instructions for complex tasks"
-- "Include code examples when explaining technical concepts"
-- "Ask for clarification before starting ambiguous requests"
-
-**Behavior Removal:**
-- "Forget asking follow-up questions for simple requests"
-- "Stop being so verbose in responses"
-- "Don't use bullet points anymore"
-- "Remove the overly formal communication style"
-- "Eliminate redundant explanations"
-
-**Behavior Modification:**
-- "Change from formal to casual communication style"
-- "Improve debugging approach with more systematic methods"
-- "Enhance code review process with security focus"
-
----
-
-*This Enhanced Behavior Modification System provides sophisticated, production-ready capabilities for real-time agent behavior learning and removal with comprehensive safety, conflict detection, and rollback mechanisms.*
+*This CNS Architecture provides the complete cognitive framework for the self-contained agent team, enabling sophisticated prompt engineering, quality assurance, and continuous learning while maintaining your original design principles.*

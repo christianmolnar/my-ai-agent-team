@@ -9,9 +9,10 @@ import Anthropic from '@anthropic-ai/sdk';
 // Types and interfaces for Personal Assistant
 interface PersonalAssistantResponse {
   response: string;
-  conversationType: 'direct' | 'orchestrated' | 'error';
+  conversationType: 'direct' | 'orchestrated' | 'error' | 'clarification' | 'confirmation';
   suggestedFollowUps: string[];
   personaInfluence: string[];
+  flowState?: FlowState; // NEW: For 4-step flow state tracking
 }
 
 interface PersonaContext {
@@ -49,6 +50,17 @@ interface ConversationContext {
   requirementsSession?: RequirementsSession;
   lastActivity: Date;
   externalSources?: Array<{url: string; content: string; title?: string}>;
+  flowState?: FlowState; // NEW: 4-step flow state
+}
+
+interface FlowState {
+  stage: 'waiting_clarification' | 'waiting_confirmation' | 'executing';
+  originalRequest: string;
+  enhancedRequest?: string;
+  comprehensiveRequest?: string;
+  clarifyingQuestions?: string[];
+  clarificationHistory: string[];
+  interactionCount: number;
 }
 
 interface RequirementsSession {
@@ -247,15 +259,16 @@ export class PersonalAssistantAgent implements Agent {
   }
 
   /**
-   * Main conversation handler - processes user input and generates personalized responses
-   * Integrates persona data and determines if orchestration is needed
+   * Main conversation handler - NEW 4-STEP FLOW IMPLEMENTATION
+   * Step 1: Clarify (max 1 round) → Step 2: Plan → Step 3: Confirm → Step 4: Execute
+   * Eliminates endless questioning loops with anti-loop protection
    */
   async handleUserConversation(userMessage: string, conversationContext?: ConversationContext): Promise<PersonalAssistantResponse> {
     try {
       console.log('🤖 Personal Assistant - Handling conversation:');
       console.log('  📝 User Message:', userMessage);
       console.log('  📚 Conversation Context:', conversationContext ? 
-        `${conversationContext.history.length} previous messages` : 'No context');
+        `${conversationContext.history?.length || 0} previous messages` : 'No context');
       
       // Check for URLs in the message and fetch their content
       const urlPattern = /https?:\/\/[^\s]+/g;
@@ -321,8 +334,10 @@ export class PersonalAssistantAgent implements Agent {
         const isFrustrated = frustrationIndicators.some(indicator => userLower.includes(indicator));
         
         // Check for direct commands like "write the paper", "create the document", etc.
-        const directCommands = /^(write|create|make|build|generate|research)\s+(the\s+)?(paper|document|report|essay|analysis|summary|comprehensive|detailed)/i;
+        const directCommands = /^(write|create|make|build|generate|research)\s+.*?(paper|document|report|essay|analysis|summary|comprehensive|detailed|story|fiction|narrative|chapter|book|novel|tale)/i;
         const isDirectCommand = directCommands.test(userMessage.trim());
+        
+        console.log(`[PersonalAssistant] Direct command check: "${userMessage.trim()}" matches pattern: ${isDirectCommand}`);
         
         // Additional check for comprehensive requests that should go straight to orchestration
         const comprehensiveRequests = /\b(comprehensive|detailed|complete|thorough)\s+(summary|analysis|report|document|research|learning)/i;
@@ -330,11 +345,12 @@ export class PersonalAssistantAgent implements Agent {
         
         // If user is frustrated, has given context, issued direct command, or made comprehensive request, proceed to orchestration
         if (isFrustrated || isDirectCommand || isComprehensiveRequest || (hasContext && conversationContext && conversationContext.history.length > 6)) {
-          console.log('[PersonalAssistant] User ready to proceed - going directly to orchestration');
+          console.log(`[PersonalAssistant] Proceeding to orchestration - frustrated: ${isFrustrated}, directCommand: ${isDirectCommand}, comprehensive: ${isComprehensiveRequest}, hasContext: ${hasContext}`);
           return await this.handleOrchestratedRequest(userMessage, personaContext, intentAnalysis, conversationContext);
         }
         
         // Otherwise, start enhanced requirements gathering
+        console.log('[PersonalAssistant] Starting requirements gathering instead of orchestration');
         return await this.startEnhancedRequirementsGathering(userMessage, personaContext, intentAnalysis, conversationContext);
       } else {
         // Direct conversation response for simple requests
@@ -457,9 +473,12 @@ export class PersonalAssistantAgent implements Agent {
       - Vague or unclear project requests
       - File creation requests (Word documents, PDFs, etc.) that require specialized formatting
       - Creative content creation that needs professional formatting and delivery
+      - Story creation, fiction writing, narrative generation (any length)
+      - Chapter-based content, book creation, creative writing projects
       - Content creation + file generation combinations
       - Any request mentioning "comprehensive", "detailed analysis", "research and compile"
       - Knowledge synthesis across multiple domains
+      - Document generation requests with specific page/word count requirements
 
       DO NOT require orchestration for:
       - Simple greetings ("Are you awake?", "Hello", "How are you?")
@@ -518,7 +537,7 @@ Analyze the user's message to determine:
 
 3. **Required Agents**: Which agents would be needed? Options:
    - researcher (for information gathering)
-   - communications (for writing/messaging)  
+   - communications (for writing/messaging/story creation/document generation)  
    - project-coordinator (for planning/organization)
    - data-scientist (for analysis/insights)
    - full-stack-developer (for technical implementation)
@@ -685,18 +704,14 @@ REASONING: [brief explanation]`;
         systemPrompt
       );
 
-      // Check and correct any capability claims
-      const capabilityAwareResponse = await this.generateCapabilityAwareResponse(
-        userMessage, 
-        personaContext, 
-        response
-      );
+      // Use the response as-is for now (capability checking can be added later)
+      const finalResponse = response;
 
       return {
-        response: capabilityAwareResponse,
+        response: finalResponse,
         conversationType: 'direct',
         personaInfluence: personaContext.appliedElements || [],
-        suggestedFollowUps: this.generateFollowUpSuggestions(userMessage, capabilityAwareResponse)
+        suggestedFollowUps: this.generateFollowUpSuggestions(userMessage, finalResponse)
       };
     } catch (error) {
       console.error('Error generating direct response:', error);
@@ -812,33 +827,74 @@ ${personaContext.relevantElements?.map(element => `- ${element.category}: ${elem
     let cnsLearnings = '';
     try {
       // TODO: Replace bridge call with local CNS integration
-      /*
-      const cnsResult = await this.personaBridge.handleTask({
-        type: 'get-cns-data',
-        payload: {
-          requestingAgent: 'personal-assistant',
-          dataType: 'learning-data',
-          agentType: 'personal-assistant',
-          section: 'all',
-          userMessage
-        }
-      });
+      // Temporary fallback - no CNS learning data
+      cnsLearnings = 'CNS learning files not available - bridge functionality removed for new architecture';
+    } catch (error) {
+      console.warn('CNS: Bridge access failed:', error.message);
+      cnsLearnings = 'CNS learning files not available - bridge error';
+    }
 
-      if (cnsResult.success && cnsResult.result) {
-        const cnsData = cnsResult.result;
-        let learningText = '';
-        
-        if (cnsData.formatting_guidelines) {
-          learningText += `## FORMATTING GUIDELINES\n${cnsData.formatting_guidelines}\n\n`;
-          console.log('✅ CNS: Loaded formatting guidelines:', cnsData.formatting_guidelines.length, 'characters');
-        }
-        
-        if (cnsData.conversation_patterns) {
-          learningText += `## CONVERSATION PATTERNS\n${cnsData.conversation_patterns}\n\n`;
-          console.log('✅ CNS: Loaded conversation patterns:', cnsData.conversation_patterns.length, 'characters');
-        }
-        
-        cnsLearnings = learningText || 'CNS learning files not available';
+    return `You are the Personal Assistant AI that coordinates a team of 20+ specialized AI agents.
+
+YOUR ROLE & IDENTITY:
+- You are the primary interface between the user and their AI agent team
+- You coordinate with specialized agents (researchers, developers, analysts, etc.) to handle complex requests
+- You have direct access to team capabilities and can orchestrate multi-agent workflows
+- You ARE part of a team - embrace this collaborative identity
+
+TEAM AWARENESS:
+- When you coordinate with other agents, acknowledge this openly
+- Reference team capabilities naturally: "Let me check with our research team" or "I'll coordinate with our specialists"
+- Be proud of your orchestration abilities - it's your core strength
+- Never deny your team-based nature or pretend to be a standalone AI
+
+PERSONALITY & APPROACH:
+- Be friendly, professional, and genuinely helpful
+- Adapt your communication style to match the user's preferences  
+- Show understanding of their background and current context
+- Be transparent about when you're coordinating with team members
+- Celebrate the collaborative advantage your team provides
+
+USER CONTEXT:
+${this.formatPersonaContext(personaContext)}
+
+COMMUNICATION GUIDELINES:
+- Match the user's preferred communication style: ${personaContext.communicationStyle}
+- Reference their expertise and interests when relevant
+- Consider their current projects and ongoing work
+- Provide responses that are actionable and relevant to their role as ${personaContext.role}
+
+LEARNED BEHAVIORS AND FORMATTING GUIDELINES:
+${cnsLearnings}
+
+🚨🚨🚨 CRITICAL FORMATTING ENFORCEMENT 🚨🚨🚨
+THE USER HAS COMPLAINED MULTIPLE TIMES ABOUT UNFORMATTED RESPONSES.
+YOU MUST FORMAT EVERY RESPONSE PROPERLY OR IT WILL BE REJECTED.
+
+MANDATORY RULES - NO EXCEPTIONS:
+• NEVER write sentences longer than 20 words
+• ALWAYS use bullet points (•) for lists
+• ALWAYS add blank lines between sections
+• ALWAYS break long text into short paragraphs
+• ALWAYS use **bold** for emphasis
+
+❌ FORBIDDEN: "I understand this is about your son's ongoing health situation. Let me coordinate with our team to provide helpful information while being mindful of the sensitivity of this topic. **Initial Response**: I'm concerned about your son's three-year struggle with symptoms. To help provide the most relevant information: 1. **Clarifying Questions**: • Which specific symptoms has your son been experiencing? • Have you received any medical evaluations or diagnoses? • Are you looking for research-based information, specialist resources, or support options?"
+
+✅ REQUIRED FORMAT:
+I understand this is about your son's ongoing health situation.
+
+Let me coordinate with our team to provide helpful information.
+
+**Initial Questions:**
+• Which specific symptoms has your son been experiencing?
+• Have you received any medical evaluations or diagnoses? 
+• Are you looking for research-based information or support options?
+
+EVERY response must be broken into short, readable segments like this.
+
+Your goal is to provide personalized assistance with PERFECT formatting that the user can easily read.`;
+  }
+}
         console.log('✅ CNS: Total learning data length:', cnsLearnings.length, 'characters');
       } else {
         console.log('❌ CNS: Bridge call failed:', cnsResult.error || 'No result');
@@ -1506,312 +1562,191 @@ RESPONSE: [Your response to the user]`;
    * Check if user message is an approval/rejection response
    */
   private isApprovalResponse(message: string): boolean {
-    const approvalPhrases = [
-      'yes', 'no', 'go ahead', 'proceed', 'approve', 'looks good',
-      'that\'s good', 'that\'s correct', 'that works', 'sounds right',
-      'not quite', 'but I want', 'actually', 'change', 'modify'
-    ];
-    
+    const approvalKeywords = ['yes', 'approve', 'confirm', 'proceed', 'continue', 'go ahead', 'sounds good'];
     const lowerMessage = message.toLowerCase();
-    return approvalPhrases.some(phrase => lowerMessage.includes(phrase));
+    return approvalKeywords.some(keyword => lowerMessage.includes(keyword));
   }
 
   /**
-   * Proceed with orchestration using approved requirements
+   * Utility methods for 4-step flow
    */
-  private async proceedWithApprovedRequirements(
-    session: RequirementsSession,
-    conversationContext: ConversationContext
-  ): Promise<PersonalAssistantResponse> {
-    
-    const personaContext = await this.getPersonaContext(session.originalRequest);
-    
-    // Create enhanced intent analysis with requirements
-    const enhancedIntentAnalysis: IntentAnalysis = {
-      complexityLevel: 'high',
-      requiresOrchestration: true,
-      requiredAgents: [], // Will be determined by orchestrator
-      deliverables: [],   // Will be determined by orchestrator  
-      priority: 'high'
-    };
-
-    // Use the refined requirements for orchestration
-    const enhancedRequest = `${session.originalRequest}
-
-DETAILED REQUIREMENTS:
-${session.currentRequirements}
-
-USER FEEDBACK INCORPORATED:
-${session.userResponses.map(r => `Q: ${r.question}\nA: ${r.answer}`).join('\n\n')}`;
-
-    return await this.handleOrchestratedRequest(enhancedRequest, personaContext, enhancedIntentAnalysis, conversationContext);
-  }
-
-  /**
-   * Refine requirements based on user feedback
-   */
-  private async refineRequirements(
-    userMessage: string,
-    session: RequirementsSession, 
-    conversationContext: ConversationContext
-  ): Promise<PersonalAssistantResponse> {
-    
-    const refinementPrompt = `The user wants to modify the requirements. Here's the context:
-
-CURRENT REQUIREMENTS: "${session.currentRequirements}"
-USER FEEDBACK: "${userMessage}"
-
-## CONVERSATION HISTORY (for full context):
-${this.formatConversationHistory(conversationContext.history)}
-
-Please:
-1. Understand what the user wants to change
-2. Ask specific questions to clarify their modifications
-3. Keep the conversation focused and productive
-
-Respond naturally, asking for the specific changes they want to make.`;
-
+  private async fetchUrlContent(url: string): Promise<string> {
     try {
-      const response = await this.claudeService.generateResponse([
-        { role: 'user', content: refinementPrompt }
-      ]);
-
-      session.status = 'gathering';
-      session.iterationCount++;
-      session.lastUpdate = new Date();
-
-      return {
-        response: response,
-        conversationType: 'direct',
-        suggestedFollowUps: [],
-        personaInfluence: ['requirements-modification']
-      };
-
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return await response.text();
     } catch (error) {
-      console.error('Requirements refinement failed:', error);
-      return {
-        response: `I understand you'd like to make some changes. Could you please tell me specifically what you'd like to modify about the requirements?`,
-        conversationType: 'direct',
-        suggestedFollowUps: [],
-        personaInfluence: ['fallback-modification']
-      };
+      console.error('Failed to fetch URL content:', error);
+      return '';
     }
   }
 
-  /**
-   * Generate project plan based on gathered requirements
-   */
-  private async generateProjectPlan(
-    session: RequirementsSession,
-    userMessage: string,
-    intentAnalysis: IntentAnalysis
-  ): Promise<ProjectPlan> {
-    const planGenerationPrompt = `You are a project planning expert. Based on the user's requirements, create a detailed project plan.
-
-ORIGINAL REQUEST: "${session.originalRequest}"
-
-REQUIREMENTS GATHERED:
-${session.userResponses.map(r => `Q: ${r.question}\nA: ${r.answer}`).join('\n\n')}
-
-INTENT ANALYSIS: ${JSON.stringify(intentAnalysis, null, 2)}
-
-Create a comprehensive project plan that includes:
-1. Clear deliverables with specific formats
-2. Detailed approach and methodology
-3. Realistic timeframe
-4. Required agents/capabilities
-5. Step-by-step workflow
-
-Return ONLY a JSON object with this structure:
-{
-  "title": "Project Title",
-  "description": "Detailed description of what will be delivered",
-  "deliverables": [
-    {
-      "type": "document|image|code|research|analysis",
-      "name": "Deliverable Name",
-      "description": "What this deliverable contains",
-      "format": "specific format (e.g., 'Word document', 'PDF', 'PNG image')"
-    }
-  ],
-  "approach": "Detailed methodology and approach",
-  "estimatedTimeframe": "Realistic time estimate",
-  "requiredAgents": ["agent1", "agent2"],
-  "workflowSteps": ["Step 1", "Step 2", "Step 3"],
-  "userApprovalRequired": true
-}`;
-
+  private extractTitleFromContent(content: string): string {
     try {
-      const planResponse = await this.claudeService.generateResponse([
-        { role: 'user', content: planGenerationPrompt }
-      ]);
-
-      const plan = JSON.parse(planResponse);
-      plan.id = `plan_${Date.now()}`;
+      const titleMatch = content.match(/<title[^>]*>([^<]*)<\/title>/i);
+      if (titleMatch && titleMatch[1]) {
+        return titleMatch[1].trim();
+      }
       
-      return plan as ProjectPlan;
+      // Fallback: try to extract first heading
+      const headingMatch = content.match(/<h[1-6][^>]*>([^<]*)<\/h[1-6]>/i);
+      if (headingMatch && headingMatch[1]) {
+        return headingMatch[1].trim();
+      }
+      
+      return 'Untitled';
     } catch (error) {
-      console.error('Plan generation failed:', error);
-      // Fallback plan
-      return {
-        id: `plan_${Date.now()}`,
-        title: `Project: ${session.originalRequest}`,
-        description: `Create deliverables based on: ${session.originalRequest}`,
-        deliverables: intentAnalysis.deliverables.map(d => ({
-          type: 'document' as const,
-          name: d,
-          description: `${d} based on user requirements`,
-          format: 'Word document'
-        })),
-        approach: 'Research and create content using appropriate agents',
-        estimatedTimeframe: 'Estimated completion time varies based on complexity',
-        requiredAgents: intentAnalysis.requiredAgents,
-        workflowSteps: [
-          'Research and gather information',
-          'Create initial content',
-          'Review and refine',
-          'Format and deliver'
-        ],
-        userApprovalRequired: true
-      };
+      console.error('Failed to extract title:', error);
+      return 'Untitled';
     }
   }
 
-  /**
-   * Present plan to user for approval
-   */
-  private async presentPlanForApproval(
-    plan: ProjectPlan,
-    session: RequirementsSession
-  ): Promise<PersonalAssistantResponse> {
-    const deliverablesList = plan.deliverables
-      .map(d => `• ${d.name} (${d.type}) - ${d.description}`)
-      .join('\n');
-    
-    const stepsList = plan.workflowSteps
-      .map((step, i) => `${i + 1}. ${step}`)
-      .join('\n');
+  private formatConversationHistory(history: any[]): string {
+    if (!history || history.length === 0) {
+      return 'No previous conversation history.';
+    }
 
-    const response = `## 📋 Project Plan: ${plan.title}
-
-**Description:** ${plan.description}
-
-**Deliverables:**
-${deliverablesList}
-
-**Approach:** ${plan.approach}
-
-**Workflow Steps:**
-${stepsList}
-
-**Required Agents:** ${plan.requiredAgents.join(', ')}
-**Estimated Timeframe:** ${plan.estimatedTimeframe}
-
----
-
-**Do you approve this plan?** 
-
-Reply with:
-- **"Yes"** or **"Approve"** to proceed with execution
-- **"Modify [specific changes]"** to request adjustments
-- **"Cancel"** to stop the project
-
-I'll coordinate with the appropriate agents to execute this plan once approved.`;
-
-    return {
-      response,
-      conversationType: 'direct',
-      suggestedFollowUps: ['Yes, proceed', 'Modify the approach', 'Cancel this project'],
-      personaInfluence: ['plan-approval']
-    };
+    return history.map((entry, index) => {
+      const timestamp = entry.timestamp ? new Date(entry.timestamp).toLocaleString() : 'Unknown time';
+      const role = entry.role || 'unknown';
+      const content = entry.content || entry.message || 'No content';
+      
+      return `${index + 1}. [${timestamp}] ${role.toUpperCase()}: ${content}`;
+    }).join('\n');
   }
 
-  /**
-   * Enhanced orchestration with clear deliverable instructions
-   */
-  private async executeApprovedPlan(
-    plan: ProjectPlan,
-    session: RequirementsSession,
-    personaContext: PersonaContext,
-    conversationContext?: ConversationContext
-  ): Promise<PersonalAssistantResponse> {
+  private filterAgentResults(results: any): any {
+    if (!results) return results;
     
-    // Create enhanced orchestrator prompt with explicit content creation instructions
-    const enhancedPrompt = `APPROVED PROJECT EXECUTION
+    // Remove internal metadata and keep only user-relevant information
+    if (Array.isArray(results)) {
+      return results.map(result => this.cleanAgentResult(result));
+    } else {
+      return this.cleanAgentResult(results);
+    }
+  }
 
-PROJECT TITLE: ${plan.title}
-PROJECT DESCRIPTION: ${plan.description}
+  private cleanAgentResult(result: any): any {
+    if (!result || typeof result !== 'object') return result;
+    
+    // Remove internal fields that shouldn't be shown to users
+    const cleaned = { ...result };
+    delete cleaned.internalMetadata;
+    delete cleaned.debugInfo;
+    delete cleaned.systemPrompts;
+    delete cleaned.rawResponse;
+    
+    return cleaned;
+  }
 
-CRITICAL: The user wants ACTUAL CONTENT, not instructions for creating content.
+  private getExternalSourcesFromHistory(history: any[]): any[] {
+    if (!history || !Array.isArray(history)) return [];
+    
+    return history
+      .filter(entry => entry.externalSources && Array.isArray(entry.externalSources))
+      .flatMap(entry => entry.externalSources)
+      .filter(source => source && typeof source === 'object');
+  }
 
-DELIVERABLES TO CREATE:
-${plan.deliverables.map(d => `- ${d.name} (${d.format}): ${d.description}`).join('\n')}
+  // Additional flow management methods
+  private async proceedWithApprovedRequirements(
+    session: any,
+    conversationContext: ConversationContext
+  ): Promise<PersonalAssistantResponse> {
+    const comprehensiveRequest = conversationContext.flowState?.comprehensiveRequest;
+    
+    if (!comprehensiveRequest) {
+      return {
+        response: "I apologize, but I couldn't find the approved requirements. Could you please clarify what you'd like me to proceed with?",
+        conversationType: 'error',
+        suggestedFollowUps: ['Please restate your request', 'Start over with a new request'],
+        personaInfluence: ['helpful', 'apologetic']
+      };
+    }
 
-APPROACH: ${plan.approach}
-
-WORKFLOW STEPS:
-${plan.workflowSteps.map((step, i) => `${i + 1}. ${step}`).join('\n')}
-
-REQUIREMENTS CONTEXT:
-${session.userResponses.map(r => `Q: ${r.question}\nA: ${r.answer}`).join('\n\n')}
-
-IMPORTANT INSTRUCTIONS FOR AGENTS:
-- CREATE the actual content, documents, research, etc.
-- DO NOT provide instructions on how to create content
-- DELIVER finished deliverables that the user can immediately use
-- ENSURE content matches the specific requirements gathered
-- FORMAT properly according to requested formats
-
-Execute this plan and create the actual deliverables now.`;
-
+    // Execute the comprehensive request through the Master Orchestrator
     try {
-      const masterOrchestrator = new MasterOrchestratorAgent();
-      const orchestratorResponse = await masterOrchestrator.handleTask({
+      const orchestratorResponse = await this.masterOrchestrator.handleTask({
         type: 'orchestrate',
         payload: {
-          userRequest: enhancedPrompt,
-          userMessage: enhancedPrompt,
+          userRequest: comprehensiveRequest,
+          userMessage: comprehensiveRequest,
+          source: 'personal-assistant',
           conversationHistory: conversationContext?.history || [],
           context: {
-            projectPlan: plan,
-            requirementsSession: session,
-            personaContext,
-            requestedDeliverables: plan.deliverables.map(d => d.name),
+            requestedDeliverables: [],
             timestamp: new Date().toISOString(),
             requestId: Math.random().toString(36).substr(2, 9)
           }
         }
       });
 
-      if (orchestratorResponse?.success) {
-        const finalResponse = await this.craftFinalUserResponse({
-          originalRequest: session.originalRequest,
-          orchestratorResults: orchestratorResponse.result,
-          personaContext: personaContext
-        });
+      return {
+        response: orchestratorResponse.result || "I've completed your request. Is there anything else I can help you with?",
+        conversationType: 'orchestrated',
+        suggestedFollowUps: ['Ask another question', 'Need help with something else'],
+        personaInfluence: ['helpful', 'thorough']
+      };
 
-        // Update session status
-        session.status = 'completed';
-        session.lastUpdate = new Date();
-
-        return {
-          response: finalResponse,
-          conversationType: 'orchestrated',
-          suggestedFollowUps: ['Request modifications', 'Start a new project'],
-          personaInfluence: ['plan-execution']
-        };
-      } else {
-        console.error('Plan execution failed:', orchestratorResponse);
-        return {
-          response: "I encountered an issue executing the approved plan. Please try again or request a modified approach.",
-          conversationType: 'error',
-          suggestedFollowUps: ['Try again', 'Modify the plan'],
-          personaInfluence: ['error-handling']
-        };
-      }
     } catch (error) {
-      console.error('Error executing plan:', error);
-      return this.generateErrorResponse(error);
+      console.error('Error executing approved requirements:', error);
+      return {
+        response: "I encountered an error while processing your request. Could you please try again or rephrase your request?",
+        conversationType: 'error',
+        suggestedFollowUps: ['Try again', 'Rephrase your request'],
+        personaInfluence: ['apologetic', 'helpful']
+      };
+    }
+  }
+
+  private async refineRequirements(
+    userMessage: string,
+    session: any,
+    conversationContext: ConversationContext
+  ): Promise<PersonalAssistantResponse> {
+    const currentRequest = conversationContext.flowState?.comprehensiveRequest || '';
+    const clarificationHistory = conversationContext.flowState?.clarificationHistory || [];
+
+    const refinementPrompt = `
+Based on the user's additional input: "${userMessage}"
+
+Current comprehensive request: ${currentRequest}
+
+Previous clarifications: ${clarificationHistory.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+
+Generate an improved comprehensive request that incorporates this new information. The request should be clear, specific, and actionable.
+
+Improved comprehensive request:`;
+
+    try {
+      const messages = [{ role: 'user' as const, content: refinementPrompt }];
+      const systemPrompt = 'You are an AI assistant helping to refine user requirements into clear, comprehensive requests.';
+      const response = await this.claudeService.generateResponse(messages, systemPrompt);
+      
+      // Update the comprehensive request in flow state
+      if (conversationContext.flowState) {
+        conversationContext.flowState.comprehensiveRequest = response;
+        conversationContext.flowState.clarificationHistory.push(userMessage);
+      }
+
+      return {
+        response: `Thank you for the clarification. I've refined your request:\n\n${response}\n\nIs this correct? Should I proceed with this request?`,
+        conversationType: 'confirmation',
+        suggestedFollowUps: ['Yes, proceed', 'No, let me clarify further', 'Start over'],
+        personaInfluence: ['helpful', 'thorough'],
+        flowState: conversationContext.flowState
+      };
+
+    } catch (error) {
+      console.error('Error refining requirements:', error);
+      return {
+        response: "I encountered an error while refining your request. Could you please restate what you need?",
+        conversationType: 'error',
+        suggestedFollowUps: ['Restate your request', 'Start over'],
+        personaInfluence: ['apologetic', 'helpful']
+      };
     }
   }
 }

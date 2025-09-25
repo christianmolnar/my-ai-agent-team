@@ -36,24 +36,15 @@ export class ProjectCoordinatorAgent implements Agent {
   private sessionAgentTasks: Map<string, Map<string, AgentInteraction>>;
 
   constructor() {
-    try {
-      // Initialize Claude service for coordination planning
-      this.claudeService = AgentClaudeClientFactory.createProjectCoordinatorClient();
-      
-      // Initialize logging service
-      this.logger = interactionLogger;
-      
-      // Initialize tracking maps
-      this.activeSessions = new Map();
-      this.sessionAgentTasks = new Map();
-    } catch (error) {
-      console.error('ProjectCoordinatorAgent constructor error:', error);
-      // Create fallback implementations
-      this.claudeService = null as any;
-      this.logger = null as any;
-      this.activeSessions = new Map();
-      this.sessionAgentTasks = new Map();
-    }
+    // Initialize Claude service for coordination planning
+    this.claudeService = AgentClaudeClientFactory.createProjectCoordinatorClient();
+    
+    // Initialize logging service
+    this.logger = interactionLogger;
+    
+    // Initialize tracking maps
+    this.activeSessions = new Map();
+    this.sessionAgentTasks = new Map();
   }
 
   /**
@@ -134,11 +125,8 @@ export class ProjectCoordinatorAgent implements Agent {
     try {
       console.log(`📊 Coordinating task execution for: "${userRequest}"`);
       
-      // Ensure userRequest is a string
-      const safeRequest = userRequest || '';
-      
       // Check if this is a simple agent count request
-      if (safeRequest.toLowerCase().includes('count') && safeRequest.toLowerCase().includes('agents')) {
+      if (userRequest.toLowerCase().includes('count') && userRequest.toLowerCase().includes('agents')) {
         return `Project coordination for agent inventory request:
 
 ✅ **Task**: Agent count and capability summary
@@ -147,11 +135,6 @@ export class ProjectCoordinatorAgent implements Agent {
 ✅ **Quality Check**: Agent list verified against registry
 
 The request has been successfully coordinated and executed.`;
-      }
-      
-      // For simple projects, provide concise coordination summary
-      if (this.isSimpleProject(userRequest)) {
-        return this.provideSimpleCoordination(userRequest);
       }
       
       // For other coordination tasks, provide structured coordination
@@ -213,16 +196,6 @@ Project coordination provides the organizational structure for successful multi-
 TARGET DELIVERABLES: ${deliverables.join(', ')}
 PRIORITY LEVEL: ${priority}
 METHODOLOGY: Agile project coordination with continuous monitoring`;
-  }
-
-  /**
-   * Ensure session is properly initialized for tracking
-   */
-  ensureSessionInitialized(sessionId: string): void {
-    if (!this.sessionAgentTasks.has(sessionId)) {
-      this.sessionAgentTasks.set(sessionId, new Map());
-      console.log(`🎯 Project Coordinator initialized session tracking: ${sessionId}`);
-    }
   }
 
   /**
@@ -288,7 +261,7 @@ METHODOLOGY: Agile project coordination with continuous monitoring`;
           agentName: payload.agentName,
           agentType: payload.agentType || 'specialist',
           taskAssigned: payload.taskAssigned,
-          taskSummary: this.createTaskSummary(payload.taskAssigned),
+          taskSummary: payload.taskAssigned.substring(0, 80),
           taskPriority: payload.taskPriority || 'medium',
           taskComplexity: payload.taskComplexity || 'moderate',
           inputReceived: payload.inputReceived,
@@ -340,7 +313,7 @@ METHODOLOGY: Agile project coordination with continuous monitoring`;
         const interaction = sessionTasks.get(payload.interactionId);
         if (interaction) {
           interaction.outputProduced = payload.outputProduced;
-          interaction.outputSummary = this.createOutputSummary(payload.outputProduced);
+          interaction.outputSummary = payload.outputProduced.substring(0, 120);
           interaction.status = payload.success !== false ? 'completed' : 'failed';
           interaction.success = payload.success !== false;
           interaction.executionTimeMs = payload.executionTimeMs || 0;
@@ -557,96 +530,5 @@ The plan should be practical and immediately actionable, with clear next steps f
     }
 
     return nextSteps.length > 0 ? nextSteps : ['Begin agent coordination', 'Execute tactical plan'];
-  }
-
-  /**
-   * Check if this is a simple project requiring minimal coordination
-   */
-  private isSimpleProject(request: string): boolean {
-    // Ensure request is a string
-    const safeRequest = request || '';
-    const simpleIndicators = ['simple', 'functional', 'colorful', 'basic', 'quick'];
-    const lowerRequest = safeRequest.toLowerCase();
-    
-    return simpleIndicators.some(indicator => lowerRequest.includes(indicator)) ||
-           safeRequest.split(' ').length < 15;
-  }
-
-  /**
-   * Create a meaningful task summary instead of just truncating
-   */
-  private createTaskSummary(taskAssigned: string): string {
-    if (!taskAssigned || taskAssigned.length <= 100) {
-      return taskAssigned; // Return as-is if short enough
-    }
-
-    // Extract key action words and context
-    const words = taskAssigned.split(' ');
-    if (words.length <= 12) {
-      return taskAssigned;
-    }
-
-    // Find important words (verbs, nouns, specific terms)
-    const importantWords = words.filter(word => 
-      word.length > 3 && 
-      !['the', 'and', 'for', 'with', 'that', 'this', 'from', 'they', 'have', 'been'].includes(word.toLowerCase())
-    );
-
-    // Create a concise summary preserving meaning
-    const firstPart = words.slice(0, 8).join(' ');
-    const lastPart = words.slice(-4).join(' ');
-    
-    return `${firstPart}... ${lastPart}`;
-  }
-
-  /**
-   * Create a meaningful output summary instead of just truncating
-   */
-  private createOutputSummary(output: string): string {
-    if (!output || output.length <= 200) {
-      return output; // Return as-is if short enough
-    }
-
-    // Extract first and last meaningful sentences
-    const sentences = output.split(/[.!?]+/).filter(s => s.trim().length > 0);
-    
-    if (sentences.length <= 2) {
-      return output.substring(0, 200) + '...';
-    }
-
-    // Get first sentence and last sentence
-    const firstSentence = sentences[0].trim() + '.';
-    const lastSentence = sentences[sentences.length - 1].trim() + '.';
-    
-    // If combined length is reasonable, use both
-    if (firstSentence.length + lastSentence.length <= 180) {
-      return `${firstSentence} ... ${lastSentence}`;
-    }
-    
-    // Otherwise just use first sentence with more context
-    return firstSentence.length <= 150 ? 
-      firstSentence + ' [Task completed successfully]' : 
-      firstSentence.substring(0, 150) + '...';
-  }
-
-  /**
-   * Provide concise coordination for simple projects
-   */
-  private provideSimpleCoordination(request: string): string {
-    return `📋 **Project Coordination Complete**
-
-**Simple Project Approach:**
-• **Goal:** Create a simple, functional, and colorful application
-• **Team:** Full-stack developer, UX designer, and test expert
-• **Timeline:** Rapid development with immediate delivery
-• **Quality:** Focus on functionality and user delight
-
-**Coordination Summary:**
-✅ Requirements clarified with user preferences
-✅ Development team aligned on colorful, simple design
-✅ Testing approach streamlined for quick validation
-✅ Ready for immediate development and delivery
-
-This coordination ensures a smooth, efficient development process focused on delivering exactly what you requested.`;
   }
 }
