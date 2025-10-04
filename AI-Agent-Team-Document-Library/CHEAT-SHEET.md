@@ -3,26 +3,36 @@
 ## 🧠 CNS Learning Commands
 
 ### **Natural Language Commands:**
-```bash
-# Direct commands (requires full path):
-./scripts/cns "help"                       # Show all CNS commands
-./scripts/cns "test your functionality"    # Test CNS functionality  
-./scripts/cns "do CNS learning session"    # Generate comprehensive learning report
-./scripts/cns "verify your learnings"      # Show recent learnings and updates
-./scripts/cns "document my preference"     # Auto-detect preference from conversation
-./scripts/cns "document my preference" "text"     # Document explicit preference
-./scripts/cns "document my pattern"        # Auto-detect successful pattern from conversation
-./scripts/cns "document my pattern" "text"        # Document explicit pattern  
-./scripts/cns "document my anti-pattern"   # Auto-detect anti-pattern from conversation
-./scripts/cns "document my anti-pattern" "text"   # Document explicit anti-pattern
-./scripts/cns "document my mannerism" "text"      # Document communication style/mannerism
 
-# Shortcut aliases (if scripts/aliases/ is in PATH):
-scripts/aliases/cns "help"                 # Same commands but shorter
-scripts/aliases/cns-help                   # Quick CNS help
+**🎯 Quick Setup for Easy Access:**
+```bash
+# Add to PATH (one-time setup):
+echo 'export PATH="$PATH:'$(pwd)'/scripts"' >> ~/.bashrc
+source ~/.bashrc
+# Now you can use: cns "help" instead of ./scripts/cns "help"
 ```
 
-**Setup Required:** Add to PATH or use full paths
+**Commands (after PATH setup):**
+```bash
+cns "help"                              # Show all CNS commands
+cns "test your functionality"           # Test CNS functionality  
+cns "do CNS learning session"          # Generate comprehensive learning report
+cns "verify your learnings"            # Show recent learnings and updates
+cns "document my preference"            # Auto-detect preference from conversation
+cns "document my preference" "text"     # Document explicit preference
+cns "document my pattern"               # Auto-detect successful pattern
+cns "document my pattern" "text"        # Document explicit pattern  
+cns "document my anti-pattern"          # Auto-detect anti-pattern
+cns "document my anti-pattern" "text"   # Document explicit anti-pattern
+cns "document my mannerism" "text"      # Document communication style
+```
+
+**Commands (without PATH setup):**
+```bash
+./scripts/cns "help"                    # Full path required
+./scripts/cns "verify your learnings"   # All commands need full path
+./scripts/aliases/cns-help              # Quick help alias
+```
 
 ## 🚀 Project Setup & Management
 ```bash

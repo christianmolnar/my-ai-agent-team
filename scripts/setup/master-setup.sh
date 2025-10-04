@@ -265,6 +265,59 @@ EOF
     fi
 }
 
+setup_path_configuration() {
+    print_header "⚙️ PATH CONFIGURATION"
+    
+    local project_scripts="$PWD/scripts"
+    local shell_config=""
+    
+    # Detect shell and config file
+    if [[ "$SHELL" == *"bash"* ]]; then
+        shell_config="$HOME/.bashrc"
+    elif [[ "$SHELL" == *"zsh"* ]]; then
+        shell_config="$HOME/.zshrc"
+    else
+        shell_config="$HOME/.profile"
+    fi
+    
+    print_info "Detected shell: $SHELL"
+    print_info "Config file: $shell_config"
+    
+    if ask_yes_no "Add CNS commands to PATH for easy access (enables 'cns' command)?" "y"; then
+        # Check if already in PATH config
+        if [[ -f "$shell_config" ]] && grep -q "$project_scripts" "$shell_config"; then
+            print_success "CNS scripts already in PATH configuration"
+        else
+            print_step "Adding scripts to PATH in $shell_config..."
+            
+            # Create config file if it doesn't exist
+            touch "$shell_config"
+            
+            # Add PATH configuration
+            echo "" >> "$shell_config"
+            echo "# AI Agent Team CNS Commands" >> "$shell_config"
+            echo "export PATH=\"\$PATH:$project_scripts\"" >> "$shell_config"
+            
+            print_success "CNS scripts added to PATH"
+            print_info "Restart your terminal or run: source $shell_config"
+        fi
+        
+        # Set PATH for current session
+        export PATH="$PATH:$project_scripts"
+        print_success "CNS commands available in current session"
+        
+        # Test the command
+        if command -v cns &> /dev/null; then
+            print_success "✅ CNS command test: 'cns' works!"
+        else
+            print_warning "CNS command not immediately available - restart terminal"
+        fi
+    else
+        print_info "Skipping PATH setup"
+        print_warning "Consequence: You'll need to use './scripts/cns' instead of just 'cns'"
+    fi
+}
+
 start_development_server() {
     print_header "🚀 STARTING DEVELOPMENT"
     
@@ -294,7 +347,8 @@ display_next_steps() {
     echo -e "2. ${YELLOW}Review API setup guide${NC} - AI-Agent-Team-Document-Library/implementation-guides/api-keys-setup.md"
     echo -e "3. ${YELLOW}Explore the Personal Assistant${NC} - http://localhost:3000/personal-assistant"
     
-    echo -e "\n${CYAN}CNS Commands (auto-configured):${NC}"
+    echo -e "\n${CYAN}CNS Commands:${NC}"
+    echo -e "• ${GREEN}cns \"help\"${NC} - Show all CNS commands"
     echo -e "• ${GREEN}cns \"document my preference\"${NC} - CNS learning commands"
     echo -e "• ${GREEN}cns \"do CNS learning session\"${NC} - Generate learning reports"
     echo -e "• ${GREEN}cns \"verify your learnings\"${NC} - Check recent learnings"
@@ -335,6 +389,7 @@ main() {
     install_dependencies
     setup_environment
     setup_github_copilot
+    setup_path_configuration
     verify_build
     run_tests
     setup_development_tools
