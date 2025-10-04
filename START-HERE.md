@@ -15,8 +15,13 @@ Welcome to the AI Agent Team ecosystem! This guide will help you get started qui
 
 **Option 1: Guided Setup (Recommended)**
 ```bash
-# Run the master setup script - handles everything automatically
+# Run the master setup script - handles everything automatically  
 ./scripts/setup/master-setup.sh
+
+# After setup, add scripts to PATH for easy CNS access:
+echo 'export PATH="$PATH:$(pwd)/scripts/aliases"' >> ~/.bashrc
+source ~/.bashrc
+# Now you can use: cns "help" instead of ./scripts/cns "help"
 ```
 *This script guides you through all setup steps with skip options and consequence explanations.*
 
@@ -58,6 +63,21 @@ After setup, you can immediately use:
 - **Personal Assistant UI**: http://localhost:3000/personal-assistant
 - **Main Application**: http://localhost:3000  
 - **GitHub Copilot**: Will be personalized if you ran the setup
+- **CNS Commands**: `./scripts/cns "help"` for AI learning system
+
+### **🧠 Essential CNS Commands**
+```bash
+# Core CNS functionality (use after setup):
+./scripts/cns "help"                    # Show all commands
+./scripts/cns "verify your learnings"   # See what the system has learned
+./scripts/cns "document my preference"  # Teach the system your preferences
+
+# Quick access (if PATH is configured):
+scripts/aliases/cns "help"             # Shorter command
+scripts/aliases/cns-help               # Direct help
+```
+
+**Quick Setup for CNS**: `[CHEAT-SHEET.md](AI-Agent-Team-Document-Library/CHEAT-SHEET.md)` has complete command reference.
 
 ## ⚡ **Alternative Quick Starts**
 

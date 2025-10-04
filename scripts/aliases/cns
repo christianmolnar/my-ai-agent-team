@@ -1,0 +1,3 @@
+#!/bin/bash
+# Direct CNS command - enables "cns" usage instead of "./scripts/cns"
+"$(dirname "$0")/../cns" "$@"

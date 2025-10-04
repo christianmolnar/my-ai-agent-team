@@ -1,0 +1,3 @@
+#!/bin/bash
+# CNS Help - Quick access to CNS commands
+./scripts/cns "help"
