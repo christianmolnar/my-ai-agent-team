@@ -1,0 +1,36 @@
+#!/bin/bash
+# AI Agent Team - Project Environment Activation
+# Usage: source ./activate (or `. ./activate`)
+
+# Get the absolute path to the project root
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="$PROJECT_ROOT/scripts"
+
+# Check if scripts directory is already in PATH
+if [[ ":$PATH:" != *":$SCRIPTS_DIR:"* ]]; then
+    export PATH="$SCRIPTS_DIR:$PATH"
+    echo "✅ Added $SCRIPTS_DIR to PATH"
+    echo "🧠 You can now use: cns \"document my preference\""
+    echo "🔄 Use 'deactivate' to restore original PATH"
+    
+    # Store original PATH for deactivation
+    export AI_AGENT_TEAM_ORIGINAL_PATH="$PATH"
+    
+    # Create deactivate function
+    deactivate() {
+        if [ -n "$AI_AGENT_TEAM_ORIGINAL_PATH" ]; then
+            export PATH="$AI_AGENT_TEAM_ORIGINAL_PATH"
+            unset AI_AGENT_TEAM_ORIGINAL_PATH
+            unset -f deactivate
+            echo "✅ Restored original PATH"
+        fi
+    }
+else
+    echo "✅ Scripts directory already in PATH"
+fi
+
+# Set project root for convenience
+export AI_AGENT_TEAM_ROOT="$PROJECT_ROOT"
+
+echo "🚀 AI Agent Team environment activated"
+echo "📁 Project root: $AI_AGENT_TEAM_ROOT"

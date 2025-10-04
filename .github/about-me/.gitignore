@@ -1,0 +1,12 @@
+# Personal user data - never commit actual personal information
+user-profile.md
+communication-style.md
+preferences.md
+context.md
+
+# Keep templates for others to use
+!*.template.md
+!.gitignore
+
+# Personal CNS memories (optional - user choice)
+# ../copilot-cns/memory/user-interactions.md

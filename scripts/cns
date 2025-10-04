@@ -1,0 +1,140 @@
+#!/bin/bash
+
+# CNS Learning Command Suite - Natural Language Interface
+# Single entry point with descriptive subcommands
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+CNS_DIR="$PROJECT_ROOT/.github/copilot-cns"
+
+# Function to generate timestamp
+timestamp() {
+    date '+%Y-%m-%d %H:%M:%S'
+}
+
+# Function to perform CNS learning session
+do_cns_learning_session() {
+    echo -e "${BLUE}🧠 Performing CNS Learning Session...${NC}"
+    
+    # Execute the main learning script
+    exec "$SCRIPT_DIR/utilities/cns-learning.sh" "cns learning session"
+}
+
+# Function to document preference from conversation context
+document_my_preference() {
+    local preference_text="$1"
+    
+    # Execute the main learning script with duplicate detection
+    exec "$SCRIPT_DIR/utilities/cns-learning.sh" "document preference" "$preference_text"
+}
+
+# Function to document patterns from conversation
+document_my_pattern() {
+    echo -e "${BLUE}🧠 Documenting successful pattern...${NC}"
+    
+    # Execute the pattern documentation function
+    exec "$SCRIPT_DIR/utilities/cns-learning.sh" "document pattern" "$1"
+}
+
+# Function to document anti-patterns from conversation
+document_my_anti_pattern() {
+    echo -e "${BLUE}🧠 Documenting anti-pattern...${NC}"
+    
+    # Execute the anti-pattern documentation function
+    exec "$SCRIPT_DIR/utilities/cns-learning.sh" "document anti-pattern" "$1"
+}
+
+# Function to document communication mannerisms
+document_my_mannerism() {
+    echo -e "${BLUE}🧠 Documenting communication mannerism...${NC}"
+    
+    # Execute the mannerism documentation function
+    exec "$SCRIPT_DIR/utilities/cns-learning.sh" "document mannerism" "$1"
+}
+
+# Function to verify learnings
+verify_your_learnings() {
+    echo -e "${BLUE}🧠 Verifying my recent learnings...${NC}"
+    
+    # Execute the verification function
+    exec "$SCRIPT_DIR/utilities/cns-learning.sh" "verify cns learnings"
+}
+
+# Function to show help
+show_help() {
+    cat << EOF
+${GREEN}CNS Natural Language Command Interface${NC}
+
+Available commands:
+  ${BLUE}do CNS learning session${NC}              Perform comprehensive learning analysis
+  ${BLUE}document my preference${NC} [text]        Document user preference (auto-detects from context if no text)
+  ${BLUE}document my pattern${NC} [text]           Document successful pattern (auto-detects from context if no text)
+  ${BLUE}document my anti-pattern${NC} [text]      Document anti-pattern (auto-detects from context if no text)
+  ${BLUE}document my mannerism${NC} [text]         Document communication style/mannerism
+  ${BLUE}verify your learnings${NC}               Show recent learnings and verify updates
+  ${BLUE}test your functionality${NC}             Test CNS framework health
+  ${BLUE}help${NC}                               Show this help message
+
+Examples:
+  $0 "do CNS learning session"
+  $0 "document my preference" "I prefer detailed explanations"
+  $0 "document my preference"                    # Auto-detects from conversation
+  $0 "document my pattern"                       # Auto-detects successful patterns
+  $0 "document my anti-pattern"                  # Auto-detects problematic patterns
+  $0 "document my mannerism" "I prefer concise responses with bullet points"
+  $0 "verify your learnings"
+  $0 "test your functionality"
+
+CNS Location: .github/copilot-cns/
+EOF
+}
+
+# Main command dispatcher using natural language
+case "${1:-help}" in
+    "do CNS learning session"|"do cns learning session"|"learning session")
+        do_cns_learning_session
+        ;;
+    "document my preference"|"capture my preference")
+        document_my_preference "$2"
+        ;;
+    "document my pattern"|"capture my pattern")
+        document_my_pattern "$2"
+        ;;
+    "document my anti-pattern"|"capture my anti-pattern")
+        document_my_anti_pattern "$2"
+        ;;
+    "document my mannerism"|"capture my mannerism")
+        document_my_mannerism "$2"
+        ;;
+    "verify your learnings"|"verify learnings"|"show learnings")
+        verify_your_learnings
+        ;;
+    "test your functionality"|"test cns"|"test")
+        exec "$SCRIPT_DIR/utilities/cns-learning.sh" "test cns"
+        ;;
+    "help"|"--help"|"-h"|"")
+        show_help
+        ;;
+    *)
+        echo -e "${RED}I don't understand: '$1'${NC}"
+        echo -e "${YELLOW}Try using natural language like:${NC}"
+        echo "  'do CNS learning session'"
+        echo "  'document my preference'"
+        echo "  'document my pattern'"
+        echo "  'document my anti-pattern'"
+        echo "  'document my mannerism'"
+        echo "  'verify your learnings'"
+        echo ""
+        echo "Use '$0 help' for full command list"
+        exit 1
+        ;;
+esac

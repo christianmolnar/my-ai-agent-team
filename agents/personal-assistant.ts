@@ -894,7 +894,16 @@ EVERY response must be broken into short, readable segments like this.
 
 Your goal is to provide personalized assistance with PERFECT formatting that the user can easily read.`;
   }
-}
+
+  private async loadCNSLearnings(): Promise<string> {
+    let cnsLearnings = '';
+    
+    try {
+      /*
+      // TODO: Replace with new CNS integration
+      const cnsResult = await this.personaBridge.getCNSLearningData();
+      if (cnsResult.success && cnsResult.data) {
+        cnsLearnings = cnsResult.data;
         console.log('✅ CNS: Total learning data length:', cnsLearnings.length, 'characters');
       } else {
         console.log('❌ CNS: Bridge call failed:', cnsResult.error || 'No result');
@@ -907,6 +916,12 @@ Your goal is to provide personalized assistance with PERFECT formatting that the
       console.warn('CNS: Bridge access failed:', error.message);
       cnsLearnings = 'CNS learning files not available - bridge error';
     }
+    
+    return cnsLearnings;
+  }
+
+  private generateSystemPrompt(personaContext: PersonaContext): string {
+    const cnsLearnings = 'CNS learning files not available - bridge functionality removed for new architecture';
     
     return `You are the Personal Assistant AI that coordinates a team of 20+ specialized AI agents.
 
