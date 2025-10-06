@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     console.log(`🎯 Executing enhanced orchestration task: ${orchestrationTask.type}`);
 
     // Execute the enhanced orchestration
-    const result = await enhancedOrchestrator.handleTask(orchestrationTask);
+    const result = await orchestrator.handleTask(orchestrationTask);
 
     if (result.success) {
       console.log(`✅ Enhanced orchestration completed successfully`);
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Health check for enhanced orchestration capabilities
-    const availableAgents = AgentRegistry.getAvailableAgents();
+    const availableAgents = await AgentRegistry.getAvailableAgents();
     const enhancedOrchestrator = await AgentRegistry.getAgentInstance('enhanced-master-orchestrator-agent');
     
     return NextResponse.json({

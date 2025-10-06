@@ -14,6 +14,12 @@
     "test:registry": "npx tsx test-agent-registry.js",
     "test:orchestrator": "npx tsx test-orchestrator-basic.js",
     "test:agents": "npx tsx test-working-agents.js",
+    "test:comprehensive": "npx tsx test/agents/personal-assistant/comprehensive-test-runner.ts",
+    "test:behavior-contracts": "npx tsx test/agents/personal-assistant/behavior-contracts.test.ts",
+    "test:property-based": "npx tsx test/agents/personal-assistant/property-based.test.ts",
+    "test:metamorphic": "npx tsx test/agents/personal-assistant/metamorphic.test.ts",
+    "test:integration": "npx tsx test/agents/personal-assistant/integration-contracts.test.ts",
+    "test:user-journeys": "npx tsx test/agents/personal-assistant/user-journeys.test.ts",
     "test:all": "npm run test:config && npm run test:cns && npm run test:registry && npm run test:orchestrator"
   },
   "dependencies": {
@@ -25,8 +31,7 @@
     "docx": "^9.5.1",
     "dotenv": "^16.3.1",
     "natural": "^6.2.3",
-    "next": "15.3.3",
-    "officegen": "^0.6.5",
+    "next": "^15.5.4",
     "openai": "^5.20.1",
     "puppeteer": "^22.0.0",
     "react": "^19.0.0",

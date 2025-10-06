@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         content: msg.content,
         timestamp: new Date() // Use current time since we don't have timestamps from frontend
       })),
-      currentContext: `User is continuing a conversation about: ${message}`
+      lastActivity: new Date()
     } : undefined;
     
     // Process the conversation with history context
@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
       response: response.response,
       conversationType: response.conversationType,
       suggestedFollowUps: response.suggestedFollowUps,
-      involvedAgents: response.involvedAgents,
-      deliverables: response.deliverables
+      personaInfluence: response.personaInfluence,
+      flowState: response.flowState
     });
     
   } catch (error) {
