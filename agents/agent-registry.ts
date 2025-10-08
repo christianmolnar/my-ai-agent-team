@@ -1,6 +1,24 @@
-import { Agent } from './agent';
 import * as fs from 'fs';
 import * as path from 'path';
+
+interface Agent {
+  id: string;
+  name: string;
+  description: string;
+  abilities: string[];
+  handleTask(task: AgentTask): Promise<AgentTaskResult>;
+}
+
+interface AgentTask {
+  type: string;
+  payload: any;
+}
+
+interface AgentTaskResult {
+  success: boolean;
+  result: any;
+  error?: string;
+}
 
 interface AgentDefinition {
   id: string;
