@@ -81,3 +81,4 @@ cypress/screenshots/
 # Storybook build outputs
 .out
 .storybook-out
+.vercel
