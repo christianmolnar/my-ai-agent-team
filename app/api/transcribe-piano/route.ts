@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import SimplePianoTranscriptionService from '@/lib/simple-piano-transcription';
+import SimplePianoTranscriptionService from '../../../lib/simple-piano-transcription';
 
 export async function POST(request: NextRequest) {
   try {

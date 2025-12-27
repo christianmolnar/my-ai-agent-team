@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import UltimateGuitarExtractor from '@/lib/ultimate-guitar-extractor';
+import UltimateGuitarExtractor from '../../../lib/ultimate-guitar-extractor';
 
 export async function GET(request: NextRequest) {
   try {

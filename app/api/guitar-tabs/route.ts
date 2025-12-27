@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import GuitarTabService from '@/lib/guitar-tab-service';
+import GuitarTabService from '../../../lib/guitar-tab-service';
 
 export async function POST(request: NextRequest) {
   try {

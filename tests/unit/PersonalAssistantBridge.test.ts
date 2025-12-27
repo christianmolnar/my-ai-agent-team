@@ -5,8 +5,8 @@
  * including private repository access, data retrieval, and security controls.
  */
 
-import { PersonalAssistantBridge } from '../agents/personal-assistant-bridge';
-import { AgentTask } from '../agents/agent';
+import { PersonalAssistantBridge } from '../../agents/personal-assistant-bridge';
+import { AgentTask } from '../../agents/agent';
 
 async function testPersonalAssistantBridge() {
   console.log('🧪 Testing Personal Assistant Bridge...');

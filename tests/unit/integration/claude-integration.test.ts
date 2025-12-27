@@ -1,5 +1,5 @@
-import { ClaudeService } from '../../lib/claude/ClaudeService';
-import { AgentClaudeClientFactory } from '../../lib/claude/AgentClaudeClients';
+import { ClaudeService } from '../../../lib/claude/ClaudeService';
+import { AgentClaudeClientFactory } from '../../../lib/claude/AgentClaudeClients';
 import Anthropic from '@anthropic-ai/sdk';
 
 /**
@@ -138,7 +138,7 @@ describe('Agent Claude Integration', () => {
   });
 
   test('PersonalAssistantAgent Initialization', async () => {
-    const { PersonalAssistantAgent } = await import('../../agents/personal-assistant');
+    const { PersonalAssistantAgent } = await import('../../../agents/personal-assistant');
     
     expect(() => {
       const agent = new PersonalAssistantAgent();
@@ -148,7 +148,7 @@ describe('Agent Claude Integration', () => {
   });
 
   test('MasterOrchestratorAgent Initialization', async () => {
-    const { MasterOrchestratorAgent } = await import('../../agents/master-orchestrator');
+    const { MasterOrchestratorAgent } = await import('../../../agents/master-orchestrator');
     
     expect(() => {
       const agent = new MasterOrchestratorAgent();
