@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.61.0",
+    "@types/pg": "^8.16.0",
     "auto-pandoc": "^1.0.3",
     "axios": "^1.10.0",
     "cheerio": "^1.0.0-rc.12",
@@ -33,6 +34,7 @@
     "natural": "^6.2.3",
     "next": "^15.5.9",
     "openai": "^5.20.1",
+    "pg": "^8.16.3",
     "puppeteer": "^22.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,0 +1,34 @@
+{
+  "userId": "christian@test.com",
+  "analysisType": "PRIMARY_RESIDENCE",
+  "sessionName": "Test Arizona Property Analysis",
+  "propertyFiles": [
+    {
+      "filename": "H01-tucson-home.md",
+      "content": "# Test Property Analysis - H01 Tucson Home\n**Address**: 12345 N Desert View Drive, Tucson, AZ 85718\n**Price**: $425,000\n**Property Type**: Single Family Home\n**Bedrooms**: 4\n**Bathrooms**: 3\n**Square Footage**: 2,850 sq ft\n**Lot Size**: 0.75 acres\n**Year Built**: 2018\n\n## Property Details\n- Swimming pool with spa\n- 3-car garage\n- Desert landscaping\n- Mountain views\n- Open floor plan\n- Granite countertops\n- Stainless steel appliances\n- Energy efficient features\n\n## Neighborhood\n- Foothills location\n- Highly rated schools\n- Close to hiking trails\n- Shopping and dining nearby\n- Low crime rate\n\n## Financial Information\n- HOA fees: $85/month\n- Property taxes: $3,200/year\n- Estimated insurance: $1,200/year\n\nThis property represents excellent value in the Tucson foothills area with modern amenities and stunning desert views.",
+      "fileType": "PROPERTY_INPUT",
+      "metadata": {
+        "location": "Tucson, AZ",
+        "price": 425000,
+        "bedrooms": 4,
+        "bathrooms": 3
+      }
+    }
+  ],
+  "userParameters": {
+    "budgetRange": {
+      "min": 350000,
+      "max": 500000
+    },
+    "preferences": {
+      "location": ["Tucson", "Phoenix", "Scottsdale"],
+      "propertyType": ["Single Family", "Townhome"],
+      "amenities": ["Swimming Pool", "Mountain Views", "Garage"]
+    },
+    "analysis": {
+      "timeframe": "Move within 6 months",
+      "priorities": ["Location", "Value", "Amenities", "Schools"],
+      "specialRequirements": "Must have pool and mountain views for Arizona lifestyle"
+    }
+  }
+}

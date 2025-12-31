@@ -1,0 +1,19 @@
+[
+  {
+    "agentId": "real-estate-analyzer",
+    "taskId": "test-task-001",
+    "taskType": "property-analysis",
+    "errorCategory": "DATA",
+    "severity": "MEDIUM",
+    "description": "Quality issues detected",
+    "location": "General",
+    "originalContent": "\n# Sample Real Estate Analysis\n\n## Property Overview\n**Address:** 123 Test Street, Phoenix, AZ 85001\n**Price:** $450,000\n**Monthly Payment:** $2,850/month\n\n## Financial Analysis\n- **ROI:** 12% annually\n- **Cap Rate:** 8.5%\n- **Cash Flow:** $650/month positive\n- **Property Value Growth:** 15% over 5 years\n\n## Links and References\n- Property Listing: https://zillow.com/fake-link-12345\n- Market Data: https://example.com/market-data\n- School Ratings: https://greatschools.org/arizona/phoenix/123\n\n## Investment Recommendation\nBased on the analysis, this property shows strong potential with excellent cash flow.\nThe 12% ROI significantly exceeds market averages, and the location demographics\nsuggest continued appreciation.\n",
+    "expectedContent": "Review and correct identified issues",
+    "detectedBy": "quality-review-system",
+    "confidence": 0.8,
+    "userImpact": "MEDIUM",
+    "errorId": "error_1766950624725_na95evxca",
+    "timestamp": "2025-12-28T19:37:04.725Z",
+    "status": "DETECTED"
+  }
+]

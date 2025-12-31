@@ -1,0 +1,20 @@
+[
+  {
+    "agentId": "real-estate-analyzer",
+    "taskId": "test-task-001",
+    "taskType": "property-analysis",
+    "controlDuration": 360,
+    "treatmentDuration": 480,
+    "generationTime": 360,
+    "reviewTime": 90,
+    "correctionTime": 20,
+    "verificationTime": 10,
+    "qualityImprovement": 15.5,
+    "trackingId": "eff_1766950624729_lr7e295ss",
+    "timeIncrease": 120,
+    "timeIncreasePercentage": 33.33333333333333,
+    "newEfficiencyRatio": 120,
+    "efficiencyLoss": 25,
+    "timestamp": "2025-12-28T19:37:04.729Z"
+  }
+]
