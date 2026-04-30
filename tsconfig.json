@@ -37,6 +37,9 @@
     "../backups/**/*",
     "../**/*.backup/**/*",
     ".next/**/*",
-    "dist/**/*"
+    "dist/**/*",
+    "logs/**/*",
+    "data/**/*",
+    "deliverables/**/*"
   ]
 }
