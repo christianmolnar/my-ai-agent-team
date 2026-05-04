@@ -11,6 +11,43 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from dotenv import load_dotenv
 
+SAFE_COMMAND_PREFIXES = (
+    "git status",
+    "git diff",
+    "git log",
+    "git branch",
+    "git switch",
+    "git checkout",
+    "git fetch",
+    "git pull",
+    "git add",
+    "git commit",
+    "git push",
+    "npm install",
+    "npm run",
+    "npm test",
+    "pytest",
+    "python -m pytest",
+    "pip install",
+    "vercel",
+)
+
+BLOCKED_COMMAND_SNIPPETS = (
+    "rm -rf",
+    "del /f",
+    "format ",
+    "shutdown",
+    "reboot",
+    "mkfs",
+    "diskpart",
+    "git reset --hard",
+    "git clean -fd",
+    ":(){:|:&};:",
+)
+
+PENDING_COMMANDS: Dict[int, Dict[str, str]] = {}
+MAX_DISCORD_MESSAGE = 1900
+
 # AI providers
 try:
     from anthropic import Anthropic
@@ -79,6 +116,70 @@ def check_repository_status():
     
     return status
 
+
+def normalize_repo_key(repo_key: str) -> str:
+    """Normalize user-provided repository keys for matching."""
+    return repo_key.strip().lower().replace("_", "-")
+
+
+def resolve_repo_path(repo_key: str) -> Optional[Path]:
+    """Resolve a repository key to an accessible path."""
+    status = check_repository_status()
+    normalized = normalize_repo_key(repo_key)
+
+    for key, info in status.items():
+        if normalize_repo_key(key) == normalized and info["accessible"]:
+            return Path(info["path"])
+
+    return None
+
+
+def format_repo_status() -> str:
+    """Render accessible repository status for Discord output."""
+    status = check_repository_status()
+    lines = []
+
+    for name, info in status.items():
+        lines.append(f"- {name}: {info['status']} ({info['path']})")
+
+    return "\n".join(lines)
+
+
+def is_command_safe(command: str) -> tuple[bool, str]:
+    """Validate command against allowlist and denylist."""
+    normalized = command.strip().lower()
+
+    for blocked in BLOCKED_COMMAND_SNIPPETS:
+        if blocked in normalized:
+            return False, f"Blocked command pattern detected: {blocked}"
+
+    if not normalized.startswith(SAFE_COMMAND_PREFIXES):
+        return False, "Command is outside the safe allowlist"
+
+    return True, "ok"
+
+
+def parse_run_command(content: str) -> tuple[Optional[str], Optional[str]]:
+    """Parse !run command syntax: !run <repo> :: <command>."""
+    remainder = content[len("!run "):].strip()
+    if "::" not in remainder:
+        return None, None
+
+    repo_key, command = remainder.split("::", 1)
+    repo_key = repo_key.strip()
+    command = command.strip()
+    if not repo_key or not command:
+        return None, None
+
+    return repo_key, command
+
+
+def clip_text(text: str, max_len: int = MAX_DISCORD_MESSAGE) -> str:
+    """Clip long output for Discord limits."""
+    if len(text) <= max_len:
+        return text
+    return text[:max_len] + "\n... (output truncated)"
+
 def execute_command(command: str, cwd: Optional[str] = None) -> str:
     """Execute a shell command safely"""
     try:
@@ -88,18 +189,101 @@ def execute_command(command: str, cwd: Optional[str] = None) -> str:
             capture_output=True,
             text=True,
             cwd=cwd,
-            timeout=30
+            timeout=180
         )
-        
+
+        stdout = (result.stdout or "").strip()
+        stderr = (result.stderr or "").strip()
+
         if result.returncode == 0:
-            return f"✅ Command successful:\n```\n{result.stdout}\n```"
+            if stdout:
+                return f"✅ Command successful:\n```\n{clip_text(stdout)}\n```"
+            return "✅ Command successful (no output)."
         else:
-            return f"❌ Command failed (exit {result.returncode}):\n```\n{result.stderr}\n```"
+            combined = stderr or stdout or "No output captured."
+            return f"❌ Command failed (exit {result.returncode}):\n```\n{clip_text(combined)}\n```"
             
     except subprocess.TimeoutExpired:
-        return "⏰ Command timed out (30s)"
+        return "⏰ Command timed out (180s)"
     except Exception as e:
         return f"💥 Error: {str(e)}"
+
+
+async def try_handle_control_command(message) -> bool:
+    """Handle bot control commands before AI chat flow."""
+    content = message.content.strip()
+    user_id = message.author.id
+
+    if content == "!help":
+        await message.reply(
+            "🤖 Bot command mode:\n"
+            "- !repos\n"
+            "- !run <repo> :: <command>\n"
+            "- !confirm\n"
+            "- !cancel\n\n"
+            "Example:\n"
+            "!run FinsightAI :: git status\n"
+            "!run observatory :: npm run build"
+        )
+        return True
+
+    if content == "!repos":
+        await message.reply("📁 Repository status:\n" + format_repo_status())
+        return True
+
+    if content.startswith("!run "):
+        repo_key, command = parse_run_command(content)
+        if not repo_key or not command:
+            await message.reply("❌ Invalid format. Use: !run <repo> :: <command>")
+            return True
+
+        repo_path = resolve_repo_path(repo_key)
+        if repo_path is None:
+            await message.reply(f"❌ Repo not found or not accessible: {repo_key}")
+            return True
+
+        safe, reason = is_command_safe(command)
+        if not safe:
+            await message.reply(f"🚫 Command rejected: {reason}")
+            return True
+
+        PENDING_COMMANDS[user_id] = {
+            "repo_key": repo_key,
+            "cwd": str(repo_path),
+            "command": command,
+        }
+
+        await message.reply(
+            f"⚠️ Ready to run command in {repo_key}:\n"
+            f"```\n{command}\n```\n"
+            "Reply with !confirm to execute or !cancel to discard."
+        )
+        return True
+
+    if content == "!cancel":
+        if user_id in PENDING_COMMANDS:
+            del PENDING_COMMANDS[user_id]
+            await message.reply("🛑 Pending command canceled.")
+        else:
+            await message.reply("ℹ️ No pending command to cancel.")
+        return True
+
+    if content == "!confirm":
+        pending = PENDING_COMMANDS.get(user_id)
+        if not pending:
+            await message.reply("ℹ️ No pending command. Use !run first.")
+            return True
+
+        command = pending["command"]
+        cwd = pending["cwd"]
+        repo_key = pending["repo_key"]
+
+        del PENDING_COMMANDS[user_id]
+        result = execute_command(command, cwd=cwd)
+        await message.reply(f"⚙️ Executed in {repo_key}:\n{result}")
+        return True
+
+    return False
 
 async def call_ai_api(messages, system_prompt):
     """Call AI API with fallback from Claude to OpenAI"""
@@ -159,6 +343,9 @@ async def on_message(message):
     if (hasattr(message.channel, 'name') and message.channel.name not in allowed_channels 
         and not isinstance(message.channel, discord.DMChannel)):
         return
+
+    if await try_handle_control_command(message):
+        return
     
     try:
         async with message.channel.typing():
@@ -182,7 +369,7 @@ async def on_message(message):
 - Be direct and take action when requested
 - Use emojis for clarity in Discord
 - Check repository status when asked
-- Execute commands when needed
+- When execution is requested, ask the user to use !run and !confirm command flow
 - Provide concrete help with development tasks
 
 Respond naturally and be proactive. The user expects you to take action, not just provide instructions."""
