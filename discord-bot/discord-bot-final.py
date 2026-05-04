@@ -30,6 +30,8 @@ SAFE_COMMAND_PREFIXES = (
     "python -m pytest",
     "pip install",
     "vercel",
+    "npx vercel",
+    "railway",
 )
 
 BLOCKED_COMMAND_SNIPPETS = (
@@ -221,9 +223,14 @@ async def try_handle_control_command(message) -> bool:
             "- !run <repo> :: <command>\n"
             "- !confirm\n"
             "- !cancel\n\n"
-            "Example:\n"
+            "Code examples:\n"
             "!run FinsightAI :: git status\n"
-            "!run observatory :: npm run build"
+            "!run observatory :: npm run build\n"
+            "!run my-ai-agent-team :: pytest\n\n"
+            "Deploy examples:\n"
+            "!run FinsightAI :: vercel --prod\n"
+            "!run FinsightAI :: railway up\n\n"
+            "Every !run needs !confirm before execution."
         )
         return True
 
