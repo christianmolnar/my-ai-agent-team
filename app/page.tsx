@@ -137,6 +137,24 @@ const agentTeams = {
 
 export default function Home() {
   const [message, setMessage] = useState<string>("");
+  
+  // User personalization
+  const [userName, setUserName] = useState<string>("");
+  const [showNameSetting, setShowNameSetting] = useState<boolean>(false);
+  
+  // Learning system state
+  const [showLearningPanel, setShowLearningPanel] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<string>("");
+  const [methodologyArea, setMethodologyArea] = useState<string>("");
+  const [methodologyImprovement, setMethodologyImprovement] = useState<string>("");
+  const [lastUserMessage, setLastUserMessage] = useState<string>("");
+  const [lastAgentResponse, setLastAgentResponse] = useState<string>("");
+  
+  // Loading and performance state
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingStage, setLoadingStage] = useState<string>("");
+  const [lastChanges, setLastChanges] = useState<string>("");
+  
   const [chatHistory, setChatHistory] = useState<Array<{
     role: string;
     content: string;
@@ -145,6 +163,7 @@ export default function Home() {
       suggestedFollowUps?: string[];
       involvedAgents?: string[];
       deliverables?: string[];
+      isLoading?: boolean;
     };
   }>>([
     { role: 'assistant', content: 'Hello! I\'m your Personal Assistant. I can help coordinate projects across your entire AI agent team. What would you like to work on today?' }
@@ -152,6 +171,21 @@ export default function Home() {
 
   // Create ref for auto-scrolling chat
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Load user name from localStorage on component mount
+  useEffect(() => {
+    const savedUserName = localStorage.getItem('userName');
+    if (savedUserName) {
+      setUserName(savedUserName);
+    }
+  }, []);
+
+  // Save user name to localStorage when it changes
+  useEffect(() => {
+    if (userName.trim()) {
+      localStorage.setItem('userName', userName);
+    }
+  }, [userName]);
 
   // Auto-scroll to bottom when chat history updates
   useEffect(() => {
@@ -162,8 +196,12 @@ export default function Home() {
 
   // Function to start a new chat
   const handleNewChat = () => {
+    const greeting = userName.trim() 
+      ? `Hello ${userName}! I'm your Personal Assistant. I can help coordinate projects across your entire AI agent team. What would you like to work on today?`
+      : `Hello! I'm your Personal Assistant. I can help coordinate projects across your entire AI agent team. What would you like to work on today?`;
+    
     setChatHistory([
-      { role: 'assistant', content: 'Hello! I\'m your Personal Assistant. I can help coordinate projects across your entire AI agent team. What would you like to work on today?' }
+      { role: 'assistant', content: greeting }
     ]);
   };
 
@@ -172,26 +210,61 @@ export default function Home() {
       const userMessage = message.trim();
       setChatHistory([...chatHistory, { role: 'user', content: userMessage }]);
       setMessage('');
+      setIsLoading(true);
+      setLoadingStage("🧠 Analyzing your request...");
       
-      // Add loading message
+      // Check if this relates to a project and conversation context is needed
+      const needsContext = userMessage.toLowerCase().includes('project') || 
+                          userMessage.toLowerCase().includes('work on') ||
+                          userMessage.toLowerCase().includes('discuss') ||
+                          userMessage.toLowerCase().includes('continue') ||
+                          userMessage.toLowerCase().includes('what we') ||
+                          userMessage.toLowerCase().includes('again') ||
+                          userMessage.toLowerCase().includes('try') ||
+                          userMessage.toLowerCase().includes('previous') ||
+                          userMessage.toLowerCase().includes('questions') ||
+                          userMessage.toLowerCase().includes('formatting') ||
+                          chatHistory.length > 2; // Always include context if we have ongoing conversation
+      
+      // Update loading message based on whether we need context
+      const contextLoadingMessage = needsContext ? 
+        '🤔 Processing your request...\n\n⚙️ Loading persona context\n⚙️ Reviewing conversation history\n⚙️ Analyzing intent and complexity\n⚙️ Coordinating team response' :
+        '🤔 Processing your request...\n\n⚙️ Loading persona context\n⚙️ Analyzing intent and complexity\n⚙️ Coordinating team response';
+      
+      // Add enhanced loading message with spinner
       setChatHistory(prev => [...prev, { 
         role: 'assistant', 
-        content: '🤔 Thinking...' 
+        content: contextLoadingMessage,
+        metadata: { isLoading: true }
       }]);
       
       try {
+        setLoadingStage("📡 Calling Personal Assistant API...");
+        
         // Call the actual Personal Assistant API
         const response = await fetch('/api/personal-assistant', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ message: userMessage })
+          body: JSON.stringify({ 
+            message: userMessage,
+            context: needsContext ? chatHistory.filter(msg => !msg.metadata?.isLoading) : undefined,
+            userName: userName.trim() || undefined
+          })
         });
         
+        setLoadingStage("📄 Processing response...");
         const data = await response.json();
         
+        setIsLoading(false);
+        setLoadingStage("");
+        
         if (data.success) {
+          // Track messages for learning context
+          setLastUserMessage(userMessage);
+          setLastAgentResponse(data.response);
+          
           // Replace loading message with actual response
           setChatHistory(prev => {
             const newHistory = [...prev];
@@ -202,7 +275,8 @@ export default function Home() {
                 conversationType: data.conversationType,
                 suggestedFollowUps: data.suggestedFollowUps,
                 involvedAgents: data.involvedAgents,
-                deliverables: data.deliverables
+                deliverables: data.deliverables,
+                isLoading: false
               }
             };
             return newHistory;
@@ -232,12 +306,115 @@ export default function Home() {
     }
   };
 
+  // Learning system functions
+  const handleSendFeedback = async () => {
+    if (!feedback.trim()) return;
+
+    try {
+      const response = await fetch('/api/personal-assistant/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          feedback: feedback,
+          context: {},
+          sessionId: `session-${Date.now()}`,
+          userMessage: lastUserMessage,
+          agentResponse: lastAgentResponse
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setFeedback("");
+        
+        // Display detailed feedback impact to user
+        const filesUpdated = data.learningDetails?.updatedFiles || [];
+        const changes = data.learningDetails?.changes || [];
+        
+        const impactMessage = `✅ **Feedback processed successfully!**
+
+📊 **Learning Impact Details:**
+• **${changes.length}** specific improvements captured
+• **${filesUpdated.length}** CNS brain files updated
+• **Applied to:** ${data.learningDetails?.appliedTo || 'Future conversations'}
+• **Confidence boost:** ${data.learningDetails?.confidenceBoost || 'Moderate improvement'}
+
+📁 **Updated Files:**
+${filesUpdated.map(file => `• ${file}`).join('\n')}
+
+🧠 **Changes Applied:**
+${changes.map((change, i) => `${i + 1}. ${change}`).join('\n')}
+
+Thank you for helping me learn and improve! These changes will be applied to all future responses.`;
+        
+        setChatHistory(prev => [...prev, {
+          role: 'assistant',
+          content: impactMessage,
+          metadata: {
+            conversationType: 'feedback-confirmation',
+            suggestedFollowUps: ['Continue our conversation', 'Ask about my learning progress']
+          }
+        }]);
+        
+      } else {
+        alert('Failed to send feedback: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error sending feedback:', error);
+      alert('Error sending feedback');
+    }
+  };
+
+  const handleUpdateMethodology = async () => {
+    if (!methodologyArea.trim() || !methodologyImprovement.trim()) return;
+
+    try {
+      const response = await fetch('/api/personal-assistant/methodology', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          area: methodologyArea,
+          improvement: methodologyImprovement
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setMethodologyArea("");
+        setMethodologyImprovement("");
+        alert(`Methodology updated for area: ${data.area}`);
+      } else {
+        alert('Failed to update methodology: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error updating methodology:', error);
+      alert('Error updating methodology');
+    }
+  };
+
   return (
     <div style={{
       minHeight: "100vh",
       background: "linear-gradient(135deg, #181a1b 0%, #232526 100%)",
       padding: "20px"
     }}>
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+      `}</style>
+      
       <main style={{
         maxWidth: "1400px",
         margin: "0 auto",
@@ -292,6 +469,46 @@ export default function Home() {
             </p>
           </div>
 
+          {/* User Name Input */}
+          <div style={{
+            marginBottom: "20px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px"
+          }}>
+            <label style={{
+              color: "#ffb347",
+              fontSize: "14px",
+              fontWeight: "500"
+            }}>
+              Your Name:
+            </label>
+            <input
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Enter your name (optional)"
+              style={{
+                background: "#1a1b1c",
+                border: "1px solid #333",
+                borderRadius: "8px",
+                padding: "8px 12px",
+                color: "#fff",
+                fontSize: "14px",
+                flex: "1",
+                maxWidth: "200px"
+              }}
+            />
+            {userName && (
+              <span style={{
+                color: "#90EE90",
+                fontSize: "12px"
+              }}>
+                ✓ Saved
+              </span>
+            )}
+          </div>
+
           {/* Chat History */}
           <div ref={chatContainerRef} style={{
             background: "#181a1b",
@@ -299,7 +516,7 @@ export default function Home() {
             border: "1px solid #333",
             padding: "20px",
             marginBottom: "20px",
-            height: "300px",
+            height: "600px",
             overflowY: "auto",
             scrollBehavior: "smooth"
           }}>
@@ -331,9 +548,40 @@ export default function Home() {
                     border: "1px solid #444",
                     flex: 1,
                     fontSize: "14px",
-                    lineHeight: "1.5"
+                    lineHeight: "1.5",
+                    // Add special styling for loading messages
+                    ...(msg.metadata?.isLoading && {
+                      background: "linear-gradient(135deg, #232526 0%, #2a2d2e 100%)",
+                      border: "1px solid #ffb347",
+                      animation: "pulse 1.5s ease-in-out infinite"
+                    })
                   }}>
-                    {msg.content}
+                    {/* Add loading spinner for loading messages */}
+                    {msg.metadata?.isLoading && (
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        marginBottom: "8px"
+                      }}>
+                        <div style={{
+                          width: "20px",
+                          height: "20px",
+                          border: "2px solid #555",
+                          borderTop: "2px solid #ffb347",
+                          borderRadius: "50%",
+                          animation: "spin 1s linear infinite"
+                        }}></div>
+                        <span style={{ color: "#ffb347", fontWeight: "600" }}>Processing...</span>
+                      </div>
+                    )}
+                    
+                    {/* Render content with proper line breaks */}
+                    {msg.content.split('\n').map((line, i) => (
+                      line.trim() ? <div key={i} style={{ marginBottom: line.startsWith('•') || line.match(/^\d+\./) ? '4px' : '8px' }}>
+                        {line}
+                      </div> : <br key={i} />
+                    ))}
                     
                     {/* Show metadata for assistant responses */}
                     {msg.role === 'assistant' && msg.metadata && (
@@ -444,8 +692,163 @@ export default function Home() {
             >
               🔄 New Chat
             </button>
+            <button
+              onClick={() => setShowLearningPanel(!showLearningPanel)}
+              style={{
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "1px solid #555",
+                cursor: "pointer",
+                fontWeight: "600",
+                fontSize: "14px",
+                background: showLearningPanel ? "#ffb347" : "#232526",
+                color: showLearningPanel ? "#000" : "#f3f3f3",
+                transition: "all 0.2s",
+                whiteSpace: "nowrap"
+              }}
+              title="Open learning system controls"
+              onMouseOver={(e) => {
+                if (!showLearningPanel) {
+                  e.currentTarget.style.background = "#2a2d2e";
+                  e.currentTarget.style.borderColor = "#777";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (!showLearningPanel) {
+                  e.currentTarget.style.background = "#232526";
+                  e.currentTarget.style.borderColor = "#555";
+                }
+              }}
+            >
+              🧠 Learning
+            </button>
           </div>
         </div>
+
+        {/* Learning Panel */}
+        {showLearningPanel && (
+          <div style={{
+            background: "#232526",
+            borderRadius: "15px",
+            padding: "25px",
+            border: "1px solid #444",
+            marginTop: "20px"
+          }}>
+            <h3 style={{
+              color: "#ffb347",
+              marginBottom: "20px",
+              fontSize: "24px",
+              fontWeight: "600"
+            }}>
+              🧠 Agent Learning System
+            </h3>
+            
+            {/* Feedback Section */}
+            <div style={{ marginBottom: "30px" }}>
+              <h4 style={{
+                color: "#f3f3f3",
+                marginBottom: "10px",
+                fontSize: "18px"
+              }}>
+                Provide Feedback on My Response
+              </h4>
+              <textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Tell me how I can improve my last response..."
+                style={{
+                  width: "100%",
+                  height: "100px",
+                  padding: "15px",
+                  borderRadius: "10px",
+                  border: "1px solid #555",
+                  background: "#1a1c1d",
+                  color: "#f3f3f3",
+                  fontSize: "16px",
+                  resize: "vertical",
+                  marginBottom: "10px"
+                }}
+              />
+              <button
+                onClick={handleSendFeedback}
+                disabled={!feedback.trim()}
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  border: "none",
+                  cursor: feedback.trim() ? "pointer" : "not-allowed",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  background: feedback.trim() ? "#ffb347" : "#555",
+                  color: feedback.trim() ? "#000" : "#ccc",
+                  transition: "all 0.2s"
+                }}
+              >
+                📤 Send Feedback
+              </button>
+            </div>
+
+            {/* Methodology Update Section */}
+            <div>
+              <h4 style={{
+                color: "#f3f3f3",
+                marginBottom: "10px",
+                fontSize: "18px"
+              }}>
+                Teach Me New Behavior
+              </h4>
+              <input
+                value={methodologyArea}
+                onChange={(e) => setMethodologyArea(e.target.value)}
+                placeholder="Area to improve (e.g. 'question-asking', 'project-scoping')"
+                style={{
+                  width: "100%",
+                  padding: "12px 15px",
+                  borderRadius: "8px",
+                  border: "1px solid #555",
+                  background: "#1a1c1d",
+                  color: "#f3f3f3",
+                  fontSize: "16px",
+                  marginBottom: "10px"
+                }}
+              />
+              <textarea
+                value={methodologyImprovement}
+                onChange={(e) => setMethodologyImprovement(e.target.value)}
+                placeholder="How should I improve in this area? (e.g. 'Always ask 3-5 clarifying questions before starting complex projects')"
+                style={{
+                  width: "100%",
+                  height: "80px",
+                  padding: "15px",
+                  borderRadius: "10px",
+                  border: "1px solid #555",
+                  background: "#1a1c1d",
+                  color: "#f3f3f3",
+                  fontSize: "16px",
+                  resize: "vertical",
+                  marginBottom: "10px"
+                }}
+              />
+              <button
+                onClick={handleUpdateMethodology}
+                disabled={!methodologyArea.trim() || !methodologyImprovement.trim()}
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  border: "none",
+                  cursor: (methodologyArea.trim() && methodologyImprovement.trim()) ? "pointer" : "not-allowed",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  background: (methodologyArea.trim() && methodologyImprovement.trim()) ? "#4CAF50" : "#555",
+                  color: (methodologyArea.trim() && methodologyImprovement.trim()) ? "#fff" : "#ccc",
+                  transition: "all 0.2s"
+                }}
+              >
+                🎓 Update Methodology
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Agent Teams */}
         <div style={{ display: "grid", gap: "30px" }}>

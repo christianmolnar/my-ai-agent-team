@@ -1,11 +1,11 @@
 import { ClaudeService, ClaudeConfig } from './ClaudeService';
 
 export class AgentClaudeClientFactory {
-  // Development Tier Clients (Sonnet 4)
+  // Development Tier Clients (Latest Models)
   static createFullStackDeveloperClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.FULL_STACK_DEVELOPER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022', // Using current available model
+      model: 'claude-sonnet-4-20250514', // Latest Sonnet 4
       maxTokens: 4000,
       temperature: 0.3,
       timeout: 60000,
@@ -18,7 +18,7 @@ export class AgentClaudeClientFactory {
   static createDevOpsEngineerClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.DEVOPS_ENGINEER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-haiku-20241022', // Latest Haiku for faster DevOps tasks
       maxTokens: 3000,
       temperature: 0.2,
       timeout: 60000,
@@ -31,7 +31,7 @@ export class AgentClaudeClientFactory {
   static createQAEngineerClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.QA_ENGINEER_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-haiku-20241022', // Latest Haiku for testing tasks
       maxTokens: 3000,
       temperature: 0.1,
       timeout: 60000,
@@ -44,7 +44,7 @@ export class AgentClaudeClientFactory {
   static createDataScientistClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.DATA_SCIENTIST_ANTHROPIC_API_KEY!,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514', // Latest Sonnet 4 for complex analysis
       maxTokens: 4000,
       temperature: 0.2,
       timeout: 60000,
@@ -54,11 +54,11 @@ export class AgentClaudeClientFactory {
     return new ClaudeService(config);
   }
 
-  // Management Tier Clients (Opus 3)
+  // Management Tier Clients (Opus 4.1 - Most Capable)
   static createMasterOrchestratorClient(): ClaudeService {
     const config: ClaudeConfig = {
       apiKey: process.env.MASTER_ORCHESTRATOR_ANTHROPIC_API_KEY!,
-      model: 'claude-3-opus-20240229', // Using current available Opus model
+      model: 'claude-opus-4-1-20250805', // Latest Opus 4.1 - Most capable model
       maxTokens: 4000,
       temperature: 0.4,
       timeout: 120000,

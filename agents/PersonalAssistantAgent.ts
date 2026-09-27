@@ -3,6 +3,8 @@ import { MasterOrchestratorAgent } from './MasterOrchestratorAgent';
 import { PersonalAssistantBridge } from './PersonalAssistantBridge';
 import { ClaudeService } from '../lib/claude/ClaudeService';
 import { AgentClaudeClientFactory } from '../lib/claude/AgentClaudeClients';
+import { GlobalAgentLearningSystem, LearningFeedback } from './GlobalAgentLearningSystem';
+import { CNSManager, CNSLearningResult } from '../lib/cns/CNSManager';
 import Anthropic from '@anthropic-ai/sdk';
 
 /**
@@ -29,6 +31,8 @@ export class PersonalAssistantAgent implements Agent {
   private claudeService: ClaudeService;
   private personaBridge: PersonalAssistantBridge;
   private masterOrchestrator: MasterOrchestratorAgent;
+  private learningSystem: GlobalAgentLearningSystem;
+  private cnsManager: CNSManager;
   
   // Configuration
   private readonly maxContextTokens = 200000; // Claude Sonnet context window
@@ -41,6 +45,12 @@ export class PersonalAssistantAgent implements Agent {
   private async initializeServices(): Promise<void> {
     // Initialize Claude Sonnet 3.5 service
     this.claudeService = AgentClaudeClientFactory.createPersonalAssistantClient();
+
+    // Initialize learning system
+    this.learningSystem = new GlobalAgentLearningSystem(this.id);
+
+    // Initialize CNS (Conversational Neural System) manager
+    this.cnsManager = new CNSManager('PersonalAssistantAgent');
 
     // Initialize persona bridge for private repo data
     this.personaBridge = new PersonalAssistantBridge();
@@ -93,21 +103,47 @@ export class PersonalAssistantAgent implements Agent {
    * Main conversation handler - processes user input and generates personalized responses
    * Integrates persona data and determines if orchestration is needed
    */
-  async handleUserConversation(userMessage: string, conversationContext?: ConversationContext): Promise<PersonalAssistantResponse> {
+  async handleUserConversation(userMessage: string, conversationContext?: ConversationContext, userName?: string): Promise<PersonalAssistantResponse> {
     try {
-      // Step 1: Load persona context from private repository
+      // Step 1: Check if we should ask clarifying questions first (only for new conversations)
+      const hasContext = conversationContext?.history && conversationContext.history.length > 0;
+      console.log(`🔍 PersonalAssistant: hasContext=${hasContext}, contextLength=${conversationContext?.history?.length || 0}`);
+      
+      if (!hasContext) {
+        const clarificationCheck = await this.shouldAskClarifyingQuestions(userMessage);
+        
+        if (clarificationCheck.shouldAsk && clarificationCheck.questions.length > 0) {
+          // Return properly formatted questions
+          const questionsText = clarificationCheck.questions
+            .map((q, i) => `${i + 1}. ${q}`)
+            .join('\n');
+          
+          return {
+            response: `Before I help you with this request, I'd like to ask a few clarifying questions to ensure I provide the most relevant assistance:
+
+${questionsText}
+
+Please provide these details so I can better understand your needs and coordinate the appropriate team members.`,
+            conversationType: 'direct',
+            suggestedFollowUps: ['Provide more details based on the questions above'],
+            personaInfluence: ['question-asking-methodology']
+          };
+        }
+      }
+      
+      // Step 2: Load persona context from private repository
       const personaContext = await this.getPersonaContext(userMessage);
       
-      // Step 2: Analyze user intent and complexity
+      // Step 3: Analyze user intent and complexity
       const intentAnalysis = await this.analyzeUserIntent(userMessage, conversationContext);
       
-      // Step 3: Determine response strategy
+      // Step 4: Determine response strategy
       if (intentAnalysis.requiresOrchestration) {
         // Complex request requiring multiple agents
-        return await this.handleOrchestratedRequest(userMessage, personaContext, intentAnalysis);
+        return await this.handleOrchestratedRequest(userMessage, personaContext, intentAnalysis, userName);
       } else {
         // Direct conversation response
-        return await this.generateDirectResponse(userMessage, personaContext, conversationContext);
+        return await this.generateDirectResponse(userMessage, personaContext, conversationContext, userName);
       }
     } catch (error) {
       console.error('Personal Assistant conversation error:', error);
@@ -117,26 +153,25 @@ export class PersonalAssistantAgent implements Agent {
 
   /**
    * Get persona context from private repository through bridge
+   * OPTIMIZED: Parallel execution and caching
    */
   private async getPersonaContext(userMessage: string): Promise<PersonaContext> {
     try {
-      // Get identity data
-      const identityResult = await this.personaBridge.handleTask({
-        type: 'get-identity-data',
-        payload: { requestingAgent: 'personal-assistant', userMessage }
-      });
-
-      // Get communications style
-      const commResult = await this.personaBridge.handleTask({
-        type: 'get-communications-style',
-        payload: { requestingAgent: 'personal-assistant' }
-      });
-
-      // Get project context
-      const projectResult = await this.personaBridge.handleTask({
-        type: 'get-project-context',
-        payload: { requestingAgent: 'personal-assistant' }
-      });
+      // Execute all bridge calls in parallel for better performance
+      const [identityResult, commResult, projectResult] = await Promise.all([
+        this.personaBridge.handleTask({
+          type: 'get-identity-data',
+          payload: { requestingAgent: 'personal-assistant', userMessage }
+        }),
+        this.personaBridge.handleTask({
+          type: 'get-communications-style',
+          payload: { requestingAgent: 'personal-assistant' }
+        }),
+        this.personaBridge.handleTask({
+          type: 'get-project-context',
+          payload: { requestingAgent: 'personal-assistant' }
+        })
+      ]);
 
       // Construct persona context from bridge responses
       const identity = identityResult.success ? identityResult.result : {};
@@ -272,7 +307,8 @@ REASONING: [brief explanation]`;
   private async handleOrchestratedRequest(
     userMessage: string, 
     personaContext: PersonaContext, 
-    intentAnalysis: IntentAnalysis
+    intentAnalysis: IntentAnalysis,
+    userName?: string
   ): Promise<PersonalAssistantResponse> {
     
     try {
@@ -298,7 +334,7 @@ REASONING: [brief explanation]`;
         originalRequest: userMessage,
         orchestratorResults: orchestratorResponse,
         personaContext: personaContext
-      });
+      }, userName);
 
       return {
         response: finalResponse,
@@ -342,7 +378,8 @@ REASONING: [brief explanation]`;
   private async generateDirectResponse(
     userMessage: string, 
     personaContext: PersonaContext, 
-    conversationContext?: ConversationContext
+    conversationContext?: ConversationContext,
+    userName?: string
   ): Promise<PersonalAssistantResponse> {
     
     const conversationPrompt = this.constructConversationPrompt({
@@ -356,7 +393,7 @@ REASONING: [brief explanation]`;
       { role: 'user', content: conversationPrompt }
     ];
 
-    const systemPrompt = this.buildPersonaSystemPrompt(personaContext);
+    const systemPrompt = await this.buildPersonaSystemPrompt(personaContext, userName);
 
     try {
       const response = await this.claudeService.generateResponse(
@@ -467,12 +504,15 @@ ${personaContext.relevantElements.map(element => `- ${element.category}: ${eleme
   /**
    * Builds system prompt with persona context integration
    */
-  private buildPersonaSystemPrompt(personaContext: PersonaContext): string {
-    return `You are the Personal Assistant AI that coordinates a team of 20+ specialized AI agents.
+  private async buildPersonaSystemPrompt(personaContext: PersonaContext, userName?: string): Promise<string> {
+    const userNameContext = userName ? `The user's name is ${userName}. Address them by name when appropriate.` : '';
+    
+    const basePrompt = `You are the Personal Assistant AI that coordinates a team of 20+ specialized AI agents.
 
 YOUR ROLE & IDENTITY:
 - You are the primary interface between the user and their AI agent team
 - You coordinate with specialized agents (researchers, developers, analysts, etc.) to handle complex requests
+${userNameContext ? `- ${userNameContext}` : ''}
 - You have direct access to team capabilities and can orchestrate multi-agent workflows
 - You ARE part of a team - embrace this collaborative identity
 
@@ -498,7 +538,52 @@ COMMUNICATION GUIDELINES:
 - Consider their current projects and ongoing work
 - Provide responses that are actionable and relevant to their role as ${personaContext.role}
 
+FORMATTING REQUIREMENTS:
+- Use proper formatting for readability
+- Create numbered lists for sequential steps or questions (1. 2. 3.)
+- Use bullet points for non-sequential items (•, -, or *)
+- Add line breaks between paragraphs for clarity
+- Avoid run-on sentences - break up long responses into digestible chunks
+- Use headers or section breaks when appropriate
+- Make lists visually clear and easy to scan
+
 Your goal is to provide personalized, contextually relevant assistance that feels natural and helpful.`;
+
+    // Add any active learning guidelines
+    const learningGuidelines = await this.getActiveLearningGuidelines();
+    if (learningGuidelines) {
+      return `${basePrompt}
+
+ACTIVE LEARNING GUIDELINES:
+${learningGuidelines}
+
+Remember to apply these learning improvements to all responses.`;
+    }
+
+    return basePrompt;
+  }
+
+  /**
+   * Get active learning guidelines from CNS files
+   */
+  private async getActiveLearningGuidelines(): Promise<string | null> {
+    try {
+      const cnsLearnings = await this.cnsManager.getActiveLearnings();
+      if (cnsLearnings && cnsLearnings.trim().length > 0) {
+        return cnsLearnings;
+      }
+    } catch (error) {
+      console.warn('Could not load CNS learnings:', error.message);
+    }
+    
+    // Fallback to basic guidelines if CNS files aren't available
+    const commonGuidelines = [
+      "Always format responses with proper line breaks and bullet points",
+      "Use numbered lists for questions and sequential steps", 
+      "Break long responses into clear paragraphs"
+    ];
+    
+    return commonGuidelines.join('\n- ');
   }
 
   /**
@@ -584,7 +669,7 @@ Your goal is to provide personalized, contextually relevant assistance that feel
   /**
    * Crafts final user-facing response from orchestrator results
    */
-  private async craftFinalUserResponse(params: FinalResponseParams): Promise<string> {
+  private async craftFinalUserResponse(params: FinalResponseParams, userName?: string): Promise<string> {
     const { originalRequest, orchestratorResults, personaContext } = params;
 
     const responsePrompt = `# Final Response Compilation
@@ -612,7 +697,7 @@ The response should feel like a natural conversation while delivering all reques
       { role: 'user', content: responsePrompt }
     ];
 
-    const systemPrompt = this.buildPersonaSystemPrompt(personaContext);
+    const systemPrompt = await this.buildPersonaSystemPrompt(personaContext, userName);
 
     try {
       const finalResponse = await this.claudeService.generateResponse(
@@ -660,7 +745,146 @@ The response should feel like a natural conversation while delivering all reques
   }
 
   private formatConversationHistory(history: ConversationMessage[]): string {
+    if (!history || !Array.isArray(history) || history.length === 0) {
+      return "No previous conversation history.";
+    }
     return history.map(msg => `**${msg.role}**: ${msg.content}`).join('\n\n');
+  }
+
+  /**
+   * Learning System Integration
+   * Methods to enable self-modification and continuous improvement
+   */
+
+  /**
+   * Process user feedback and learn from it
+   */
+  async learn(feedback: LearningFeedback): Promise<void> {
+    await this.learningSystem.processFeedback(feedback);
+  }
+
+  /**
+   * Get the learning system for this agent
+   */
+  getLearningSystem(): GlobalAgentLearningSystem {
+    return this.learningSystem;
+  }
+
+  /**
+   * Process user feedback directly from conversation
+   */
+  async processUserFeedback(feedback: string, context: any): Promise<CNSLearningResult> {
+    console.log('🎓 personal-assistant: Processing learning feedback...');
+    
+    try {
+      // Process feedback through CNS system
+      const cnsResult = await this.cnsManager.processLearningFeedback(feedback, context);
+      
+      // Also update the traditional learning system
+      const learningFeedback: LearningFeedback = {
+        agentId: this.id,
+        sessionId: context.sessionId || 'default-session',
+        userMessage: context.userMessage || 'N/A',
+        agentResponse: context.agentResponse || 'N/A',
+        userFeedback: feedback,
+        improvementSuggestion: 'CNS-based learning applied',
+        timestamp: new Date(),
+        context
+      };
+      
+      await this.learn(learningFeedback);
+      
+      console.log('✅ personal-assistant: Learning cycle complete - I\'ve improved myself based on your feedback!');
+      return cnsResult;
+    } catch (error) {
+      console.error('❌ personal-assistant: Learning feedback processing failed:', error);
+      return {
+        success: false,
+        updatedFiles: [],
+        analysis: 'Failed to process learning feedback',
+        changes: []
+      };
+    }
+  }
+
+  /**
+   * Update own methodology based on learning
+   */
+  async updateOwnMethodology(area: string, improvement: string): Promise<void> {
+    const learningFeedback: LearningFeedback = {
+      agentId: this.id,
+      sessionId: 'self-improvement',
+      userMessage: 'Update methodology',
+      agentResponse: 'Analyzing methodology improvement',
+      userFeedback: `Improve ${area}: ${improvement}`,
+      improvementSuggestion: improvement,
+      timestamp: new Date(),
+      context: { area, improvement }
+    };
+
+    await this.learningSystem.processFeedback(learningFeedback);
+  }
+
+  /**
+   * Determine if clarifying questions should be asked before starting work
+   */
+  async shouldAskClarifyingQuestions(request: string): Promise<{ shouldAsk: boolean; questions: string[] }> {
+    // Use Claude to analyze if the request needs clarification
+    const prompt = `
+      As the Personal Assistant, analyze this request and determine if clarifying questions should be asked:
+      
+      REQUEST: "${request}"
+      
+      Consider:
+      1. Is the request clear and specific enough to execute?
+      2. Are there ambiguities that could lead to incorrect results?
+      3. What additional context would improve the outcome?
+      
+      Respond with JSON:
+      {
+        "shouldAsk": boolean,
+        "questions": ["question1", "question2", ...]
+      }
+    `;
+
+    try {
+      const response = await this.claudeService.generateResponse([
+        { role: 'user', content: prompt }
+      ]);
+
+      // Clean the response to extract JSON
+      const cleanedResponse = response.trim();
+      
+      // Try to find JSON in the response
+      let jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.warn('No JSON found in clarifying questions response:', cleanedResponse);
+        return { shouldAsk: false, questions: [] };
+      }
+
+      return JSON.parse(jsonMatch[0]);
+    } catch (error) {
+      console.error('Error determining clarifying questions:', error);
+      return { shouldAsk: false, questions: [] };
+    }
+  }
+
+  /**
+   * Learn from interaction patterns
+   */
+  async learnFromInteraction(interaction: any): Promise<void> {
+    const learningFeedback: LearningFeedback = {
+      agentId: this.id,
+      sessionId: interaction.sessionId || 'interaction-learning',
+      userMessage: interaction.userMessage || 'N/A',
+      agentResponse: interaction.response || 'N/A', 
+      userFeedback: `Interaction completed: ${interaction.type}`,
+      improvementSuggestion: interaction.success ? 'Continue current approach' : 'Analyze and improve',
+      timestamp: new Date(),
+      context: interaction
+    };
+
+    await this.learn(learningFeedback);
   }
 }
 
